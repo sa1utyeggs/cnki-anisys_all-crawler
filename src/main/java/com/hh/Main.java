@@ -18,32 +18,53 @@ import java.util.stream.Collectors;
  * @author ab875
  */
 public class Main {
+    /**
+     * URL
+     */
     public static final String SEARCH_URL = "https://kns.cnki.net/kns8/defaultresult/index";
     public static final String VISUAL_URL = "https://kns.cnki.net/kns8/Visual/Center";
     public static final String SQL_VAL_URL = "https://kns.cnki.net/kns8/Brief/GetGridTableHtml";
     public static final String BASE_URL = "https://kns.cnki.net";
 
-    public static void main(String[] args) throws IOException {
+    public static final long EXCEPTION_TIME = 10000;
+    public static final long INTERVAL_BASE_TIME = 10000;
+
+    public static void main(String[] args) {
+        insertPaperInfo("磷酸", "结肠癌");
+    }
+
+    public static void insertPaperInfo(String metabolite, String disease) {
         int error = 0;
-        List<String> keys = getPaperDetailKey("结肠癌 姜黄素");
-        List<String> distinctKeys = keys.stream().distinct().collect(Collectors.toList());
-        for (String key : distinctKeys) {
-            try {
-                System.out.println(getPaperDetail(key));
-                System.out.println(distinctKeys.indexOf(key) + "/" + distinctKeys.size());
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("error: " + ++error);
-                // 如果出错 休息 10~15s
+        try {
+            List<String> keys = getPaperDetailKey(disease + " " + metabolite);
+            List<String> distinctKeys = keys.stream().distinct().collect(Collectors.toList());
+            Random random = new Random();
+            for (String key : distinctKeys) {
                 try {
-                    Thread.sleep(10000 + new Random().nextInt(5000));
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
+                    // 打印进度、url
+                    System.out.println(distinctKeys.indexOf(key) + "/" + distinctKeys.size());
+                    System.out.println(BASE_URL + "/kcms/detail/detail.aspx?" + key);
+                    // 获得论文信息
+                    Map<String, Object> paperDetail = getPaperDetail(key);
+                    // 插入数据库
+                    DataBaseUtils.insertPaperInfo(metabolite, disease, paperDetail);
+                    Thread.sleep(100 + random.nextInt(100));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("error: " + ++error);
+                    // 如果出错 休息 10~15s
+                    try {
+                        Thread.sleep(10000 + random.nextInt(5000));
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
                 }
             }
+            System.out.println("本次错误数：" + error +"\n" + "共：" + distinctKeys.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("获得url-key失败");
         }
-        System.out.println(error);
     }
 
     /**
@@ -53,16 +74,31 @@ public class Main {
      * @return 信息map
      * @throws IOException
      */
-    public static Map<String, Object> getPaperDetail(String key) throws IOException {
+    public static Map<String, Object> getPaperDetail(String key) throws Exception {
         // 返回值
         HashMap<String, Object> map = new HashMap<>();
-        Connection connection = getConnection(BASE_URL + "/kcms/detail/detail.aspx?" + key);
+        String url = BASE_URL + "/kcms/detail/detail.aspx?" + key;
+        Connection connection = getConnection(url);
+        // 下面不添加不能返回数据
+        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
         Document document = connection.get();
         // 获取文章的头部信息（包括文章名，作者，分类号，摘要）
-        System.out.println(BASE_URL + "/kcms/detail/detail.aspx?" + key);
         Element docTop = document.getElementsByClass("doc-top").get(0);
-        Element abstractText = docTop.getElementsByClass("abstract-text").get(0);
+        Element title;
+        Element abstractText;
+        if (docTop != null) {
+            abstractText = docTop.getElementsByClass("abstract-text").get(0);
+            title = docTop.getElementsByClass("wx-tit").get(0).getElementsByTag("h1").get(0);
+            AssertUtils.sysIsError(abstractText == null, "此文章无摘要");
+            AssertUtils.sysIsError(title == null, "此文章无标题");
+        } else {
+            throw new Exception("无法获取文章头部信息");
+        }
+        assert abstractText != null;
+        assert title != null;
         map.put("abstractText", abstractText.text());
+        map.put("title", title.text());
+        map.put("url", url);
         return map;
     }
 
@@ -264,7 +300,7 @@ public class Main {
             jsonObject.fluentPut("SearchSql", searchSql);
             jsonObject.fluentPut("HandlerId", handlerId);
         }
-       // System.out.println(jsonString);
+        // System.out.println(jsonString);
 
         Connection connection = getConnection(BASE_URL + "/kns8/Brief/GetGridTableHtml");
         // 一定要有 referer 不然不会返回数据
