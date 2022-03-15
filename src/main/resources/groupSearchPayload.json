@@ -1,0 +1,37 @@
+{
+  "IsSearch": true,
+  "QueryJson": {
+    "Platform": "",
+    "DBCode": "CFLS",
+    "KuaKuCode": "CJFQ,CCND,CIPD,CDMD,BDZK,CISD,SNAD,CCJD,GXDB_SECTION,CJFN,CCVD",
+    "QNode": {
+      "QGroup": [
+        {
+          "Key": "Subject",
+          "Title": "",
+          "Logic": 1,
+          "Items": [
+            {
+              "Title": "主题",
+              "Name": "SU",
+              "Value": "结肠癌",
+              "Operate": "%=",
+              "BlurType": ""
+            }
+          ],
+          "ChildItems": []
+        }
+      ]
+    }
+  },
+  "PageName": "defaultresult",
+  "DBCode": "CFLS",
+  "KuaKuCodes": "CJFQ,CCND,CIPD,CDMD,BDZK,CISD,SNAD,CCJD,GXDB_SECTION,CJFN,CCVD",
+  "CurPage": 1,
+  "RecordsCntPerPage": 20,
+  "CurDisplayMode": "listmode",
+  "CurrSortField": "",
+  "CurrSortFieldType": "desc",
+  "IsSentenceSearch": false,
+  "Subject": ""
+}

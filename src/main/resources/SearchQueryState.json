@@ -1,0 +1,24 @@
+{
+  "Platform": "",
+  "DBCode": "CFLS",
+  "KuaKuCode": "CJFQ,CDMD,CIPD,CCND,CISD,SNAD,BDZK,CCJD,CCVD,CJFN",
+  "QNode": {
+    "QGroup": [
+      {
+        "Key": "Subject",
+        "Title": "",
+        "Logic": 1,
+        "Items": [
+          {
+            "Title": "主题",
+            "Name": "SU",
+            "Value": "结肠癌",
+            "Operate": "%=",
+            "BlurType": ""
+          }
+        ],
+        "ChildItems": []
+      }
+    ]
+  }
+}
