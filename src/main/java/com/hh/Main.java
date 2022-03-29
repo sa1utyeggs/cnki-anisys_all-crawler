@@ -27,16 +27,16 @@ public class Main {
     public static final String BASE_URL = "https://kns.cnki.net";
 
     public static final long EXCEPTION_TIME = 10000;
-    public static final long INTERVAL_BASE_TIME = 10000;
+    public static final long INTERVAL_BASE_TIME = 100;
 
     public static void main(String[] args) {
-        insertPaperInfo("磷酸", "结肠癌");
+        insertPaperInfo("姜黄素", "结肠癌");
     }
 
     public static void insertPaperInfo(String metabolite, String disease) {
         int error = 0;
         try {
-            List<String> keys = getPaperDetailKey(disease + " " + metabolite);
+            List<String> keys = getPaperDetailKey(metabolite, disease);
             List<String> distinctKeys = keys.stream().distinct().collect(Collectors.toList());
             Random random = new Random();
             for (String key : distinctKeys) {
@@ -46,21 +46,23 @@ public class Main {
                     System.out.println(BASE_URL + "/kcms/detail/detail.aspx?" + key);
                     // 获得论文信息
                     Map<String, Object> paperDetail = getPaperDetail(key);
+                    // 生成主要语句
+                    paperDetail.put("mainSentence", getMainSentence((String) paperDetail.get("abstractText"), metabolite, disease));
                     // 插入数据库
                     DataBaseUtils.insertPaperInfo(metabolite, disease, paperDetail);
-                    Thread.sleep(100 + random.nextInt(100));
+                    Thread.sleep(INTERVAL_BASE_TIME + random.nextInt(100));
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("error: " + ++error);
                     // 如果出错 休息 10~15s
                     try {
-                        Thread.sleep(10000 + random.nextInt(5000));
+                        Thread.sleep(EXCEPTION_TIME + random.nextInt(5000));
                     } catch (InterruptedException interruptedException) {
                         interruptedException.printStackTrace();
                     }
                 }
             }
-            System.out.println("本次错误数：" + error +"\n" + "共：" + distinctKeys.size());
+            System.out.println("本次错误数：" + error + "\n" + "共：" + distinctKeys.size());
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("获得url-key失败");
@@ -100,6 +102,19 @@ public class Main {
         map.put("title", title.text());
         map.put("url", url);
         return map;
+    }
+
+    public static String getMainSentence(String text, String metabolite, String disease) {
+        String[] sentences = text.split("。");
+        StringBuilder mainSentence = new StringBuilder();
+        // 查找代谢物、疾病都在的句子
+        for (String sentence : sentences) {
+            if (sentence.contains(metabolite) && sentence.contains(disease)) {
+                mainSentence.append(sentence).append("。");
+            }
+        }
+        // 结果可能有多个句子
+        return mainSentence.toString();
     }
 
     /**
@@ -234,20 +249,22 @@ public class Main {
     }
 
     /**
-     * 根据key（搜索词），获得结果文章的关键词（用于获得文章具体信息）
+     * 根据代谢物与疾病，
+     * 条件为：模糊搜索，同义词拓展，中英文拓展
      *
-     * @param key 搜索词
+     * @param metabolite
+     * @param disease
      * @return
      * @throws IOException
      */
-    public static List<String> getPaperDetailKey(String key) throws IOException {
+    public static List<String> getPaperDetailKey(String metabolite, String disease) throws IOException {
         int currentPage = 1;
         int pages;
         String sqlVal = "";
         int handlerId = 0;
         ArrayList<String> keys = new ArrayList<>(200);
         do {
-            Connection connection = getPaperGridConnection(key, currentPage, sqlVal, handlerId);
+            Connection connection = getPaperGridConnection(metabolite, disease, currentPage, sqlVal, handlerId);
             Document document = connection.post();
             // 获得总页数
             String countPageMark = document.getElementsByClass("countPageMark").get(0).text();
@@ -275,7 +292,7 @@ public class Main {
         return keys;
     }
 
-    public static Connection getPaperGridConnection(String key, Integer curPage, String searchSql, Integer handlerId) {
+    public static Connection getPaperGridConnection(String metabolite, String disease, Integer curPage, String searchSql, Integer handlerId) {
         // 读出 json 字符串
         String jsonString = null;
         try {
@@ -285,14 +302,26 @@ public class Main {
         }
         // 准换为 jsonObject
         JSONObject jsonObject = JSONObject.parseObject(jsonString);
-        // 修改 Value 为 key
+        // 修改 关键词1 为 metabolite
         jsonObject.getJSONObject("QueryJson")
                 .getJSONObject("QNode")
                 .getJSONArray("QGroup")
                 .getJSONObject(0)
+                .getJSONArray("ChildItems")
+                .getJSONObject(0)
                 .getJSONArray("Items")
                 .getJSONObject(0)
-                .fluentPut("Value", key);
+                .fluentPut("Value", metabolite);
+        // 修改关键词2 为 disease
+        jsonObject.getJSONObject("QueryJson")
+                .getJSONObject("QNode")
+                .getJSONArray("QGroup")
+                .getJSONObject(0)
+                .getJSONArray("ChildItems")
+                .getJSONObject(1)
+                .getJSONArray("Items")
+                .getJSONObject(0)
+                .fluentPut("Value", disease);
         // 修改请求的页数
         jsonObject.fluentPut("CurPage", curPage);
         if (curPage > 1) {

@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class DataBaseUtils {
-    public static final String DATABASE_URL = "jdbc:mysql://******/for_nlp?useSSL=true&&characterEncoding=UTF-8&&allowMultiQueries=true&&serverTimezone=UTC";
-    public static final String DATABASE_USERNAME = "****";
-    public static final String DATABASE_PASSWORD = "******";
+    public static final String DATABASE_URL = "jdbc:mysql://47.99.104.231/for_nlp?useSSL=true&&characterEncoding=UTF-8&&allowMultiQueries=true&&serverTimezone=UTC";
+    public static final String DATABASE_USERNAME = "root";
+    public static final String DATABASE_PASSWORD = "HH985682";
 
     static {
         try {
@@ -35,25 +35,27 @@ public class DataBaseUtils {
         return flag;
     }
 
-    public static void insertPaperInfo(String metabolite, String disease, String title, String url, String abstractText) throws Exception {
+    public static void insertPaperInfo(String metabolite, String disease, String title, String url, String abstractText, String mainSentence) throws Exception {
         Connection connection = getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into paper_info(metabolite,disease,title,url,abstractText) values (?,?,?,?,?);");
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into paper_info(metabolite,disease,title,url,abstractText,mainSentence) values (?,?,?,?,?,?);");
         preparedStatement.setString(1, metabolite);
         preparedStatement.setString(2, disease);
         preparedStatement.setString(3, title);
         preparedStatement.setString(4, url);
         preparedStatement.setString(5, abstractText);
+        preparedStatement.setString(6, mainSentence);
         int flag = preparedStatement.executeUpdate();
         preparedStatement.close();
         connection.close();
-        AssertUtils.sysIsError(flag == 0,"插入失败");
+        AssertUtils.sysIsError(flag == 0, "插入失败");
     }
 
     public static void insertPaperInfo(String metabolite, String disease, Map<String, Object> map) throws Exception {
         String title = (String) map.get("title");
         String url = (String) map.get("url");
         String abstractText = (String) map.get("abstractText");
-        insertPaperInfo(metabolite, disease, title, url, abstractText);
+        String mainSentence = (String) map.get("mainSentence");
+        insertPaperInfo(metabolite, disease, title, url, abstractText, mainSentence);
     }
 
 }
