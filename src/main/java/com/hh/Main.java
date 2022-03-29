@@ -49,7 +49,7 @@ public class Main {
                     // 生成主要语句
                     paperDetail.put("mainSentence", getMainSentence((String) paperDetail.get("abstractText"), metabolite, disease));
                     // 插入数据库
-                    // DataBaseUtils.insertPaperInfo(metabolite, disease, paperDetail);
+                    DataBaseUtils.insertPaperInfo(metabolite, disease, paperDetail);
                     Thread.sleep(INTERVAL_BASE_TIME + random.nextInt(100));
                 } catch (Exception e) {
                     e.printStackTrace();
