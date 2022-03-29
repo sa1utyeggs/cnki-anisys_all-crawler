@@ -30,7 +30,7 @@ public class Main {
     public static final long INTERVAL_BASE_TIME = 100;
 
     public static void main(String[] args) {
-        insertPaperInfo("姜黄素", "结肠癌");
+        insertPaperInfo("12312312312", "");
     }
 
     public static void insertPaperInfo(String metabolite, String disease) {
@@ -49,7 +49,7 @@ public class Main {
                     // 生成主要语句
                     paperDetail.put("mainSentence", getMainSentence((String) paperDetail.get("abstractText"), metabolite, disease));
                     // 插入数据库
-                    DataBaseUtils.insertPaperInfo(metabolite, disease, paperDetail);
+                    // DataBaseUtils.insertPaperInfo(metabolite, disease, paperDetail);
                     Thread.sleep(INTERVAL_BASE_TIME + random.nextInt(100));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,7 +63,7 @@ public class Main {
                 }
             }
             System.out.println("本次错误数：" + error + "\n" + "共：" + distinctKeys.size());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("获得url-key失败");
         }
@@ -257,7 +257,7 @@ public class Main {
      * @return
      * @throws IOException
      */
-    public static List<String> getPaperDetailKey(String metabolite, String disease) throws IOException {
+    public static List<String> getPaperDetailKey(String metabolite, String disease) throws Exception {
         int currentPage = 1;
         int pages;
         String sqlVal = "";
@@ -267,8 +267,15 @@ public class Main {
             Connection connection = getPaperGridConnection(metabolite, disease, currentPage, sqlVal, handlerId);
             Document document = connection.post();
             // 获得总页数
-            String countPageMark = document.getElementsByClass("countPageMark").get(0).text();
-            pages = Integer.parseInt(countPageMark.substring(countPageMark.indexOf("/") + 1));
+            String countPageMark = "";
+            // 有可能查不到数据，那么页数就找不到东西
+            if (!document.getElementsByClass("countPageMark").isEmpty()) {
+                countPageMark = document.getElementsByClass("countPageMark").get(0).text();
+                pages = Integer.parseInt(countPageMark.substring(countPageMark.indexOf("/") + 1));
+            } else {
+                // 返回 空的数组
+                return new ArrayList<>(0);
+            }
             // 获得 sqlVal 和 handlerId
             Element sqlValInput = document.getElementById("sqlVal");
             if (sqlValInput != null) {
