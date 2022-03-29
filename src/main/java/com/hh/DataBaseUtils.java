@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class DataBaseUtils {
-    public static final String DATABASE_URL = "jdbc:mysql://47.99.104.231/for_nlp?useSSL=true&&characterEncoding=UTF-8&&allowMultiQueries=true&&serverTimezone=UTC";
+    public static final String DATABASE_URL = "jdbc:mysql://你自己的ip/for_nlp?useSSL=true&&characterEncoding=UTF-8&&allowMultiQueries=true&&serverTimezone=UTC";
     public static final String DATABASE_USERNAME = "root";
-    public static final String DATABASE_PASSWORD = "HH985682";
+    public static final String DATABASE_PASSWORD = "******";
 
     static {
         try {
