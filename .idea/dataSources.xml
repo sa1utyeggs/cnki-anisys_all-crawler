@@ -5,7 +5,15 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://47.99.104.231:3306/for_nlp</jdbc-url>
+      <jdbc-url>jdbc:mysql://47.99.104.231:3306/nlp</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="@hh_rds_aliyun-diet_disease_normal" uuid="0b78c706-633b-4c6f-969f-79bf023302cc">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <remarks>hh_阿里云rds</remarks>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://rm-bp1i2mlyhe9zc39cgho.mysql.rds.aliyuncs.com:3306/diet_disease</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

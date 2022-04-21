@@ -19,11 +19,11 @@
               "Items": [
                 {
                   "Key": "",
-                  "Title": "结肠癌",
+                  "Title": "胆碱",
                   "Logic": 1,
                   "Name": "KY",
                   "Operate": "%",
-                  "Value": "结肠癌",
+                  "Value": "胆碱",
                   "ExtendType": 1,
                   "ExtendValue": "SYS_XL_SYNONYM_DICT",
                   "Value2": ""
@@ -32,17 +32,17 @@
               "ChildItems": []
             },
             {
-              "Key": "input[data-tipid=gradetxt-2]",
+              "Key": "input[data-tipid=gradetxt-3]",
               "Title": "关键词",
               "Logic": 1,
               "Items": [
                 {
                   "Key": "",
-                  "Title": "姜黄素",
+                  "Title": "结肠癌",
                   "Logic": 1,
                   "Name": "KY",
                   "Operate": "%",
-                  "Value": "姜黄素",
+                  "Value": "结肠癌",
                   "ExtendType": 1,
                   "ExtendValue": "SYS_XL_SYNONYM_DICT",
                   "Value2": ""
@@ -62,13 +62,13 @@
       ]
     }
   },
-  "PageName": "defaultresult",
+  "PageName": "AdvSearch",
   "DBCode": "CFLS",
   "KuaKuCodes": "CJFQ,CCND,CIPD,CDMD,BDZK,CISD,SNAD,CCJD,GXDB_SECTION,CJFN,CCVD",
   "CurPage": 1,
   "RecordsCntPerPage": 20,
   "CurDisplayMode": "listmode",
-  "CurrSortField": "",
+  "CurrSortField": "PT",
   "CurrSortFieldType": "desc",
   "IsSentenceSearch": false,
   "Subject": ""

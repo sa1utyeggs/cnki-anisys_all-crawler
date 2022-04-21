@@ -1,0 +1,75 @@
+{
+  "IsSearch": true,
+  "QueryJson": {
+    "Platform": "",
+    "DBCode": "CFLS",
+    "KuaKuCode": "CJFQ,CCND,CIPD,CDMD,BDZK,CISD,SNAD,CCJD,GXDB_SECTION,CJFN,CCVD",
+    "QNode": {
+      "QGroup": [
+        {
+          "Key": "Subject",
+          "Title": "",
+          "Logic": 4,
+          "Items": [],
+          "ChildItems": [
+            {
+              "Key": "input[data-tipid=gradetxt-1]",
+              "Title": "主题",
+              "Logic": 0,
+              "Items": [
+                {
+                  "Key": "",
+                  "Title": "结肠癌",
+                  "Logic": 1,
+                  "Name": "SU",
+                  "Operate": "%=",
+                  "Value": "结肠癌",
+                  "ExtendType": 1,
+                  "ExtendValue": "SYS_XL_SYNONYM_DICT",
+                  "Value2": ""
+                }
+              ],
+              "ChildItems": []
+            },
+            {
+              "Key": "input[data-tipid=gradetxt-2]",
+              "Title": "主题",
+              "Logic": 1,
+              "Items": [
+                {
+                  "Key": "",
+                  "Title": "姜黄素",
+                  "Logic": 1,
+                  "Name": "SU",
+                  "Operate": "%=",
+                  "Value": "姜黄素",
+                  "ExtendType": 1,
+                  "ExtendValue": "SYS_XL_SYNONYM_DICT",
+                  "Value2": ""
+                }
+              ],
+              "ChildItems": []
+            }
+          ]
+        },
+        {
+          "Key": "ControlGroup",
+          "Title": "",
+          "Logic": 1,
+          "Items": [],
+          "ChildItems": []
+        }
+      ]
+    }
+  },
+  "PageName": "defaultresult",
+  "DBCode": "CFLS",
+  "KuaKuCodes": "CJFQ,CCND,CIPD,CDMD,BDZK,CISD,SNAD,CCJD,GXDB_SECTION,CJFN,CCVD",
+  "CurPage": 1,
+  "RecordsCntPerPage": 20,
+  "CurDisplayMode": "listmode",
+  "CurrSortField": "",
+  "CurrSortFieldType": "desc",
+  "IsSentenceSearch": false,
+  "Subject": ""
+}
