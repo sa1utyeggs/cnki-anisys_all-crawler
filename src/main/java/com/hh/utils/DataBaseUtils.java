@@ -1,6 +1,10 @@
-package com.hh;
+package com.hh.utils;
+
+import com.hh.utils.AssertUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class DataBaseUtils {
@@ -16,8 +20,8 @@ public class DataBaseUtils {
         }
     }
 
-    public static void main(String[] args) {
-        test();
+    public static void main(String[] args) throws Exception {
+        System.out.println(getMetabolites(10));
     }
 
     public static void test() {
@@ -104,4 +108,26 @@ public class DataBaseUtils {
         insertPaperInfo(metabolite, disease, title, url, abstractText, mainSentence);
     }
 
+    public static List<String> getMetabolites(int limit) throws Exception {
+        Connection connection = getConnection();
+
+        ArrayList<String> metaboliteNames = new ArrayList<>();
+        // 先插入text，并返回主键
+        PreparedStatement ps = connection.prepareStatement("select name from metabolite limit ?");
+        ResultSet rs = null;
+        try {
+            ps.setInt(1,limit);
+            rs = ps.executeQuery();
+            while (rs.next()){
+                metaboliteNames.add(rs.getString(1));
+            }
+            return metaboliteNames;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            ps.close();
+            connection.close();
+        }
+    }
 }

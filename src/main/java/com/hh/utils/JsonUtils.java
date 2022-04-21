@@ -1,11 +1,10 @@
-package com.hh;
+package com.hh.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * @author ab875

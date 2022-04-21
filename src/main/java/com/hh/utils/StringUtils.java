@@ -1,4 +1,4 @@
-package com.hh;
+package com.hh.utils;
 
 public class StringUtils {
     public static boolean isEmpty(String str) {

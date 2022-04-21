@@ -1,12 +1,9 @@
 package com.hh;
 
+import com.hh.utils.FileUtils;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Test {
     public static void main(String[] args) throws IOException {
