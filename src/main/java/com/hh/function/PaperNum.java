@@ -7,6 +7,8 @@ import com.hh.utils.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -17,23 +19,31 @@ import java.util.List;
  * @author 86183
  */
 public class PaperNum {
+    private static final ApplicationContext CONTEXT = new ClassPathXmlApplicationContext("applicationContext.xml");
+    private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
+
 
     /**
      * 获得代谢物-疾病的论文数量，并插入数据库
      *
-     * @param disease 疾病名字
+     * @param disease        疾病名字
+     * @param searchType     搜索的类型
+     * @param test           如果是测试，不插入数据库
+     * @param zeroNumberSave 对于查找结果为 0 的行，是否插入数据库
      */
-    public static void getMetabolitesDiseasePaperNum(String disease, String searchType, boolean test) {
+    public static void getMetabolitesDiseasePaperNum(String disease, String searchType, boolean test, int metaboliteLimit, boolean zeroNumberSave) {
         ArrayList<String> errorName = new ArrayList<>(10);
         try {
             // 获得所有的代谢物
-            List<String> metabolites = DataBaseUtils.getMetabolites(1000);
+            List<String> metabolites = DATA_BASE_UTILS.getMetabolites(metaboliteLimit);
             String key = null;
+            int index = 0;
             int sum = 0;
             int error = 0;
             int number = 0;
             int flag = 0;
             for (String metabolite : metabolites) {
+                index++;
                 try {
                     key = metabolite + " " + disease;
                     // 将读取的字符串经过处理，转为数字（相关文献数量）
@@ -41,12 +51,14 @@ public class PaperNum {
 
                     // 若不是测试，则插入数据库
                     if (!test) {
-                        // 将查询到的数据插入数据库
-                        flag = DataBaseUtils.insertMetaboliteDiseaseNumber(metabolite, disease, number);
-                        if (flag == 1) {
-                            sum++;
-                        } else {
-                            throw new Exception("数据库插入错误");
+                        // 若 查询到的结果为 0，且不允许插入number 为 0 的行
+                        if (!(number == 0 && !zeroNumberSave)) {
+                            flag = DATA_BASE_UTILS.insertMetaboliteDiseaseNumber(metabolite, disease, number);
+                            if (flag == 1) {
+                                sum++;
+                            } else {
+                                throw new Exception("数据库插入错误");
+                            }
                         }
                     }
 
@@ -56,7 +68,7 @@ public class PaperNum {
                     errorName.add(metabolite + " || " + disease);
                 }
                 // 实时输出结果
-                System.out.println("查找：" + key + " || 查找结果：" + number + " || 插入结果： " + flag + " || 目前插入数据数：" + sum + " || 错误数：" + error);
+                System.out.printf("查找：%s || 查找结果：%s || 插入结果： %s || 目前插入行数：%s / 已扫描： %s || 错误数：%s\n", key, number, flag, sum, index, error);
             }
         } catch (Exception e) {
             e.printStackTrace();

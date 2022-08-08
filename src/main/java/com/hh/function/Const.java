@@ -15,8 +15,8 @@ public class Const {
     /**
      * 时间常量
      */
-    public static final long EXCEPTION_TIME = 10000;
-    public static final long INTERVAL_BASE_TIME = 100;
+    public static final long BASE_EXCEPTION_TIME = 500;
+    public static final long BASE_INTERVAL_TIME = 100;
 
     /**
      * 高级搜索时的类型
@@ -25,4 +25,14 @@ public class Const {
      */
     public static final String SEARCH_KY = "KY";
     public static final String SEARCH_SU = "SU";
+
+    /**
+     * 基础词汇
+     */
+    public static final String CANCER = "癌";
+    public static final String TUMOR = "肿瘤";
+    public static final String CEIL = "细胞";
+
+
+    public static final String SOURCE_ZHIWANG = "中国知网";
 }

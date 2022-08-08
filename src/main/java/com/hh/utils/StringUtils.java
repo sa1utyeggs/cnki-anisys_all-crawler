@@ -5,10 +5,7 @@ public class StringUtils {
         return str == null || "".equals(str);
     }
 
-    public static String format(String string){
-        return string.replace(" ", "")
-                .replace("，",",")
-                .replace("【","[")
-                .replace("】","]");
+    public static String formatComma(String string) {
+        return string.replace(",", "，");
     }
 }

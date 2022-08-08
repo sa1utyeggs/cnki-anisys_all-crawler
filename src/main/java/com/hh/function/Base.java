@@ -1,5 +1,6 @@
 package com.hh.function;
 
+import cn.hutool.core.util.URLUtil;
 import com.hh.utils.JsonUtils;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Connection;
@@ -30,7 +31,9 @@ public class Base {
 
                 // 从文件里读 cookie
                 cookie = FileUtils.readFileToString(cookieFile, "utf-8");
-                con.header("cookie", cookie);
+                // 注意替换 ; / ? : @ = &
+                cookie = URLUtil.normalize(cookie);
+                con.header("Cookie", cookie);
 
             }
             return con;

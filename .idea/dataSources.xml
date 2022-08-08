@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@hh-aliyun-ubuntu" uuid="69c6a2fe-fbd9-4e7f-b5d5-cbd9edaf4f0d">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://47.99.104.231:3306/nlp</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="@hh_rds_aliyun-diet_disease_normal" uuid="0b78c706-633b-4c6f-969f-79bf023302cc">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>

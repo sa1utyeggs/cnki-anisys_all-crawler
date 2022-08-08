@@ -3,6 +3,16 @@
 使用的时候，将DataBaseUtils中的数据库改成自己用的；
 或者将数据库相关代码注释掉；
 
+如果爬取不成功，可以修改cookie试试  
+
+## 功能
+PaperDetail：爬取论文详情页面：  
+当然你也可以自己使用其余的方法来编写自己的爬虫；  
+insertPaperInfo方法是这个类的入口，对于搜索的参数，可以自己指定，不一定是饮食与疾病；  
+
+PaperNum：爬取论文数量：  
+getMetabolitesDiseasePaperNum方法是入口，其余同上；  
+
 ###insertPaperInfo方法的表结构
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
