@@ -25,18 +25,29 @@ public class PaperDetail {
     private static final ApplicationContext CONTEXT = new ClassPathXmlApplicationContext("applicationContext.xml");
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
 
+
+    public static void main(String[] args) throws Exception {
+        String[] split = "目的:探讨清燥救肺汤对荷CT26小鼠结肠癌增殖及侵袭转移相关蛋白核转录因子-κB（nuclear transcription factor kappa B，NF-κB），血管内皮生长因子（vascular endothelial growth factor，VEGF），血管内皮细胞生长因子受体-1（vascular endothelial growth factor receptor-1，VEGFR-1），基质金属蛋白酶-9（matrix metalloprotein-9，MMP-9）表达的影响。方法:将50只雄性BALB/c小鼠，随机分为模型组，化疗[50 mg·kg-1·（2 d）-1]组，清燥救肺汤高、中、低剂量(15.2，7.6，3.8 g·kg-1·d-1)组，每组10只。小鼠右腋下注射CT26细胞建立结肠癌小鼠模型，清燥救肺汤组以相应剂量造模前2周开始灌胃给药，造模后化疗组以5-氟尿嘧啶[5-FU，50 mg·kg-1·（2 d）-1]腹腔注射给药，模型组以等体积生理盐水灌胃给药，造模后2周后处死各组小鼠并取瘤，称重计算抑瘤率，蛋白免疫印迹法（Western blot）检测NF-κB，VEGF，VEGFR-1及MMP-9蛋白表达。结果:与模型组比较，清燥救肺汤高、中剂量组瘤重显著减小（P<0.01）。化疗组及清燥救肺汤高、中、低剂量组抑瘤率分别为83.90%，60.98%，44.39%，21.46%。与模型组比较，清燥救肺汤高、中剂量组NF-κB及VEGF蛋白表达明显降低（P<0.05，P<0.01）。与模型组比较，清燥救肺汤高、中、低剂量组VEGFR-1及MMP-9蛋白表达明显降低（P<0.05，P<0.01）。结论:清燥救肺汤可能通过降低NF-κB，VEGF，VEGFR-1，MMP-9蛋白表达，发挥抑制荷CT26小鼠结肠癌细胞增殖及侵袭转移的功效。".split("。");
+        System.out.println(getAliasFromPaperAbstract(split, "受体"));
+        System.out.println(DATA_BASE_UTILS.isPaperInfoExists("4dc20df28c4650bf3760b33f6e0f846a"));
+    }
+
+
     /**
      * 根据 两个参数 来查询论文数据，并插入到数据库中
      * 考虑增加对别名的支持（包括饮食和疾病）
      *
      * @param metabolite 代谢物
      * @param disease    疾病
+     * @param type       搜索关键词的方式
+     * @param exclusions 句子中若存在本关键词则不使用
+     * @param test       是否为测试模式
      */
-    public static void insertPaperInfo(String metabolite, String disease, String type, boolean test) {
+    public static void insertPaperInfo(String metabolite, String disease, String type, Set<String> exclusions, int maxKeyNum, boolean test) {
         int error = 0;
         try {
             // 根据查找词，获得文章的key（key是组成文章url的参数）
-            List<String> keys = getPaperDetailKey(metabolite, disease, type);
+            List<String> keys = getPaperDetailKey(metabolite, disease, type, maxKeyNum);
             List<String> distinctKeys = keys.stream().distinct().collect(Collectors.toList());
             Random random = new Random();
             for (String key : distinctKeys) {
@@ -47,7 +58,7 @@ public class PaperDetail {
                     // 获得论文信息
                     Map<String, Object> paperDetail = getPaperDetail(key);
                     // 生成主要语句
-                    paperDetail.put("mainSentence", getMainSentence((String) paperDetail.get("abstractText"), metabolite, disease));
+                    paperDetail.put("mainSentence", getMainSentence((String) paperDetail.get("abstractText"), metabolite, disease, exclusions));
                     if (test) {
                         // 如果作为测试则输出
                         System.out.println(paperDetail);
@@ -57,7 +68,10 @@ public class PaperDetail {
                         String source = Const.SOURCE_ZHIWANG;
                         // 根据 url 以及 source 生成 唯一值
                         String uniqueKey = DigestUtil.md5Hex(metabolite + disease + url + source);
-                        DATA_BASE_UTILS.insertPaperInfo(metabolite, disease, paperDetail, source, uniqueKey);
+                        if (!DATA_BASE_UTILS.isPaperInfoExists(uniqueKey)) {
+                            // 若不存在该记录，则插入
+                            DATA_BASE_UTILS.insertPaperInfo(metabolite, disease, paperDetail, source, uniqueKey);
+                        }
                     }
                     // 访问间隔，防止访问过快
                     Thread.sleep(Const.BASE_INTERVAL_TIME + random.nextInt(100));
@@ -71,6 +85,12 @@ public class PaperDetail {
                         interruptedException.printStackTrace();
                     }
                 }
+            }
+            // 插入完成后，修改 完成状态
+            try {
+                DATA_BASE_UTILS.checkMetaboliteDisease(metabolite, disease);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             System.out.println("本次错误数：" + error + "\n" + "共：" + distinctKeys.size());
         } catch (Exception e) {
@@ -114,7 +134,16 @@ public class PaperDetail {
         return map;
     }
 
-    private static List<MainSentence> getMainSentence(String text, String metabolite, String disease) throws Exception {
+    private static boolean startWithWords(String sentence, Set<String> exclusions) {
+        for (String exclusion : exclusions) {
+            if (sentence.startsWith(exclusion)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<MainSentence> getMainSentence(String text, String metabolite, String disease, Set<String> exclusions) throws Exception {
         String[] sentences = text.split("。");
         // 获得代谢物的 alias （暂时没做）
         // 获得疾病的 alias，并寻找可能的别名
@@ -125,9 +154,14 @@ public class PaperDetail {
         dietAliases.addAll(getAliasFromPaperAbstract(sentences, metabolite));
         // 返回的数组
         ArrayList<MainSentence> mainSentences = new ArrayList<>(sentences.length);
+        // 用于跳出循环到 sentence循环
         boolean flag = true;
         // 遍历
         for (String sentence : sentences) {
+            // 如果句子含有排除词，就不需要考虑
+            if (exclusions != null && startWithWords(sentence, exclusions)) {
+                continue;
+            }
             for (String dietA : dietAliases) {
                 if (!flag) {
                     flag = true;
@@ -142,9 +176,7 @@ public class PaperDetail {
                         mainSentences.add(new MainSentence(sentence, null, dietA, headOffset, diseaseA, tailOffset));
                         // 发现匹配后，低优先级的关键词就不需要添加了
                         // 但是对于 癌、肿瘤、细胞这种词汇，若已经到使用这些词的地步时，还是要三句都选上的；
-                        if (!diseaseA.equals(Const.CANCER)
-                                && !diseaseA.equals(Const.TUMOR)
-                                && !diseaseA.equals(Const.CEIL)) {
+                        if (!diseaseA.equals(Const.CANCER) && !diseaseA.equals(Const.TUMOR) && !diseaseA.equals(Const.CEIL)) {
                             flag = false;
                             break;
                         }
@@ -229,26 +261,22 @@ public class PaperDetail {
         return ans;
     }
 
-
-    public static void main(String[] args) {
-        String[] split = "目的:探讨清燥救肺汤对荷CT26小鼠结肠癌增殖及侵袭转移相关蛋白核转录因子-κB（nuclear transcription factor kappa B，NF-κB），血管内皮生长因子（vascular endothelial growth factor，VEGF），血管内皮细胞生长因子受体-1（vascular endothelial growth factor receptor-1，VEGFR-1），基质金属蛋白酶-9（matrix metalloprotein-9，MMP-9）表达的影响。方法:将50只雄性BALB/c小鼠，随机分为模型组，化疗[50 mg·kg-1·（2 d）-1]组，清燥救肺汤高、中、低剂量(15.2，7.6，3.8 g·kg-1·d-1)组，每组10只。小鼠右腋下注射CT26细胞建立结肠癌小鼠模型，清燥救肺汤组以相应剂量造模前2周开始灌胃给药，造模后化疗组以5-氟尿嘧啶[5-FU，50 mg·kg-1·（2 d）-1]腹腔注射给药，模型组以等体积生理盐水灌胃给药，造模后2周后处死各组小鼠并取瘤，称重计算抑瘤率，蛋白免疫印迹法（Western blot）检测NF-κB，VEGF，VEGFR-1及MMP-9蛋白表达。结果:与模型组比较，清燥救肺汤高、中剂量组瘤重显著减小（P<0.01）。化疗组及清燥救肺汤高、中、低剂量组抑瘤率分别为83.90%，60.98%，44.39%，21.46%。与模型组比较，清燥救肺汤高、中剂量组NF-κB及VEGF蛋白表达明显降低（P<0.05，P<0.01）。与模型组比较，清燥救肺汤高、中、低剂量组VEGFR-1及MMP-9蛋白表达明显降低（P<0.05，P<0.01）。结论:清燥救肺汤可能通过降低NF-κB，VEGF，VEGFR-1，MMP-9蛋白表达，发挥抑制荷CT26小鼠结肠癌细胞增殖及侵袭转移的功效。".split("。");
-        System.out.println(getAliasFromPaperAbstract(split, "受体"));
-    }
-
     /**
      * 根据代谢物与疾病，
      * 条件为：模糊搜索，同义词拓展，中英文拓展
      *
      * @param metabolite 代谢物
      * @param disease    疾病
+     * @param type       搜索关键词的方式
      * @return 文献的key
      * @throws Exception 异常
      */
-    private static List<String> getPaperDetailKey(String metabolite, String disease, String type) throws Exception {
+    private static List<String> getPaperDetailKey(String metabolite, String disease, String type, int maxKeyNum) throws Exception {
         int currentPage = 1;
         int pages = 1;
         String sqlVal = "";
         int handlerId = 0;
+        int keyNum = 0;
         ArrayList<String> keys = new ArrayList<>(200);
         do {
             // 获得 主页面的 connection
@@ -285,6 +313,13 @@ public class PaperDetail {
                 String href = a.attr("href");
                 // 将 key 添加到 keys 中
                 keys.add(href.substring(href.indexOf("FileName")));
+                keyNum++;
+                if (keyNum == maxKeyNum) {
+                    break;
+                }
+            }
+            if (keyNum == maxKeyNum) {
+                break;
             }
             // 将 currentPage ++
             System.out.println("当前页：" + currentPage++ + "/" + pages + " 处理成功");

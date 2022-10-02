@@ -6,6 +6,8 @@ import com.mysql.cj.MysqlType;
 
 import javax.sql.rowset.serial.SerialArray;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,42 +18,42 @@ import java.util.Map;
  * @author 86183
  */
 public class DataBaseUtils {
-    public static final String DATABASE_URL = "jdbc:mysql://******/diet_disease?useSSL=true&&characterEncoding=UTF-8&&allowMultiQueries=true&&serverTimezone=UTC";
-    public static final String DATABASE_USERNAME = "******";
-    public static final String DATABASE_PASSWORD = "******";
+    private String databaseUrl;
+    private String databaseUsername;
+    private String databasePassword;
+    private Connection connection;
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void setDatabaseUrl(String databaseUrl) {
+        this.databaseUrl = databaseUrl;
     }
+
+    public void setDatabaseUsername(String databaseUsername) {
+        this.databaseUsername = databaseUsername;
+    }
+
+    public void setDatabasePassword(String databasePassword) {
+        this.databasePassword = databasePassword;
+    }
+
+    //    static {
+//        try {
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static DataBaseUtils newInstance() {
         return new DataBaseUtils();
     }
 
     public static void main(String[] args) throws Exception {
+
         test();
     }
 
     public static void test() throws Exception {
-        Connection connection = getConnection();
-        List<String> metabolites = newInstance().getMetabolites(100000);
-        // ps：获得代谢物的名称
-        PreparedStatement ps = connection.prepareStatement("insert into diet_metabolite_alias(`name`,alias,priority) values (?,?,?)");
-        try {
-            for (String metabolite : metabolites) {
-                ps.setString(1, metabolite);
-                ps.setString(2, metabolite);
-                ps.setInt(3, 1);
-                ps.executeUpdate();
-            }
-        } finally {
-            ps.close();
-            connection.close();
-        }
+        // System.out.println(new DataBaseUtils().getConnection());
     }
 
     /**
@@ -60,37 +62,12 @@ public class DataBaseUtils {
      * @return 连接
      * @throws SQLException sql
      */
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
-    }
-
-    /**
-     * 插入代谢物-疾病相关文献的数量
-     *
-     * @param metabolite 代谢物
-     * @param disease    疾病
-     * @param number     文献数量
-     * @return 是否插入成功
-     * @throws SQLException sql
-     */
-    public int insertMetaboliteDiseaseNumber(String metabolite, String disease, int number) throws Exception {
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into metabolite_disease_number(metabolite, disease, number) values (?,?,?)");
-        int flag = 0;
-        try {
-            preparedStatement.setString(1, metabolite);
-            preparedStatement.setString(2, disease);
-            preparedStatement.setInt(3, number);
-            flag = preparedStatement.executeUpdate();
-            if (flag == 0) {
-                System.out.println("插入错误：" + metabolite + " | " + disease + " | " + number);
-            }
-            return flag;
-        } finally {
-            preparedStatement.close();
-            connection.close();
-            endBanner(1 - flag, 1);
+    public Connection getConnection() throws SQLException {
+        if (connection == null) {
+            connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
+            connection.setAutoCommit(false);
         }
+        return connection;
     }
 
     /**
@@ -162,6 +139,7 @@ public class DataBaseUtils {
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
+            connection.rollback();
             throw new Exception("插入数据库失败");
         } finally {
             if (rs != null) {
@@ -180,6 +158,35 @@ public class DataBaseUtils {
         String abstractText = (String) map.get("abstractText");
         List<MainSentence> mainSentences = (List<MainSentence>) map.get("mainSentence");
         this.insertPaperInfo(metabolite, disease, title, url, source, key, abstractText, mainSentences);
+    }
+
+    /**
+     * 根据 key 判断记录是否存在于 paper_info
+     *
+     * @param uniqueKey key
+     * @return boolean
+     * @throws Exception e
+     */
+    public boolean isPaperInfoExists(String uniqueKey) throws Exception {
+        Connection connection = getConnection();
+        // 取消自动提交
+        connection.setAutoCommit(false);
+        PreparedStatement ps = connection.prepareStatement("select 1 from paper_info where unique_key = ?;");
+        ps.setString(1, uniqueKey);
+        ResultSet resultSet = null;
+        try {
+            resultSet = ps.executeQuery();
+            return resultSet.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            ps.close();
+            connection.close();
+        }
     }
 
     /**
@@ -271,6 +278,167 @@ public class DataBaseUtils {
         }
     }
 
+    /**
+     * 是否有 代谢物-疾病-文章数 的记录数据
+     *
+     * @param metabolite 代谢物
+     * @param disease    疾病
+     * @return boolean
+     * @throws SQLException e
+     */
+    public boolean isMetaboliteDiseaseExist(String metabolite, String disease) throws SQLException {
+        Connection connection = getConnection();
+
+        PreparedStatement ps = connection.prepareStatement("select 1 from metabolite_disease_number where disease = ? and metabolite = ?;");
+        ps.setString(1, disease);
+        ps.setString(2, metabolite);
+        ResultSet resultSet = null;
+        try {
+            resultSet = ps.executeQuery();
+            return resultSet.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            ps.close();
+            connection.close();
+        }
+    }
+
+    /**
+     * 代谢物-疾病 相关的文章收集完毕后，修改数据库
+     *
+     * @param metabolite 代谢物
+     * @param disease    疾病
+     * @return int
+     * @throws SQLException e
+     */
+    public int checkMetaboliteDisease(String metabolite, String disease) throws SQLException {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("update metabolite_disease_number set checked = true where disease = ? and metabolite = ?;");
+        int flag = 0;
+        try {
+            preparedStatement.setString(1, disease);
+            preparedStatement.setString(2, metabolite);
+            flag = preparedStatement.executeUpdate();
+            connection.commit();
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            preparedStatement.close();
+            connection.close();
+        }
+        return flag;
+    }
+
+    /**
+     * 代谢物-疾病 相关的文章是否都已经 数据收集完毕
+     *
+     * @param metabolite 代谢物
+     * @param disease    疾病
+     * @return boolean
+     * @throws SQLException e
+     */
+    public boolean isMetaboliteDiseaseChecked(String metabolite, String disease) throws SQLException {
+        Connection connection = getConnection();
+
+        PreparedStatement ps = connection.prepareStatement("select checked from metabolite_disease_number where disease = ? and metabolite = ?;");
+        ps.setString(1, disease);
+        ps.setString(2, metabolite);
+        ResultSet resultSet = null;
+        try {
+            resultSet = ps.executeQuery();
+            return resultSet.next() && resultSet.getBoolean(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            ps.close();
+            connection.close();
+        }
+    }
+
+    /**
+     * 更新 代谢物-疾病相关文献 的数量
+     *
+     * @param metabolite 代谢物
+     * @param disease    疾病
+     * @param number     文献数量
+     * @return 是否插入成功
+     * @throws SQLException sql
+     */
+    public int updateMetaboliteDiseaseNumber(String metabolite, String disease, int number) throws Exception {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("update metabolite_disease_number set `number` = ? where disease = ? and metabolite = ?;");
+        int flag = 0;
+        try {
+            preparedStatement.setInt(1, number);
+            preparedStatement.setString(2, disease);
+            preparedStatement.setString(3, metabolite);
+            flag = preparedStatement.executeUpdate();
+            if (flag == 0) {
+                System.out.println("更新：" + metabolite + " | " + disease + " | " + number);
+            }
+            connection.commit();
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            preparedStatement.close();
+            connection.close();
+            endBanner(1 - flag, 1);
+        }
+        return flag;
+    }
+
+    /**
+     * 插入代谢物-疾病相关文献的数量
+     *
+     * @param metabolite 代谢物
+     * @param disease    疾病
+     * @param number     文献数量
+     * @return 是否插入成功
+     * @throws SQLException sql
+     */
+    public int insertMetaboliteDiseaseNumber(String metabolite, String disease, int number) throws Exception {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into metabolite_disease_number(metabolite, disease, number) values (?,?,?)");
+        int flag = 0;
+        try {
+            preparedStatement.setString(1, metabolite);
+            preparedStatement.setString(2, disease);
+            preparedStatement.setInt(3, number);
+            flag = preparedStatement.executeUpdate();
+            if (flag == 0) {
+                System.out.println("插入错误：" + metabolite + " | " + disease + " | " + number);
+            }
+            connection.commit();
+            return flag;
+        } catch (Exception e) {
+            connection.commit();
+            throw e;
+        } finally {
+            preparedStatement.close();
+            connection.close();
+            endBanner(1 - flag, 1);
+        }
+    }
+
+    /**
+     * 获得与 disease 相关文章数最多的 diet
+     *
+     * @param disease 疾病名
+     * @param limit   最多数量
+     * @return list
+     * @throws SQLException e
+     */
     public List<String> getMetaboliteByMaxPaperNumber(String disease, int limit) throws SQLException {
         Connection connection = getConnection();
         ArrayList<String> metaboliteNames = new ArrayList<>();
@@ -327,14 +495,15 @@ public class DataBaseUtils {
                     if (update2 == 0) {
                         throw new Exception("插入 diet_metabolite_alias 失败：" + s);
                     }
-                    connection.commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                     error++;
-                    connection.rollback();
                 }
             }
-
+            connection.commit();
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
         } finally {
             ps1.close();
             connection.close();
@@ -387,7 +556,6 @@ public class DataBaseUtils {
                     tmp = maxPriority.getInt(1);
                 }
 
-
                 for (String s : aliases.get(i)) {
                     try {
                         if (!StringUtils.isEmpty(s)) {
@@ -407,8 +575,11 @@ public class DataBaseUtils {
                         error++;
                     }
                 }
-
+                connection.commit();
             }
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
         } finally {
             if (maxPriority != null) {
                 maxPriority.close();
@@ -444,7 +615,7 @@ public class DataBaseUtils {
         return mainSentence;
     }
 
-    public static String preparePlaceHolders(int size) {
+    private static String preparePlaceHolders(int size) {
         return String.join(",", Collections.nCopies(size, "?"));
 
     }
@@ -485,31 +656,9 @@ public class DataBaseUtils {
      * @param errorNum 错误数
      * @param sum      总数
      */
-    public static void endBanner(Integer errorNum, Integer sum) {
+    private static void endBanner(Integer errorNum, Integer sum) {
         System.out.println("错误数： " + errorNum + " / " + sum);
     }
 
-
-    public static boolean isPaperExists(String uniqueKey) throws SQLException {
-        Connection connection = getConnection();
-        // ps：获得代谢物的名称
-        PreparedStatement ps1 = connection.prepareStatement("select id from paper_info where  unique_key = ?");
-        ResultSet resultSet = null;
-        try {
-            ps1.setString(1, uniqueKey);
-            resultSet = ps1.executeQuery();
-            resultSet.next();
-            if (resultSet.getLong(1) > 0) {
-                return true;
-            }
-        } finally {
-            if (resultSet != null){
-                resultSet.close();
-            }
-            ps1.close();
-            connection.close();
-        }
-        return false;
-    }
 
 }

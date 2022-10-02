@@ -1,30 +1,16 @@
 package com.hh;
 
-import com.alibaba.fastjson.JSONObject;
 import com.hh.entity.MainSentence;
-import com.hh.function.Base;
 import com.hh.function.Const;
 import com.hh.function.PaperDetail;
 import com.hh.function.PaperNum;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.FileUtils;
-import com.hh.utils.JsonUtils;
-import com.hh.utils.StringUtils;
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.awt.print.Paper;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.sql.Array;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,24 +22,31 @@ public class Main {
     public static DataBaseUtils dataBaseUtils = context.getBean("dataBaseUtils", DataBaseUtils.class);
 
     public static void main(String[] args) throws Exception {
-        // searchAndInsert();
-        PaperDetail.insertPaperInfo("姜黄素", "结肠癌", Const.SEARCH_KY, true);
+        searchAndInsert("乳腺癌", false);
     }
 
     /**
      * 在知网中查询信息，并插入数据库
      */
-    public static void searchAndInsert() {
+    public static void searchAndInsert(String disease, boolean getAndInsertPaperNum) {
         // 参数：代谢物，疾病
         // type：SU按照主题搜索，KY按照关键词搜索
         // test：true不记录到数据库并输出detail信息，false记录到数据库不输出detail信息
         // PaperDetail.insertPaperInfo("姜黄素", "结肠癌", Const.SEARCH_KY, false);
-        // PaperNum.getMetabolitesDiseasePaperNum("结肠癌", Const.SEARCH_KY, false, Integer.MAX_VALUE,false);
-        String disease = "结肠癌";
+        if (getAndInsertPaperNum) {
+            PaperNum.getAndInsertMetabolitesDiseasePaperNum(disease, Const.SEARCH_KY, false, Integer.MAX_VALUE, false);
+        }
+        int maxPaperNumPerTime = 500;
+        HashSet<String> exclusions = new HashSet<>();
+        exclusions.add("方法");
+        exclusions.add("目的");
         try {
             List<String> metabolites = dataBaseUtils.getMetaboliteByMaxPaperNumber(disease, Integer.MAX_VALUE);
             for (String metabolite : metabolites) {
-                PaperDetail.insertPaperInfo(metabolite, disease, Const.SEARCH_KY, false);
+                // 若 没完成 则 继续完成
+                if (!dataBaseUtils.isMetaboliteDiseaseChecked(metabolite, disease)) {
+                    PaperDetail.insertPaperInfo(metabolite, disease, Const.SEARCH_KY, exclusions, maxPaperNumPerTime, false);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,7 +76,7 @@ public class Main {
     }
 
 
-    public static void getSentencesForNLP(){
+    public static void getSentencesForNLP() {
         try {
             List<String> strings = FileUtils.readCsvColumn("C:\\Users\\86183\\Desktop\\DaChuang\\杂项\\nlp\\nlp不相关增强.csv", 1, null);
             List<Long> collect = strings.stream().map(Long::valueOf).collect(Collectors.toList());

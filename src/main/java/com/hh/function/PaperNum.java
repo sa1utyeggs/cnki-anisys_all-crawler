@@ -31,7 +31,7 @@ public class PaperNum {
      * @param test           如果是测试，不插入数据库
      * @param zeroNumberSave 对于查找结果为 0 的行，是否插入数据库
      */
-    public static void getMetabolitesDiseasePaperNum(String disease, String searchType, boolean test, int metaboliteLimit, boolean zeroNumberSave) {
+    public static void getAndInsertMetabolitesDiseasePaperNum(String disease, String searchType, boolean test, int metaboliteLimit, boolean zeroNumberSave) {
         ArrayList<String> errorName = new ArrayList<>(10);
         try {
             // 获得所有的代谢物
@@ -51,9 +51,14 @@ public class PaperNum {
 
                     // 若不是测试，则插入数据库
                     if (!test) {
-                        // 若 查询到的结果为 0，且不允许插入number 为 0 的行
+                        // 若 查询到的结果为 0，且不允许插入 number 为 0 的行
                         if (!(number == 0 && !zeroNumberSave)) {
-                            flag = DATA_BASE_UTILS.insertMetaboliteDiseaseNumber(metabolite, disease, number);
+                            // 存在 则 更新
+                            if (!DATA_BASE_UTILS.isMetaboliteDiseaseExist(metabolite, disease)) {
+                                flag = DATA_BASE_UTILS.insertMetaboliteDiseaseNumber(metabolite, disease, number);
+                            } else {
+                                flag = DATA_BASE_UTILS.updateMetaboliteDiseaseNumber(metabolite, disease, number);
+                            }
                             if (flag == 1) {
                                 sum++;
                             } else {
