@@ -25,6 +25,7 @@ public class PaperNum {
 
     /**
      * 获得代谢物-疾病的论文数量，并插入数据库
+     * 支持更新操作（对于已经存在的 disease-metabolite 行，则进行更新操作）；
      *
      * @param disease        疾病名字
      * @param searchType     搜索的类型

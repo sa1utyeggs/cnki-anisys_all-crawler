@@ -20,10 +20,41 @@ public class Main {
 
     public static ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
     public static DataBaseUtils dataBaseUtils = context.getBean("dataBaseUtils", DataBaseUtils.class);
+    public static HashSet<String> exclusions = new HashSet<>();
+
+    static {
+        exclusions.add("方法");
+        exclusions.add("目的");
+    }
 
     public static void main(String[] args) throws Exception {
-        searchAndInsert("乳腺癌", false);
+        // searchAndInsert("食道癌", true);
+        start();
     }
+
+    public static void start() {
+        try {
+            // 查询所有疾病信息；
+            List<String> diseases = dataBaseUtils.getAllDisease();
+            // 遍历疾病信息，并根据当前疾病的数据挖掘状态做相应的操作；
+            for (String disease : diseases) {
+                int status = dataBaseUtils.getDiseaseStatus(disease);
+                switch (status) {
+                    case Const.NOT_FINISHED:
+                        searchAndInsert(disease, true);
+                        // 结束之后修改疾病的数据挖掘状态；
+                        dataBaseUtils.setDiseaseStatus(disease, Const.FINISHED);
+                        break;
+                    case Const.FINISHED:
+                        break;
+                    default:
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 在知网中查询信息，并插入数据库
@@ -37,9 +68,6 @@ public class Main {
             PaperNum.getAndInsertMetabolitesDiseasePaperNum(disease, Const.SEARCH_KY, false, Integer.MAX_VALUE, false);
         }
         int maxPaperNumPerTime = 500;
-        HashSet<String> exclusions = new HashSet<>();
-        exclusions.add("方法");
-        exclusions.add("目的");
         try {
             List<String> metabolites = dataBaseUtils.getMetaboliteByMaxPaperNumber(disease, Integer.MAX_VALUE);
             for (String metabolite : metabolites) {
@@ -54,7 +82,7 @@ public class Main {
     }
 
     /**
-     * 读csv中的 metabolite，并插入别名
+     * 读 csv 文件中的 metabolite，并插入别名
      */
     public static void readCsvAndInsert() throws Exception {
         List<List<String>> lists = FileUtils.readCsvColumns("C:\\Users\\86183\\Desktop\\DaChuang\\杂项\\中药（已处理）.csv", 1, 2);

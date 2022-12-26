@@ -53,7 +53,7 @@ public class DataBaseUtils {
     }
 
     public static void test() throws Exception {
-        // System.out.println(new DataBaseUtils().getConnection());
+        System.out.println(new DataBaseUtils().getConnection());
     }
 
     /**
@@ -63,7 +63,7 @@ public class DataBaseUtils {
      * @throws SQLException sql
      */
     public Connection getConnection() throws SQLException {
-        if (connection == null) {
+        if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
             connection.setAutoCommit(false);
         }
@@ -220,7 +220,7 @@ public class DataBaseUtils {
     }
 
     /**
-     * 按照优先级从高到低排序，包括 disease 本身
+     * 获得疾病的别名，按照优先级从高到低排序，结果中包含疾病本名
      *
      * @param disease 疾病
      * @return List
@@ -230,6 +230,7 @@ public class DataBaseUtils {
         Connection connection = getConnection();
 
         ArrayList<String> alias = new ArrayList<>();
+        alias.add(disease);
         // ps：获得代谢物的名称
         PreparedStatement ps = connection.prepareStatement("select alias from disease_alias where name = ? order by priority;");
         ResultSet rs = null;
@@ -249,8 +250,30 @@ public class DataBaseUtils {
         }
     }
 
+    public List<String> getAllDisease() throws SQLException {
+        Connection connection = getConnection();
+
+        ArrayList<String> diseases = new ArrayList<>();
+        // ps：获得代谢物的名称
+        PreparedStatement ps = connection.prepareStatement("select name from disease;");
+        ResultSet rs = null;
+        try {
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                diseases.add(rs.getString(1));
+            }
+            return diseases;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            ps.close();
+            connection.close();
+        }
+    }
+
     /**
-     * 按照优先级从高到低排序，包括 diet 本身
+     * 获得饮食习惯的别名，按照优先级从高到低排序，包括饮食习惯本名
      *
      * @param diet 饮食
      * @return List
@@ -462,7 +485,6 @@ public class DataBaseUtils {
         }
     }
 
-
     /**
      * 插入 metabolite 表 和 diet_metabolite_alias 表
      *
@@ -588,6 +610,56 @@ public class DataBaseUtils {
             ps1.close();
             connection.close();
             endBanner(error, size);
+        }
+    }
+
+    /**
+     * 获得疾病的数据挖掘状态
+     * 数据以疾病为驱动，每个疾病可能有三种状态：
+     * 1、数据挖掘尚未开始；
+     * 2、进行中；
+     * 3、已结束；
+     *
+     * @return 状态信息
+     */
+    public int getDiseaseStatus(String disease) throws SQLException {
+        Connection connection = getConnection();
+        // ps：获得代谢物的名称
+        PreparedStatement ps = connection.prepareStatement("select status from disease where name = ?;");
+        ResultSet rs = null;
+        try {
+            ps.setString(1, disease);
+            rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            ps.close();
+            connection.close();
+        }
+    }
+
+    /**
+     * 更新疾病数据挖掘状态
+     *
+     * @param disease 疾病名
+     * @param status  更新状态值
+     * @return 是否成功
+     * @throws SQLException e
+     */
+    public int setDiseaseStatus(String disease, int status) throws SQLException {
+        Connection connection = getConnection();
+        // ps：获得代谢物的名称
+        PreparedStatement ps = connection.prepareStatement("update disease set status = ? where name = ?;");
+        try {
+            ps.setInt(1, status);
+            ps.setString(2, disease);
+            return ps.executeUpdate();
+        } finally {
+            ps.close();
+            connection.close();
         }
     }
 

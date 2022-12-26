@@ -36,17 +36,19 @@ public class PaperDetail {
     /**
      * 根据 两个参数 来查询论文数据，并插入到数据库中
      * 考虑增加对别名的支持（包括饮食和疾病）
+     * 支持更新操作
      *
      * @param metabolite 代谢物
      * @param disease    疾病
      * @param type       搜索关键词的方式
-     * @param exclusions 句子中若存在本关键词则不使用
-     * @param test       是否为测试模式
+     * @param exclusions 排除词（句子中若存在本关键词，则不判断该句子）
+     * @param maxKeyNum  每组 disease-diet 最多获取的文章数量
+     * @param test       测试模式（数据库不操作）
      */
     public static void insertPaperInfo(String metabolite, String disease, String type, Set<String> exclusions, int maxKeyNum, boolean test) {
         int error = 0;
         try {
-            // 根据查找词，获得文章的key（key是组成文章url的参数）
+            // 根据查找词，获得文章的 key（key 是组成文章 url 的参数）
             List<String> keys = getPaperDetailKey(metabolite, disease, type, maxKeyNum);
             List<String> distinctKeys = keys.stream().distinct().collect(Collectors.toList());
             Random random = new Random();
@@ -145,7 +147,6 @@ public class PaperDetail {
 
     private static List<MainSentence> getMainSentence(String text, String metabolite, String disease, Set<String> exclusions) throws Exception {
         String[] sentences = text.split("。");
-        // 获得代谢物的 alias （暂时没做）
         // 获得疾病的 alias，并寻找可能的别名
         List<String> diseaseAliases = DATA_BASE_UTILS.getDiseaseAlias(disease);
         diseaseAliases.addAll(getAliasFromPaperAbstract(sentences, disease));
@@ -191,7 +192,8 @@ public class PaperDetail {
     }
 
     /**
-     * 根据 target 和 括号 找到可能的别名
+     * 我们发现：同一个句子中若出现了括号，则其中的词语很有可能是目标词的别称
+     * 根据上面的发现，我们可以找到可能的别名
      *
      * @param sentences 句子
      * @param target    目标

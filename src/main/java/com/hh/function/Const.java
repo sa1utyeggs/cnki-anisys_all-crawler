@@ -33,6 +33,11 @@ public class Const {
     public static final String TUMOR = "肿瘤";
     public static final String CEIL = "细胞";
 
+    /**
+     * 疾病数据挖掘状态
+     */
+    public static final int NOT_FINISHED = 0;
+    public static final int FINISHED = 1;
 
     public static final String SOURCE_ZHIWANG = "中国知网";
 }
