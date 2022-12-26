@@ -646,17 +646,18 @@ public class DataBaseUtils {
      *
      * @param disease 疾病名
      * @param status  更新状态值
-     * @return 是否成功
      * @throws SQLException e
      */
-    public int setDiseaseStatus(String disease, int status) throws SQLException {
+    public void setDiseaseStatus(String disease, int status) throws SQLException {
         Connection connection = getConnection();
         // ps：获得代谢物的名称
         PreparedStatement ps = connection.prepareStatement("update disease set status = ? where name = ?;");
         try {
             ps.setInt(1, status);
             ps.setString(2, disease);
-            return ps.executeUpdate();
+            ps.executeUpdate();
+            connection.commit();
+
         } finally {
             ps.close();
             connection.close();
