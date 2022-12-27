@@ -5,9 +5,9 @@ package com.hh.utils;
  */
 public class AssertUtils {
 
-    public static void sysIsError(Boolean flag, String message) throws Exception {
+    public static void sysIsError(Boolean flag, String message) {
         if (flag) {
-            throw new Exception(message);
+            throw new RuntimeException(message);
         }
     }
 }

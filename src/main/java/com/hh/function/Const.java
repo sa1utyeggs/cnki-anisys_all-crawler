@@ -39,5 +39,10 @@ public class Const {
     public static final int NOT_FINISHED = 0;
     public static final int FINISHED = 1;
 
+    /**
+     * 代理 IP 过期时间余量 (秒)
+     */
+    public static final int IP_TIME = 10;
+
     public static final String SOURCE_ZHIWANG = "中国知网";
 }

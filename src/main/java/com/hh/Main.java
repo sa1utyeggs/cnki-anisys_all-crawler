@@ -2,6 +2,7 @@ package com.hh;
 
 import com.hh.entity.MainSentence;
 import com.hh.function.Const;
+import com.hh.function.ContextSingltonFactory;
 import com.hh.function.PaperDetail;
 import com.hh.function.PaperNum;
 import com.hh.utils.DataBaseUtils;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class Main {
 
-    public static ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    public static ApplicationContext context = ContextSingltonFactory.getInstance();
     public static DataBaseUtils dataBaseUtils = context.getBean("dataBaseUtils", DataBaseUtils.class);
     public static HashSet<String> exclusions = new HashSet<>();
 

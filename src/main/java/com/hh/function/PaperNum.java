@@ -19,8 +19,9 @@ import java.util.List;
  * @author 86183
  */
 public class PaperNum {
-    private static final ApplicationContext CONTEXT = new ClassPathXmlApplicationContext("applicationContext.xml");
+    private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
+    private static final ConnectionFactory CONNECTION_FACTORY = CONTEXT.getBean("connectionFactory", ConnectionFactory.class);
 
 
     /**
@@ -130,8 +131,8 @@ public class PaperNum {
         jsonObject.fluentPut("json", json.toJSONString());
 
 
-        Connection connection = Base.getCnkiConnection(Const.VISUAL_URL);
-        Base.insertPostData(jsonObject, connection);
+        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.VISUAL_URL);
+        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
         Document doc = connection.post();
         Element anaDesc = doc.getElementsByClass("anaDesc").get(0);
         return anaDesc.select(">span").get(0).text();
@@ -144,10 +145,10 @@ public class PaperNum {
         JSONObject queryJson = JSONObject.parseObject(argModel.getString("QueryJson"));
         queryJson.getJSONObject("QNode").getJSONArray("QGroup").getJSONObject(0).getJSONArray("Items").getJSONObject(0).fluentPut("Value", key);
         argModel.fluentPut("queryJson", queryJson.toJSONString());
-        Connection connection = Base.getCnkiConnection(Const.SQL_VAL_URL);
+        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.SQL_VAL_URL);
         // 下面不添加不能返回数据
         connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
-        Base.insertPostData(argModel, connection);
+        CONNECTION_FACTORY.insertPostData(argModel, connection);
         Document document = connection.post();
         Element sqlValInput = document.getElementById("sqlVal");
         // 断言不为 null
@@ -162,7 +163,7 @@ public class PaperNum {
 
     @Deprecated
     private static Document search(String key) throws Exception {
-        Connection connection = Base.getCnkiConnection(Const.SEARCH_URL);
+        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.SEARCH_URL);
         HashMap<String, Object> data = new HashMap<>(10);
         // 数据初始化
         data.put("txt_1_sel", "SU$%=|");
@@ -185,7 +186,7 @@ public class PaperNum {
         data.put("ua", "1.11");
         data.put("t", System.currentTimeMillis());
         // 放入数据
-        Base.insertPostData(data, connection);
+        CONNECTION_FACTORY.insertPostData(data, connection);
         return connection.post();
 
     }
