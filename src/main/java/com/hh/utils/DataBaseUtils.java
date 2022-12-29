@@ -1,8 +1,10 @@
 package com.hh.utils;
 
 import com.hh.entity.MainSentence;
+import com.hh.function.system.DataSource;
 import com.hh.utils.AssertUtils;
 import com.mysql.cj.MysqlType;
+import lombok.Data;
 
 import javax.sql.rowset.serial.SerialArray;
 import java.io.IOException;
@@ -17,38 +19,11 @@ import java.util.Map;
 /**
  * @author 86183
  */
+@Data
 public class DataBaseUtils {
-    private String databaseUrl;
-    private String databaseUsername;
-    private String databasePassword;
-    private Connection connection;
-
-    public void setDatabaseUrl(String databaseUrl) {
-        this.databaseUrl = databaseUrl;
-    }
-
-    public void setDatabaseUsername(String databaseUsername) {
-        this.databaseUsername = databaseUsername;
-    }
-
-    public void setDatabasePassword(String databasePassword) {
-        this.databasePassword = databasePassword;
-    }
-
-    //    static {
-//        try {
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-    public static DataBaseUtils newInstance() {
-        return new DataBaseUtils();
-    }
+    private DataSource dataSource;
 
     public static void main(String[] args) throws Exception {
-
         test();
     }
 
@@ -63,11 +38,7 @@ public class DataBaseUtils {
      * @throws SQLException sql
      */
     public Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
-            connection.setAutoCommit(false);
-        }
-        return connection;
+        return dataSource.getConnection();
     }
 
     /**
@@ -147,7 +118,7 @@ public class DataBaseUtils {
             }
             psAb.close();
             psPaper.close();
-            connection.close();
+
             endBanner(error, mainSentence.size());
         }
     }
@@ -185,7 +156,7 @@ public class DataBaseUtils {
                 resultSet.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -215,7 +186,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -246,7 +217,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -268,7 +239,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -297,7 +268,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -327,7 +298,7 @@ public class DataBaseUtils {
                 resultSet.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -353,7 +324,7 @@ public class DataBaseUtils {
             throw e;
         } finally {
             preparedStatement.close();
-            connection.close();
+
         }
         return flag;
     }
@@ -384,7 +355,7 @@ public class DataBaseUtils {
                 resultSet.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -415,7 +386,7 @@ public class DataBaseUtils {
             throw e;
         } finally {
             preparedStatement.close();
-            connection.close();
+
             endBanner(1 - flag, 1);
         }
         return flag;
@@ -449,7 +420,7 @@ public class DataBaseUtils {
             throw e;
         } finally {
             preparedStatement.close();
-            connection.close();
+
             endBanner(1 - flag, 1);
         }
     }
@@ -481,7 +452,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -528,7 +499,7 @@ public class DataBaseUtils {
             throw e;
         } finally {
             ps1.close();
-            connection.close();
+
             endBanner(error, size);
         }
 
@@ -608,7 +579,7 @@ public class DataBaseUtils {
             }
             ps2.close();
             ps1.close();
-            connection.close();
+
             endBanner(error, size);
         }
     }
@@ -637,7 +608,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -660,7 +631,7 @@ public class DataBaseUtils {
 
         } finally {
             ps.close();
-            connection.close();
+
         }
     }
 
@@ -682,7 +653,7 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
+
 
         }
         return mainSentence;
@@ -717,7 +688,6 @@ public class DataBaseUtils {
                 rs.close();
             }
             ps.close();
-            connection.close();
 
         }
         return mainSentences;

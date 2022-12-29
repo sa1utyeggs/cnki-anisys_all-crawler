@@ -3,16 +3,15 @@ package com.hh.function;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hh.entity.MainSentence;
-import com.hh.utils.AssertUtils;
-import com.hh.utils.DataBaseUtils;
-import com.hh.utils.JsonUtils;
-import com.hh.utils.StringUtils;
+import com.hh.function.system.ConnectionFactory;
+import com.hh.function.system.Const;
+import com.hh.function.system.ContextSingltonFactory;
+import com.hh.utils.*;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +24,12 @@ public class PaperDetail {
     private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
     private static final ConnectionFactory CONNECTION_FACTORY = CONTEXT.getBean("connectionFactory", ConnectionFactory.class);
+
+    private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
+
+    static {
+        EXCESS_HEADERS.put("referer", "https://kns.cnki.net/kns8/defaultresult/index");
+    }
 
     public static void main(String[] args) throws Exception {
         String[] split = "目的:探讨清燥救肺汤对荷CT26小鼠结肠癌增殖及侵袭转移相关蛋白核转录因子-κB（nuclear transcription factor kappa B，NF-κB），血管内皮生长因子（vascular endothelial growth factor，VEGF），血管内皮细胞生长因子受体-1（vascular endothelial growth factor receptor-1，VEGFR-1），基质金属蛋白酶-9（matrix metalloprotein-9，MMP-9）表达的影响。方法:将50只雄性BALB/c小鼠，随机分为模型组，化疗[50 mg·kg-1·（2 d）-1]组，清燥救肺汤高、中、低剂量(15.2，7.6，3.8 g·kg-1·d-1)组，每组10只。小鼠右腋下注射CT26细胞建立结肠癌小鼠模型，清燥救肺汤组以相应剂量造模前2周开始灌胃给药，造模后化疗组以5-氟尿嘧啶[5-FU，50 mg·kg-1·（2 d）-1]腹腔注射给药，模型组以等体积生理盐水灌胃给药，造模后2周后处死各组小鼠并取瘤，称重计算抑瘤率，蛋白免疫印迹法（Western blot）检测NF-κB，VEGF，VEGFR-1及MMP-9蛋白表达。结果:与模型组比较，清燥救肺汤高、中剂量组瘤重显著减小（P<0.01）。化疗组及清燥救肺汤高、中、低剂量组抑瘤率分别为83.90%，60.98%，44.39%，21.46%。与模型组比较，清燥救肺汤高、中剂量组NF-κB及VEGF蛋白表达明显降低（P<0.05，P<0.01）。与模型组比较，清燥救肺汤高、中、低剂量组VEGFR-1及MMP-9蛋白表达明显降低（P<0.05，P<0.01）。结论:清燥救肺汤可能通过降低NF-κB，VEGF，VEGFR-1，MMP-9蛋白表达，发挥抑制荷CT26小鼠结肠癌细胞增殖及侵袭转移的功效。".split("。");
@@ -111,10 +116,13 @@ public class PaperDetail {
         // 返回值
         HashMap<String, Object> map = new HashMap<>(100);
         String url = Const.BASE_URL + "/kcms/detail/detail.aspx?" + key;
-        Connection connection = CONNECTION_FACTORY.getCnkiConnection(url);
-        // 下面不添加不能返回数据
-        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
-        Document document = connection.get();
+        Document document = HttpConnectionPoolUtil.get(Const.BASE_URL + "/kcms/detail/detail.aspx?" + key, null, EXCESS_HEADERS);
+
+//        Connection connection = CONNECTION_FACTORY.getCnkiConnection(url);
+//        // 下面不添加不能返回数据
+//        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
+//        Document document = connection.get();
+
         // 获取文章的头部信息（包括文章名，作者，分类号，摘要）
         Element docTop = document.getElementsByClass("doc-top").get(0);
         Element title;
@@ -282,8 +290,7 @@ public class PaperDetail {
         ArrayList<String> keys = new ArrayList<>(200);
         do {
             // 获得 主页面的 connection
-            Connection connection = getPaperGridConnection(metabolite, disease, currentPage, sqlVal, handlerId, type);
-            Document document = connection.post();
+            Document document = getPaperGridDocument(metabolite, disease, currentPage, sqlVal, handlerId, type);
 
             // 获得总页数
             // 有可能查不到数据，那么页数就找不到东西
@@ -329,7 +336,7 @@ public class PaperDetail {
         return keys;
     }
 
-    public static Connection getPaperGridConnection(String metabolite, String disease, Integer curPage, String searchSql, Integer handlerId, String type) throws Exception {
+    public static Document getPaperGridDocument(String metabolite, String disease, Integer curPage, String searchSql, Integer handlerId, String type) throws Exception {
         // 读出 json 字符串
         String jsonString;
 
@@ -363,14 +370,15 @@ public class PaperDetail {
             jsonObject.fluentPut("HandlerId", handlerId);
         }
 
-        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.BASE_URL + "/kns8/Brief/GetGridTableHtml");
 
-        // 一定要有 referer 不然不会返回数据
-        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
-        // 插入post数据
-        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
+//        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.BASE_URL + "/kns8/Brief/GetGridTableHtml");
+//
+//        // 一定要有 referer 不然不会返回数据
+//        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
+//        // 插入post数据
+//        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
 
-        return connection;
+        return HttpConnectionPoolUtil.post(Const.BASE_URL + "/kns8/Brief/GetGridTableHtml", jsonObject, EXCESS_HEADERS);
     }
 
 }

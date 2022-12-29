@@ -1,4 +1,4 @@
-package com.hh.function.proxy;
+package com.hh.function.ipproxy;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

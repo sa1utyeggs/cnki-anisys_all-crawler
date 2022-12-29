@@ -1,19 +1,23 @@
 package com.hh.function;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hh.function.system.ConnectionFactory;
+import com.hh.function.system.Const;
+import com.hh.function.system.ContextSingltonFactory;
 import com.hh.utils.DataBaseUtils;
+import com.hh.utils.HttpConnectionPoolUtil;
 import com.hh.utils.JsonUtils;
 import com.hh.utils.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 86183
@@ -23,6 +27,11 @@ public class PaperNum {
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
     private static final ConnectionFactory CONNECTION_FACTORY = CONTEXT.getBean("connectionFactory", ConnectionFactory.class);
 
+    private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
+
+    static {
+        EXCESS_HEADERS.put("referer", "https://kns.cnki.net/kns8/defaultresult/index");
+    }
 
     /**
      * 获得代谢物-疾病的论文数量，并插入数据库
@@ -96,8 +105,7 @@ public class PaperNum {
      * @throws Exception 异常
      */
     public static int getPaperNum(String metabolite, String disease, String type) throws Exception {
-        Connection connection = PaperDetail.getPaperGridConnection(metabolite, disease, 1, "", 0, type);
-        Document document = connection.post();
+        Document document = PaperDetail.getPaperGridDocument(metabolite, disease, 1, "", 0, type);
         String pagerTitleCell = document.getElementsByClass("pagerTitleCell").text();
         String noContent = document.getElementsByClass("no-content").text();
         System.out.println("pagerTitleCell: " + pagerTitleCell);
@@ -131,9 +139,10 @@ public class PaperNum {
         jsonObject.fluentPut("json", json.toJSONString());
 
 
-        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.VISUAL_URL);
-        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
-        Document doc = connection.post();
+//        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.VISUAL_URL);
+//        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
+//        Document doc = connection.post();
+        Document doc = HttpConnectionPoolUtil.post(Const.VISUAL_URL, jsonObject, null);
         Element anaDesc = doc.getElementsByClass("anaDesc").get(0);
         return anaDesc.select(">span").get(0).text();
     }
@@ -145,11 +154,12 @@ public class PaperNum {
         JSONObject queryJson = JSONObject.parseObject(argModel.getString("QueryJson"));
         queryJson.getJSONObject("QNode").getJSONArray("QGroup").getJSONObject(0).getJSONArray("Items").getJSONObject(0).fluentPut("Value", key);
         argModel.fluentPut("queryJson", queryJson.toJSONString());
-        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.SQL_VAL_URL);
-        // 下面不添加不能返回数据
-        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
-        CONNECTION_FACTORY.insertPostData(argModel, connection);
-        Document document = connection.post();
+//        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.SQL_VAL_URL);
+//        // 下面不添加不能返回数据
+//        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
+//        CONNECTION_FACTORY.insertPostData(argModel, connection);
+//        Document document = connection.post();
+        Document document = HttpConnectionPoolUtil.post(Const.SQL_VAL_URL, argModel, EXCESS_HEADERS);
         Element sqlValInput = document.getElementById("sqlVal");
         // 断言不为 null
         assert sqlValInput != null;
@@ -163,8 +173,8 @@ public class PaperNum {
 
     @Deprecated
     private static Document search(String key) throws Exception {
-        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.SEARCH_URL);
-        HashMap<String, Object> data = new HashMap<>(10);
+        // Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.SEARCH_URL);
+        HashMap<String, Object> data = new HashMap<>(32);
         // 数据初始化
         data.put("txt_1_sel", "SU$%=|");
         data.put("kw", URLEncoder.encode(key, "utf-8"));
@@ -186,8 +196,8 @@ public class PaperNum {
         data.put("ua", "1.11");
         data.put("t", System.currentTimeMillis());
         // 放入数据
-        CONNECTION_FACTORY.insertPostData(data, connection);
-        return connection.post();
+        // CONNECTION_FACTORY.insertPostData(data, connection);
 
+        return HttpConnectionPoolUtil.post(Const.SEARCH_URL, data, EXCESS_HEADERS);
     }
 }

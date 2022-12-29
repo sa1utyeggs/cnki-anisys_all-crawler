@@ -1,16 +1,18 @@
-package com.hh.function;
+package com.hh.function.system;
 
 import cn.hutool.core.util.URLUtil;
-import com.hh.function.proxy.IpProxy;
-import com.hh.function.proxy.ProxyIp;
+import com.hh.function.ipproxy.IpProxy;
+import com.hh.function.ipproxy.ProxyIp;
 import com.hh.utils.JsonUtils;
 import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,13 +47,19 @@ public class ConnectionFactory {
      *
      * @param url 知网 url
      * @return 连接对象
-     * @throws Exception e
      */
-    public Connection getCnkiConnection(String url) throws Exception {
-        return getCnkiConnection(url, true);
-    }
+//    public Connection getCnkiConnection(String url) {
+//        return getCnkiConnection(url, true);
+//    }
 
-    public Connection getCnkiConnection(String url, boolean proxy) throws Exception {
+    /**
+     * 获得 指定知网 url 的连接
+     *
+     * @param url   知网 url
+     * @param proxy 是否使用代理 IP
+     * @return 连接对象
+     */
+    public Connection getCnkiConnection(String url, boolean proxy) {
         Connection con;
         try {
             con = Jsoup.connect(url);
@@ -61,6 +69,9 @@ public class ConnectionFactory {
             con.header("Host", "kns.cnki.net");
             con.header("Origin", "https://kns.cnki.net");
             con.header("Cookie", cookie);
+            con.header("Connection", "keep-alive");
+
+
 
             if (proxy) {
                 ProxyIp ip = ipProxy.getIp();

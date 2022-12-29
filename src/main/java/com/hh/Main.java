@@ -1,14 +1,13 @@
 package com.hh;
 
 import com.hh.entity.MainSentence;
-import com.hh.function.Const;
-import com.hh.function.ContextSingltonFactory;
+import com.hh.function.system.Const;
+import com.hh.function.system.ContextSingltonFactory;
 import com.hh.function.PaperDetail;
 import com.hh.function.PaperNum;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.FileUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -29,8 +28,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        // searchAndInsert("食道癌", true);
-        start();
+        searchAndInsert("鼻窦炎", true, true);
+        // start();
     }
 
     public static void start() {
@@ -42,7 +41,7 @@ public class Main {
                 int status = dataBaseUtils.getDiseaseStatus(disease);
                 switch (status) {
                     case Const.NOT_FINISHED:
-                        searchAndInsert(disease, true);
+                        searchAndInsert(disease, true, false);
                         // 结束之后修改疾病的数据挖掘状态；
                         dataBaseUtils.setDiseaseStatus(disease, Const.FINISHED);
                         break;
@@ -60,13 +59,13 @@ public class Main {
     /**
      * 在知网中查询信息，并插入数据库
      */
-    public static void searchAndInsert(String disease, boolean getAndInsertPaperNum) {
+    public static void searchAndInsert(String disease, boolean getAndInsertPaperNum, boolean test) {
         // 参数：代谢物，疾病
         // type：SU按照主题搜索，KY按照关键词搜索
         // test：true不记录到数据库并输出detail信息，false记录到数据库不输出detail信息
         // PaperDetail.insertPaperInfo("姜黄素", "结肠癌", Const.SEARCH_KY, false);
         if (getAndInsertPaperNum) {
-            PaperNum.getAndInsertMetabolitesDiseasePaperNum(disease, Const.SEARCH_KY, false, Integer.MAX_VALUE, false);
+            PaperNum.getAndInsertMetabolitesDiseasePaperNum(disease, Const.SEARCH_KY, test, Integer.MAX_VALUE, false);
         }
         int maxPaperNumPerTime = 500;
         try {

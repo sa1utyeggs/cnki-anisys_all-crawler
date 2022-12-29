@@ -1,9 +1,8 @@
-package com.hh.function.proxy;
+package com.hh.function.ipproxy;
 
 import com.hh.utils.AssertUtils;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
