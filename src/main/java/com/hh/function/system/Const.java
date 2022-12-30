@@ -1,9 +1,12 @@
 package com.hh.function.system;
 
+import java.util.HashSet;
+
 /**
  * @author 86183
  */
 public class Const {
+
     /**
      * URL
      */
@@ -42,7 +45,14 @@ public class Const {
     /**
      * 代理 IP 过期时间余量 (秒)
      */
-    public static final int IP_TIME = 10;
+    public static final int IP_TIME = 30;
+
+    public static HashSet<String> EXCLUSION_WORDS = new HashSet<>();
 
     public static final String SOURCE_ZHIWANG = "中国知网";
+
+    static {
+        EXCLUSION_WORDS.add("方法");
+        EXCLUSION_WORDS.add("目的");
+    }
 }

@@ -1,6 +1,5 @@
 package com.hh.function.ipproxy;
 
-import com.hh.utils.AssertUtils;
 import lombok.Data;
 
 import java.util.List;
@@ -19,20 +18,42 @@ public class IpPool {
         random = new Random();
     }
 
+    /**
+     * 随机获取 IP
+     *
+     * @return ip
+     */
     public ProxyIp getIpRandomly() {
-        AssertUtils.sysIsError(isEmpty(),"代理 IP 池为 空，无法进行代理操作");
-        int ri = random.nextInt(pool.size());
-        ProxyIp proxyIp = pool.get(ri);
-        if (proxyIp.isExpired()) {
-            // 如果该代理过期，则删除该 ip，并重新获取 IP；
-            pool.remove(ri);
-            return getIpRandomly();
-        } else {
-            return proxyIp;
+        if (!isEmpty()) {
+            int ri = random.nextInt(pool.size());
+            return getIp(ri);
         }
+        return null;
     }
 
-    public void removeInvalidIp(ProxyIp ip) {
+    /**
+     * 获取指定下标的对象，使用 % 操作保证不会超限
+     *
+     * @param i i
+     * @return ip
+     */
+    public ProxyIp getIp(int i) {
+        if (i >= 0 && !isEmpty()) {
+            while (!isEmpty()) {
+                i %= pool.size();
+                ProxyIp proxyIp = pool.get(i);
+                if (proxyIp.isExpired()) {
+                    pool.remove(i);
+                } else {
+                    return proxyIp;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public void removeIp(ProxyIp ip) {
         for (int i = 0; i < pool.size(); i++) {
             if (pool.get(i).equals(ip)) {
                 pool.remove(i);

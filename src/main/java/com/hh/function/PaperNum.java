@@ -1,14 +1,12 @@
 package com.hh.function;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hh.function.system.ConnectionFactory;
 import com.hh.function.system.Const;
 import com.hh.function.system.ContextSingltonFactory;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.HttpConnectionPoolUtil;
 import com.hh.utils.JsonUtils;
 import com.hh.utils.StringUtils;
-import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +23,6 @@ import java.util.Map;
 public class PaperNum {
     private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
-    private static final ConnectionFactory CONNECTION_FACTORY = CONTEXT.getBean("connectionFactory", ConnectionFactory.class);
 
     private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
 

@@ -1,18 +1,16 @@
 package com.hh.function.system;
 
 import cn.hutool.core.util.URLUtil;
-import com.hh.function.ipproxy.IpProxy;
+import com.hh.function.ipproxy.ProxyIpManager;
 import com.hh.function.ipproxy.ProxyIp;
 import com.hh.utils.JsonUtils;
 import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,7 +19,7 @@ import java.util.Map;
 @Data
 public class ConnectionFactory {
     private String cookie;
-    private IpProxy ipProxy;
+    private ProxyIpManager proxyIpManager;
 
     public ConnectionFactory() {
         try {
@@ -74,7 +72,7 @@ public class ConnectionFactory {
 
 
             if (proxy) {
-                ProxyIp ip = ipProxy.getIp();
+                ProxyIp ip = proxyIpManager.getIp();
                 con.proxy(ip.getIp(), ip.getPort());
             }
             return con;

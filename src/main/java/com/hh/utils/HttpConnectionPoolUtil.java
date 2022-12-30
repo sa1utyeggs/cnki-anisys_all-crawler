@@ -1,13 +1,13 @@
 package com.hh.utils;
 
 import cn.hutool.core.util.URLUtil;
-import com.hh.function.ipproxy.IpProxy;
+import com.hh.Main;
+import com.hh.entity.system.HttpTask;
 import com.hh.function.ipproxy.ProxyIp;
-import com.hh.function.ipproxy.XiaoxiangIpProxy;
+import com.hh.function.ipproxy.ProxyIpManager;
+import com.hh.function.ipproxy.XiaoxiangProxyIpManager;
 import com.hh.function.system.ContextSingltonFactory;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-import javafx.beans.binding.ObjectExpression;
+import com.hh.function.system.ThreadPoolFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
@@ -22,6 +22,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -33,54 +34,75 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.context.ApplicationContext;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
+import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 
 /**
  * @author 86183
  */
 public class HttpConnectionPoolUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpConnectionPoolUtil.class);
+    private static final Logger logger = LogManager.getLogger(HttpConnectionPoolUtil.class);
 
     /**
-     * 指客户端和服务器建立连接的 timeout 10s
+     * 指客户端和服务器建立连接的 超时时间
      */
-    private static final int CONNECT_TIMEOUT = 2000;
+    private static final int CONNECT_TIMEOUT = 5000;
+    /**
+     * 指从 连接池里拿出连接的超时时间
+     */
+    private static final int CONNECTION_REQUEST_TIMEOUT = 2000;
     /**
      * 指客户端和服务器建立连接后，客户端从服务器读取数据的 timeout
      */
-    private static final int SOCKET_TIMEOUT = 2 * 60 * 1000;
+    private static final int SOCKET_TIMEOUT = 3000;
+
     /**
-     * 指 MAX_TOTAL：一次最多接受的请求数量
+     * 指 MAX_TOTAL：连接池有个最大连接数
      */
-    private static final int MAX_CONN = 2;
+    private static final int MAX_CONN = 10;
     /**
-     * 某一个服务每次能并行接收的请求数量
+     * 每个 route 对应一个小连接池，也有个最大连接数
      */
-    private static final int MAX_PER_ROUTE = 1;
-    private static final int MAX_ROUTE = 1;
+    private static final int MAX_PER_ROUTE = 2;
+    /**
+     * route 最大个数
+     */
+    private static final int MAX_ROUTE = 5;
     /**
      * 空闲线程的存活时间
      */
-    private static final int IDLE_TIMEOUT = 100_000;
+    private static final int IDLE_TIMEOUT = 10_000;
     /**
      * 空闲线程检查时间
      */
-    private static final int MONITOR_INTERVAL = 5000;
+    private static final int MONITOR_INTERVAL = 20_000;
+
+    /**
+     * 当线程卡死重试次数
+     */
+    public static final int CRASH_RETRY_TIMES = 1;
+
+    /**
+     * 判定请求卡死的超时时间
+     */
+    private static final int KILL_THREAD_TIMEOUT = MONITOR_INTERVAL * 3;
 
     /**
      * 发送请求的客户端单例
@@ -107,7 +129,9 @@ public class HttpConnectionPoolUtil {
      * Spring 容器 Bean
      */
     private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
-    private static final IpProxy IP_PROXY = CONTEXT.getBean("xiaoxiangIpProxy", XiaoxiangIpProxy.class);
+    private static final ProxyIpManager IP_PROXY = CONTEXT.getBean("xiaoxiangProxyIpManager", XiaoxiangProxyIpManager.class);
+    private static final ThreadPoolFactory THREAD_POOL_FACTORY = CONTEXT.getBean("threadPoolFactory", ThreadPoolFactory.class);
+    private static final ExecutorService HTTP_THREAD_POOL = THREAD_POOL_FACTORY.getThreadPool(ThreadPoolFactory.HTTP_CONNECTION_POOL_PREFIX);
 
 
     static {
@@ -123,7 +147,6 @@ public class HttpConnectionPoolUtil {
                 cookie = URLUtil.normalize(cookie);
             }
 
-            // 由 Spring 初始化 代理 IP 池
         } catch (Exception e) {
             System.out.println("ConnectionFactory：初始化失败");
         }
@@ -144,9 +167,14 @@ public class HttpConnectionPoolUtil {
      * @param httpRequestBase http请求
      */
     private static void setRequestConfig(HttpRequestBase httpRequestBase) {
+        // 获取代理 IP
         ProxyIp ip = IP_PROXY.getIp();
-        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(CONNECT_TIMEOUT)
+        RequestConfig requestConfig = RequestConfig.custom()
+                // 指三次握手的超时时间
                 .setConnectTimeout(CONNECT_TIMEOUT)
+                // 指 从 connectManager 连接池中获取 Connection 超时时间
+                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+                // 指连接上后，接收数据的超时时间
                 .setSocketTimeout(SOCKET_TIMEOUT)
                 // 设置代理
                 .setProxy(new HttpHost(ip.getIp(), ip.getPort()))
@@ -159,7 +187,7 @@ public class HttpConnectionPoolUtil {
         String[] split = url.split("/");
         String hostName = split[2];
         int port = 80;
-        if ("https:".equals(split[0])){
+        if ("https:".equals(split[0])) {
             port = 443;
         }
         // 如果 url 中指定了端口，则使用指定端口 并 去掉 hostName 中的 “:”
@@ -174,16 +202,19 @@ public class HttpConnectionPoolUtil {
             synchronized (SYNC_LOCK) {
                 if (httpClient == null) {
                     httpClient = createHttpClient(hostName, port);
-                    // 开启监控线程,对异常和空闲线程进行关闭
+                    // 开启监控线程，对异常和空闲线程进行关闭
                     monitorExecutor = Executors.newScheduledThreadPool(1);
                     monitorExecutor.scheduleAtFixedRate(new TimerTask() {
                         @Override
                         public void run() {
-                            // 关闭异常连接
+                            logger.warn("清理前：打印连接池状态：" + manager.getTotalStats());
+                            // 关闭过期连接
                             manager.closeExpiredConnections();
                             // 关闭空闲连接
                             manager.closeIdleConnections(IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
-                            logger.trace("close expired and idle for over " + IDLE_TIMEOUT / 1000 + "s connection");
+                            logger.warn("closing expired and idle for over " + IDLE_TIMEOUT / 1000 + "s connection done");
+                            logger.warn("清理后：打印连接池状态：" + manager.getTotalStats());
+                            logger.warn("打印 HTTP 线程池状态：" + HTTP_THREAD_POOL.toString());
                         }
                     }, MONITOR_INTERVAL, MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
                 }
@@ -212,46 +243,43 @@ public class HttpConnectionPoolUtil {
         // 路由最大连接数
         manager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
 
-        HttpHost httpHost = new HttpHost(host);
+
+        HttpHost httpHost = new HttpHost(host, port);
         manager.setMaxPerRoute(new HttpRoute(httpHost), MAX_ROUTE);
+
 
         // 请求失败时,进行请求重试
         HttpRequestRetryHandler handler = new HttpRequestRetryHandler() {
             @Override
             public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
-                if (i > 3) {
-                    //重试超过3次,放弃请求
-                    logger.error("retry has more than 3 time, give up request");
+                if (i > 2) {
+                    //重试超过 2 次,放弃请求
+                    logger.error("retry has more than 2 time, give up request");
                     return false;
                 }
                 if (e instanceof NoHttpResponseException) {
-                    //服务器没有响应,可能是服务器断开了连接,应该重试
+                    // 服务器没有响应,可能是服务器断开了连接,应该重试
                     logger.error("receive no response from server, retry");
                     return true;
                 }
                 if (e instanceof SSLHandshakeException) {
                     // SSL握手异常
-                    logger.error("SSL hand shake exception");
+                    logger.error("SSL hand shake exception, no retry");
                     return false;
                 }
                 if (e instanceof InterruptedIOException) {
-                    //超时
-                    logger.error("InterruptedIOException");
+                    // 超时
+                    logger.error("InterruptedIOException, no retry");
                     return false;
                 }
                 if (e instanceof UnknownHostException) {
                     // 服务器不可达
-                    logger.error("server host unknown");
-                    return false;
-                }
-                if (e instanceof ConnectTimeoutException) {
-                    // 连接超时
-                    logger.error("Connection Time out");
+                    logger.error("server host unknown, no retry");
                     return false;
                 }
                 if (e instanceof SSLException) {
-                    logger.error("SSLException");
-                    return false;
+                    logger.error("SSLException, retry");
+                    return true;
                 }
 
                 HttpClientContext context = HttpClientContext.adapt(httpContext);
@@ -264,7 +292,21 @@ public class HttpConnectionPoolUtil {
             }
         };
 
-        return HttpClients.custom().setConnectionManager(manager).setRetryHandler(handler).build();
+        SocketConfig socketConfig = SocketConfig.custom()
+                .setSoKeepAlive(true)
+                // 按照 https://blog.csdn.net/xs_challenge/article/details/109737264 的说法
+                // 由于使用了 Proxy 的 getDefaultSocketConfig 的超时时间为 0
+                // 所以重新设置 SocketTimeout 可以解决问题
+                // https://www.jianshu.com/p/5e1bdfc992b9 中也提到这种方法
+                // 但是，问题依旧没有解决
+                .setSoTimeout(SOCKET_TIMEOUT)
+                .build();
+
+        return HttpClients.custom()
+                .setDefaultSocketConfig(socketConfig)
+                .setConnectionManager(manager)
+                .setRetryHandler(handler)
+                .build();
     }
 
     /**
@@ -274,7 +316,7 @@ public class HttpConnectionPoolUtil {
      * @param params 参数
      * @return Document
      */
-    public static Document get(String url, Map<String, Object> params, Map<String, String> excessHeaders) {
+    public static Document get(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
         HttpGet httpGet = new HttpGet();
         // 基础 header
         setHeader(httpGet, BASE_HEADERS);
@@ -284,32 +326,7 @@ public class HttpConnectionPoolUtil {
         // 设置参数
         setGetParams(httpGet, url, params);
 
-        CloseableHttpResponse response = null;
-        InputStream in = null;
-        Document document = null;
-        try {
-            response = getHttpClient(url).execute(httpGet, HttpClientContext.create());
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                in = entity.getContent();
-                document = Jsoup.parse(IOUtils.toString(in, StandardCharsets.UTF_8));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-                if (response != null) {
-                    // 将 response 关闭后，就能将连接放回连接池
-                    response.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return document;
+        return executeWithRetry(httpGet, url, CRASH_RETRY_TIMES);
     }
 
     /**
@@ -319,50 +336,28 @@ public class HttpConnectionPoolUtil {
      * @param params 参数
      * @return Document
      */
-    public static Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) {
+    public static Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
         HttpPost httpPost = new HttpPost(url);
         // 基础 header
         setHeader(httpPost, BASE_HEADERS);
         // 额外 header
         setHeader(httpPost, excessHeaders);
         setRequestConfig(httpPost);
+        // form 表单
         setPostParams(httpPost, params);
-        CloseableHttpResponse response = null;
-        InputStream in = null;
-        Document document = null;
-        try {
-            response = getHttpClient(url).execute(httpPost, HttpClientContext.create());
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                in = entity.getContent();
-                document = Jsoup.parse(IOUtils.toString(in, StandardCharsets.UTF_8));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return document;
+
+        return executeWithRetry(httpPost, url, CRASH_RETRY_TIMES);
     }
 
     /**
      * 设置 post 请求的参数
      *
      * @param httpPost post
-     * @param params form
+     * @param params   form
      */
     private static void setPostParams(HttpPost httpPost, Map<String, Object> params) {
         List<NameValuePair> nvps = new ArrayList<>();
-        for (Map.Entry<String, Object> e :params.entrySet()) {
+        for (Map.Entry<String, Object> e : params.entrySet()) {
             nvps.add(new BasicNameValuePair(e.getKey(), String.valueOf(e.getValue())));
         }
         httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
@@ -375,19 +370,15 @@ public class HttpConnectionPoolUtil {
      * @param uri     网址
      * @param params  参数
      */
-    private static void setGetParams(HttpGet httpGet, String uri, Map<String, Object> params) {
-        try {
-            URIBuilder builder = new URIBuilder(uri);
-            if (params != null && !params.isEmpty()) {
-                for (Map.Entry<String, Object> e :
-                        params.entrySet()) {
-                    builder.setParameter(e.getKey(), String.valueOf(e.getValue()));
-                }
+    private static void setGetParams(HttpGet httpGet, String uri, Map<String, Object> params) throws URISyntaxException {
+        URIBuilder builder = new URIBuilder(uri);
+        if (params != null && !params.isEmpty()) {
+            for (Map.Entry<String, Object> e :
+                    params.entrySet()) {
+                builder.setParameter(e.getKey(), String.valueOf(e.getValue()));
             }
-            httpGet.setURI(builder.build());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         }
+        httpGet.setURI(builder.build());
     }
 
     private static void setHeader(HttpMessage httpMessage, Map<String, String> headers) {
@@ -396,6 +387,67 @@ public class HttpConnectionPoolUtil {
                 httpMessage.addHeader(e.getKey(), e.getValue());
             }
         }
+    }
+
+    /**
+     * 使用线程池执行 HTTP 请求
+     *
+     * @param request 请求
+     * @param url     网址
+     * @return Document
+     * @throws Exception e
+     */
+    private static Document execute(HttpRequestBase request, String url) throws Exception {
+        Document document = null;
+        HttpTask task = null;
+        try {
+            InputStream in = null;
+            // 使用线程池提交请求
+            CloseableHttpResponse response = HTTP_THREAD_POOL.submit((task = new HttpTask(request, getHttpClient(url)))).get(KILL_THREAD_TIMEOUT, TimeUnit.MILLISECONDS);
+            try {
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    in = entity.getContent();
+                    document = Jsoup.parse(IOUtils.toString(in, StandardCharsets.UTF_8));
+                    // 消费 entity
+                    EntityUtils.consume(entity);
+                }
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+                if (response != null) {
+                    // 将 response 关闭后，就能将连接放回连接池
+                    response.close();
+                }
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            // 在外部关闭连接
+            task.abortRequest();
+            logger.error("任务 "+ task + " 最终超时，关闭连接并抛出异常");
+            throw e;
+        }
+        return document;
+    }
+
+
+    private static Document executeWithRetry(HttpRequestBase request, String url, int retry) throws Exception {
+        int curr = Math.max(0, retry);
+        Document document = null;
+        Exception thr = null;
+        while (document == null && curr-- >= 0) {
+            try {
+                document = execute(request, url);
+            } catch (Exception e) {
+                thr = e;
+            }
+        }
+        if (document == null) {
+            logger.error("重复执行 HTTP 请求无效，抛出异常");
+            throw thr != null ? thr : new Exception("无法获得结果，且未捕捉到异常");
+        }
+        return document;
+
     }
 
     /**

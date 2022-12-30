@@ -1,5 +1,8 @@
 package com.hh.aop;
 
+import com.hh.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,6 +15,7 @@ import java.util.HashMap;
  */
 @Aspect
 public class ShellBanner {
+    private static final Logger logger = LogManager.getLogger(ShellBanner.class);
     private final String executionExpression = "execution(* com.hh.utils.DataBaseUtils.*(..))";
 
     @Around(executionExpression)
@@ -27,18 +31,18 @@ public class ShellBanner {
         for (int i = 0; i < length; i++) {
             params.put(parameterTypes[i].getSimpleName() + " " + parameterNames[i], parameterValues[i].toString());
         }
-        System.out.println("===================== start:" + methodName + "(" + params + ") =====================");
+        logger.info("start:" + methodName + "(" + params + ")");
 
         try {
             // 方法执行
             returnValue = proceedingJoinPoint.proceed();
         } catch (Throwable t) {
-            System.out.println("!!!!!!!! 错误：" + t.getMessage() + " !!!!!!!!");
+            logger.error("错误：" + t.getMessage());
             // 不希望在这里处理，只是做一个记录
             throw t;
         } finally {
-            System.out.println("returns ============> " + returnValue);
-            System.out.println("=====================   end:" + methodName + "(" + params + ") =====================");
+            logger.info("returns ==> " + returnValue);
+            logger.info("end:" + methodName + "(" + params + ")");
 
         }
         return returnValue;

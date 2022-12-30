@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * @author 86183
  */
-public interface IpProxy {
+public interface ProxyIpManager {
     /**
      * 获得单条 IP
      * @return IP
@@ -13,7 +13,8 @@ public interface IpProxy {
     public ProxyIp getIp();
 
     /**
-     * 获得代理 IP 池
+     * 初始化 代理 IP 池
+     * @throws Exception 异常
      */
-    public void initIpPool() throws IOException;
+    public void initIpPool() throws Exception;
 }

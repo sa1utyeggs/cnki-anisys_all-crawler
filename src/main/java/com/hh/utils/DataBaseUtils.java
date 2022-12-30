@@ -1,6 +1,7 @@
 package com.hh.utils;
 
 import com.hh.entity.MainSentence;
+import com.hh.function.system.Const;
 import com.hh.function.system.DataSource;
 import com.hh.utils.AssertUtils;
 import com.mysql.cj.MysqlType;
@@ -227,6 +228,28 @@ public class DataBaseUtils {
         ArrayList<String> diseases = new ArrayList<>();
         // ps：获得代谢物的名称
         PreparedStatement ps = connection.prepareStatement("select name from disease;");
+        ResultSet rs = null;
+        try {
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                diseases.add(rs.getString(1));
+            }
+            return diseases;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            ps.close();
+
+        }
+    }
+
+    public List<String> getAllUndoneDisease() throws SQLException {
+        Connection connection = getConnection();
+
+        ArrayList<String> diseases = new ArrayList<>();
+        // ps：获得代谢物的名称
+        PreparedStatement ps = connection.prepareStatement("select name from disease where status = " + Const.NOT_FINISHED + ";");
         ResultSet rs = null;
         try {
             rs = ps.executeQuery();
@@ -622,16 +645,11 @@ public class DataBaseUtils {
     public void setDiseaseStatus(String disease, int status) throws SQLException {
         Connection connection = getConnection();
         // ps：获得代谢物的名称
-        PreparedStatement ps = connection.prepareStatement("update disease set status = ? where name = ?;");
-        try {
+        try (PreparedStatement ps = connection.prepareStatement("update disease set status = ? where name = ?;")) {
             ps.setInt(1, status);
             ps.setString(2, disease);
             ps.executeUpdate();
             connection.commit();
-
-        } finally {
-            ps.close();
-
         }
     }
 

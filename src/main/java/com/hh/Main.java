@@ -1,16 +1,22 @@
 package com.hh;
 
 import com.hh.entity.MainSentence;
+import com.hh.entity.system.InsertTask;
 import com.hh.function.system.Const;
 import com.hh.function.system.ContextSingltonFactory;
 import com.hh.function.PaperDetail;
 import com.hh.function.PaperNum;
+import com.hh.function.system.ThreadPoolFactory;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.FileUtils;
+import com.hh.utils.HttpConnectionPoolUtil;
 import org.springframework.context.ApplicationContext;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +26,7 @@ public class Main {
 
     public static ApplicationContext context = ContextSingltonFactory.getInstance();
     public static DataBaseUtils dataBaseUtils = context.getBean("dataBaseUtils", DataBaseUtils.class);
+    public static ThreadPoolFactory threadPoolFactory = context.getBean("threadPoolFactory", ThreadPoolFactory.class);
     public static HashSet<String> exclusions = new HashSet<>();
 
     static {
@@ -27,9 +34,29 @@ public class Main {
         exclusions.add("目的");
     }
 
-    public static void main(String[] args) throws Exception {
-        searchAndInsert("鼻窦炎", true, true);
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        // test()
         // start();
+        multiThreadStart();
+    }
+
+    public static void test() {
+        searchAndInsert("鼻窦炎", true, true);
+    }
+
+    public static void multiThreadStart() {
+        ExecutorService threadPool = threadPoolFactory.getThreadPool(ThreadPoolFactory.WORK_POOL_PREFIX);
+        try {
+            // 查询所有疾病信息；
+            List<String> undoneDiseases = dataBaseUtils.getAllUndoneDisease();
+            // 遍历疾病信息，并根据当前疾病的数据挖掘状态做相应的操作；
+            for (String undoneDisease : undoneDiseases) {
+                // 提交任务
+                threadPool.submit(new InsertTask(undoneDisease));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void start() {
@@ -65,7 +92,7 @@ public class Main {
         // test：true不记录到数据库并输出detail信息，false记录到数据库不输出detail信息
         // PaperDetail.insertPaperInfo("姜黄素", "结肠癌", Const.SEARCH_KY, false);
         if (getAndInsertPaperNum) {
-            PaperNum.getAndInsertMetabolitesDiseasePaperNum(disease, Const.SEARCH_KY, test, Integer.MAX_VALUE, false);
+            PaperNum.getAndInsertMetabolitesDiseasePaperNum(disease, Const.SEARCH_KY, test, Integer.MAX_VALUE, true);
         }
         int maxPaperNumPerTime = 500;
         try {
