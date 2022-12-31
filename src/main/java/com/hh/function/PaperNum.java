@@ -2,9 +2,9 @@ package com.hh.function;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingltonFactory;
+import com.hh.function.system.ContextSingletonFactory;
 import com.hh.utils.DataBaseUtils;
-import com.hh.utils.HttpConnectionPoolUtil;
+import com.hh.utils.HttpConnectionPoolUtils;
 import com.hh.utils.JsonUtils;
 import com.hh.utils.StringUtils;
 import org.jsoup.nodes.Document;
@@ -21,7 +21,7 @@ import java.util.Map;
  * @author 86183
  */
 public class PaperNum {
-    private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
+    private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
 
     private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
@@ -139,7 +139,7 @@ public class PaperNum {
 //        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.VISUAL_URL);
 //        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
 //        Document doc = connection.post();
-        Document doc = HttpConnectionPoolUtil.post(Const.VISUAL_URL, jsonObject, null);
+        Document doc = HttpConnectionPoolUtils.post(Const.VISUAL_URL, jsonObject, null);
         Element anaDesc = doc.getElementsByClass("anaDesc").get(0);
         return anaDesc.select(">span").get(0).text();
     }
@@ -156,7 +156,7 @@ public class PaperNum {
 //        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
 //        CONNECTION_FACTORY.insertPostData(argModel, connection);
 //        Document document = connection.post();
-        Document document = HttpConnectionPoolUtil.post(Const.SQL_VAL_URL, argModel, EXCESS_HEADERS);
+        Document document = HttpConnectionPoolUtils.post(Const.SQL_VAL_URL, argModel, EXCESS_HEADERS);
         Element sqlValInput = document.getElementById("sqlVal");
         // 断言不为 null
         assert sqlValInput != null;
@@ -195,6 +195,6 @@ public class PaperNum {
         // 放入数据
         // CONNECTION_FACTORY.insertPostData(data, connection);
 
-        return HttpConnectionPoolUtil.post(Const.SEARCH_URL, data, EXCESS_HEADERS);
+        return HttpConnectionPoolUtils.post(Const.SEARCH_URL, data, EXCESS_HEADERS);
     }
 }

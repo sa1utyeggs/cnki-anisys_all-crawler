@@ -3,11 +3,9 @@ package com.hh.entity.system;
 import com.hh.function.PaperDetail;
 import com.hh.function.PaperNum;
 import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingltonFactory;
+import com.hh.function.system.ContextSingletonFactory;
 import com.hh.utils.DataBaseUtils;
-import lombok.Builder;
 import lombok.Data;
-import lombok.SneakyThrows;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,7 +20,7 @@ public class InsertTask implements Runnable {
 
 
     public InsertTask(String disease) {
-        dataBaseUtils = ContextSingltonFactory.getInstance().getBean("dataBaseUtils", DataBaseUtils.class);
+        dataBaseUtils = ContextSingletonFactory.getInstance().getBean("dataBaseUtils", DataBaseUtils.class);
         this.disease = disease;
     }
 

@@ -3,7 +3,6 @@ package com.hh.function.ipproxy;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hh.utils.DateUtils;
-import com.hh.utils.HttpConnectionPoolUtil;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +11,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -30,7 +28,14 @@ public class XiaoxiangProxyIpManager implements ProxyIpManager, InitializingBean
     private Date lastUpdate;
     protected final Logger logger = LogManager.getLogger(XiaoxiangProxyIpManager.class);
 
-    public static final int XIAOXIANG_ACCESS_INTERVAL = 10 + 1;
+    /**
+     * 索取 IP 最短间隔
+     */
+    public static final int XIAOXIANG_ACCESS_INTERVAL = 10;
+    /**
+     * 间隔缓冲
+     */
+    public static final int INTERVAL_BUFFER_CAPACITY = 1;
 
     public XiaoxiangProxyIpManager() {
         // 初始化值为前 1 天的 0 点；
@@ -74,10 +79,10 @@ public class XiaoxiangProxyIpManager implements ProxyIpManager, InitializingBean
 
             // 由于小象 ip 代理池有访问间隔的限制，若上次的访问时间里本次过近则会返回 null；
             // 需要等待，防止永远无法获得代理 IP
-            int differ = DateUtils.differForSeconds(lastUpdate, new Date());
+            int differ = Math.abs(DateUtils.differForSeconds(lastUpdate, new Date()));
             if (differ < XIAOXIANG_ACCESS_INTERVAL) {
-                int pause = Math.min(XIAOXIANG_ACCESS_INTERVAL, Math.abs(XIAOXIANG_ACCESS_INTERVAL - differ));
-                logger.warn("访问小象代理过于频繁，暂停" + pause + "s");
+                int pause = XIAOXIANG_ACCESS_INTERVAL - differ + INTERVAL_BUFFER_CAPACITY;
+                logger.warn("访问小象代理过于频繁，暂停 " + pause + "s");
                 Thread.sleep(pause * 1000L);
             }
 

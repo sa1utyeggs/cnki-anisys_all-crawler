@@ -5,14 +5,15 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author 86183
+ * 用于获得 ApplicationContext 对象
  */
-public class ContextSingltonFactory {
+public class ContextSingletonFactory {
     private static volatile ApplicationContext context;
-    private static final Object mutex = new Object();
+    private static final Object MUTEX = new Object();
 
     public static ApplicationContext getInstance() {
         if (context == null) {
-            synchronized (mutex) {
+            synchronized (MUTEX) {
                 if (context == null) {
                     context = new ClassPathXmlApplicationContext("applicationContext.xml");
                 }

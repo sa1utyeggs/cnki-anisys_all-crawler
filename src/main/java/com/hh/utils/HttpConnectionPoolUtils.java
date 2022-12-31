@@ -1,12 +1,11 @@
 package com.hh.utils;
 
 import cn.hutool.core.util.URLUtil;
-import com.hh.Main;
 import com.hh.entity.system.HttpTask;
 import com.hh.function.ipproxy.ProxyIp;
 import com.hh.function.ipproxy.ProxyIpManager;
 import com.hh.function.ipproxy.XiaoxiangProxyIpManager;
-import com.hh.function.system.ContextSingltonFactory;
+import com.hh.function.system.ContextSingletonFactory;
 import com.hh.function.system.ThreadPoolFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -23,7 +22,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
@@ -43,7 +41,6 @@ import org.springframework.context.ApplicationContext;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -56,14 +53,14 @@ import java.util.concurrent.*;
 /**
  * @author 86183
  */
-public class HttpConnectionPoolUtil {
+public class HttpConnectionPoolUtils {
 
-    private static final Logger logger = LogManager.getLogger(HttpConnectionPoolUtil.class);
+    private static final Logger logger = LogManager.getLogger(HttpConnectionPoolUtils.class);
 
     /**
      * 指客户端和服务器建立连接的 超时时间
      */
-    private static final int CONNECT_TIMEOUT = 5000;
+    private static final int CONNECT_TIMEOUT = 10000;
     /**
      * 指从 连接池里拿出连接的超时时间
      */
@@ -71,7 +68,7 @@ public class HttpConnectionPoolUtil {
     /**
      * 指客户端和服务器建立连接后，客户端从服务器读取数据的 timeout
      */
-    private static final int SOCKET_TIMEOUT = 3000;
+    private static final int SOCKET_TIMEOUT = 10000;
 
     /**
      * 指 MAX_TOTAL：连接池有个最大连接数
@@ -93,6 +90,11 @@ public class HttpConnectionPoolUtil {
      * 空闲线程检查时间
      */
     private static final int MONITOR_INTERVAL = 20_000;
+
+    /**
+     * 重试的时间间隔
+     */
+    private static final long RETRY_INTERVAL = 1000;
 
     /**
      * 当线程卡死重试次数
@@ -128,7 +130,7 @@ public class HttpConnectionPoolUtil {
     /**
      * Spring 容器 Bean
      */
-    private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
+    private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
     private static final ProxyIpManager IP_PROXY = CONTEXT.getBean("xiaoxiangProxyIpManager", XiaoxiangProxyIpManager.class);
     private static final ThreadPoolFactory THREAD_POOL_FACTORY = CONTEXT.getBean("threadPoolFactory", ThreadPoolFactory.class);
     private static final ExecutorService HTTP_THREAD_POOL = THREAD_POOL_FACTORY.getThreadPool(ThreadPoolFactory.HTTP_CONNECTION_POOL_PREFIX);
@@ -326,7 +328,7 @@ public class HttpConnectionPoolUtil {
         // 设置参数
         setGetParams(httpGet, url, params);
 
-        return executeWithRetry(httpGet, url, CRASH_RETRY_TIMES);
+        return executeWithRetry(httpGet, url, CRASH_RETRY_TIMES, RETRY_INTERVAL);
     }
 
     /**
@@ -346,7 +348,7 @@ public class HttpConnectionPoolUtil {
         // form 表单
         setPostParams(httpPost, params);
 
-        return executeWithRetry(httpPost, url, CRASH_RETRY_TIMES);
+        return executeWithRetry(httpPost, url, CRASH_RETRY_TIMES, RETRY_INTERVAL);
     }
 
     /**
@@ -424,14 +426,14 @@ public class HttpConnectionPoolUtil {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             // 在外部关闭连接
             task.abortRequest();
-            logger.error("任务 "+ task + " 最终超时，关闭连接并抛出异常");
+            logger.error("任务 " + task + " 最终超时，关闭连接并抛出异常");
             throw e;
         }
         return document;
     }
 
 
-    private static Document executeWithRetry(HttpRequestBase request, String url, int retry) throws Exception {
+    private static Document executeWithRetry(HttpRequestBase request, String url, int retry, long during) throws Exception {
         int curr = Math.max(0, retry);
         Document document = null;
         Exception thr = null;
@@ -440,6 +442,8 @@ public class HttpConnectionPoolUtil {
                 document = execute(request, url);
             } catch (Exception e) {
                 thr = e;
+                // 如果立刻重试，大概率会失败
+                Thread.sleep(during);
             }
         }
         if (document == null) {

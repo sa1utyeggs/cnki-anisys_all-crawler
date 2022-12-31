@@ -3,13 +3,12 @@ package com.hh;
 import com.hh.entity.MainSentence;
 import com.hh.entity.system.InsertTask;
 import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingltonFactory;
+import com.hh.function.system.ContextSingletonFactory;
 import com.hh.function.PaperDetail;
 import com.hh.function.PaperNum;
 import com.hh.function.system.ThreadPoolFactory;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.FileUtils;
-import com.hh.utils.HttpConnectionPoolUtil;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class Main {
 
-    public static ApplicationContext context = ContextSingltonFactory.getInstance();
+    public static ApplicationContext context = ContextSingletonFactory.getInstance();
     public static DataBaseUtils dataBaseUtils = context.getBean("dataBaseUtils", DataBaseUtils.class);
     public static ThreadPoolFactory threadPoolFactory = context.getBean("threadPoolFactory", ThreadPoolFactory.class);
     public static HashSet<String> exclusions = new HashSet<>();

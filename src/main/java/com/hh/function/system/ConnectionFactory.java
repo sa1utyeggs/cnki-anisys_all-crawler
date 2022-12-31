@@ -17,6 +17,7 @@ import java.util.Map;
  * @author 86183
  */
 @Data
+@Deprecated
 public class ConnectionFactory {
     private String cookie;
     private ProxyIpManager proxyIpManager;

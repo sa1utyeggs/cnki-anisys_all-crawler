@@ -4,7 +4,7 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hh.entity.MainSentence;
 import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingltonFactory;
+import com.hh.function.system.ContextSingletonFactory;
 import com.hh.utils.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @author 86183
  */
 public class PaperDetail {
-    private static final ApplicationContext CONTEXT = ContextSingltonFactory.getInstance();
+    private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
     private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
 
@@ -112,7 +112,7 @@ public class PaperDetail {
         // 返回值
         HashMap<String, Object> map = new HashMap<>(100);
         String url = Const.BASE_URL + "/kcms/detail/detail.aspx?" + key;
-        Document document = HttpConnectionPoolUtil.get(url, null, EXCESS_HEADERS);
+        Document document = HttpConnectionPoolUtils.get(url, null, EXCESS_HEADERS);
 
 //        Connection connection = CONNECTION_FACTORY.getCnkiConnection(url);
 //        // 下面不添加不能返回数据
@@ -374,7 +374,7 @@ public class PaperDetail {
 //        // 插入post数据
 //        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
 
-        return HttpConnectionPoolUtil.post(Const.BASE_URL + "/kns8/Brief/GetGridTableHtml", jsonObject, EXCESS_HEADERS);
+        return HttpConnectionPoolUtils.post(Const.BASE_URL + "/kns8/Brief/GetGridTableHtml", jsonObject, EXCESS_HEADERS);
     }
 
 }

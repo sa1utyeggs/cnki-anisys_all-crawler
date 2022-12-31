@@ -14,22 +14,36 @@ public class DateUtils {
     public static final String YEAR_MONTH_DAY_HOUR_MINUTE_SECOND = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * 获得两个时间的天数差
+     * 获得两个时间的天数差 （end - start）
      *
-     * @param start
-     * @param end
-     * @return
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 符号 int
      */
-    public static Integer differentDays(Date start, Date end) {
-        return Math.abs((int) ((end.getTime() - start.getTime()) / (1000 * 3600 * 24)));
+    public static int differentDays(Date start, Date end) {
+        return (int) ((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
     }
 
-    public static Integer differForSeconds(Date start, Date end) {
-        return Math.abs((int) (differTimes(start, end) / 1000));
+    /**
+     * 获得两个时间的秒数差 （end - start）
+     *
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 符号 int
+     */
+    public static int differForSeconds(Date start, Date end) {
+        return (int) (differTimes(start, end) / 1000);
     }
 
+    /**
+     * 获得两个时间的时间戳之差 （end - start）
+     *
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 符号 long
+     */
     public static long differTimes(Date start, Date end) {
-        return Math.abs(end.getTime() - start.getTime());
+        return end.getTime() - start.getTime();
     }
 
     /**

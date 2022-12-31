@@ -45,7 +45,7 @@ public class Const {
     /**
      * 代理 IP 过期时间余量 (秒)
      */
-    public static final int IP_TIME = 30;
+    public static final int IP_TIME = 50;
 
     public static HashSet<String> EXCLUSION_WORDS = new HashSet<>();
 
