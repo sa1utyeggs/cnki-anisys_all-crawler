@@ -1,12 +1,13 @@
-package com.hh.utils;
+package com.hh.function.system;
 
 import cn.hutool.core.util.URLUtil;
 import com.hh.entity.system.HttpTask;
+import com.hh.function.ipproxy.AsyncProxyIpManager;
 import com.hh.function.ipproxy.ProxyIp;
 import com.hh.function.ipproxy.ProxyIpManager;
-import com.hh.function.ipproxy.XiaoxiangProxyIpManager;
-import com.hh.function.system.ContextSingletonFactory;
-import com.hh.function.system.ThreadPoolFactory;
+import com.hh.function.ipproxy.SyncProxyIpManager;
+import com.hh.utils.JsonUtils;
+import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
@@ -37,11 +38,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -53,92 +58,95 @@ import java.util.concurrent.*;
 /**
  * @author 86183
  */
-public class HttpConnectionPoolUtils {
+@Data
+public class HttpConnectionPool implements InitializingBean {
 
-    private static final Logger logger = LogManager.getLogger(HttpConnectionPoolUtils.class);
+    private final Logger logger = LogManager.getLogger(HttpConnectionPool.class);
 
     /**
      * 指客户端和服务器建立连接的 超时时间
      */
-    private static final int CONNECT_TIMEOUT = 10000;
+    private int connectionTimeout = 10000;
     /**
      * 指从 连接池里拿出连接的超时时间
      */
-    private static final int CONNECTION_REQUEST_TIMEOUT = 2000;
+    private int connectionRequestTimeout = 2000;
     /**
      * 指客户端和服务器建立连接后，客户端从服务器读取数据的 timeout
      */
-    private static final int SOCKET_TIMEOUT = 10000;
+    private int socketTimeout = 10000;
 
     /**
      * 指 MAX_TOTAL：连接池有个最大连接数
      */
-    private static final int MAX_CONN = 10;
+    private int maxConnectionNum = 10;
     /**
      * 每个 route 对应一个小连接池，也有个最大连接数
      */
-    private static final int MAX_PER_ROUTE = 2;
+    private int maxConnectionPerRoute = 2;
     /**
      * route 最大个数
      */
-    private static final int MAX_ROUTE = 5;
+    private int maxRoute = 5;
     /**
      * 空闲线程的存活时间
      */
-    private static final int IDLE_TIMEOUT = 10_000;
+    private int idleTimeout = 10_000;
     /**
      * 空闲线程检查时间
      */
-    private static final int MONITOR_INTERVAL = 20_000;
+    private int monitorInterval = 20_000;
 
     /**
      * 重试的时间间隔
      */
-    private static final long RETRY_INTERVAL = 1000;
+    private long retryInterval = 1000;
 
     /**
      * 当线程卡死重试次数
      */
-    public static final int CRASH_RETRY_TIMES = 1;
+    public int crashRetryTimes = 1;
 
     /**
      * 判定请求卡死的超时时间
      */
-    private static final int KILL_THREAD_TIMEOUT = MONITOR_INTERVAL * 3;
+    private int killThreadTimeout = monitorInterval * 3;
 
     /**
      * 发送请求的客户端单例
      */
-    private static volatile CloseableHttpClient httpClient;
+    private volatile CloseableHttpClient httpClient;
     /**
      * 连接池管理类
      */
-    private static PoolingHttpClientConnectionManager manager;
-    private static ScheduledExecutorService monitorExecutor;
+    private PoolingHttpClientConnectionManager manager;
+    private ScheduledExecutorService monitorExecutor;
 
     /**
      * 线程锁，用于线程安全
      */
-    private final static Object SYNC_LOCK = new Object();
+    private final Object SYNC_LOCK = new Object();
 
     /**
      * 请求 header 与 cookie
      */
-    public final static Map<String, String> BASE_HEADERS = new HashMap<>(16);
-    private static String cookie;
+    public final Map<String, String> BASE_HEADERS = new HashMap<>(16);
+    private String cookie;
 
     /**
      * Spring 容器 Bean
      */
-    private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
-    private static final ProxyIpManager IP_PROXY = CONTEXT.getBean("xiaoxiangProxyIpManager", XiaoxiangProxyIpManager.class);
-    private static final ThreadPoolFactory THREAD_POOL_FACTORY = CONTEXT.getBean("threadPoolFactory", ThreadPoolFactory.class);
-    private static final ExecutorService HTTP_THREAD_POOL = THREAD_POOL_FACTORY.getThreadPool(ThreadPoolFactory.HTTP_CONNECTION_POOL_PREFIX);
+    private ProxyIpManager proxyIpManager;
+    private ThreadPoolFactory threadPoolFactory;
+    /**
+     * http 请求执行线程池
+     */
+    private ExecutorService httpThreadPool;
 
+    public HttpConnectionPool() {
 
-    static {
+        // 初始化 cookie
         try {
-            // 初始化 cookie
             URL resource = JsonUtils.class.getResource("/");
             if (resource != null) {
                 String baseUrl = resource.getPath();
@@ -148,10 +156,10 @@ public class HttpConnectionPoolUtils {
                 // 注意替换 ; / ? : @ = &
                 cookie = URLUtil.normalize(cookie);
             }
-
         } catch (Exception e) {
-            System.out.println("ConnectionFactory：初始化失败");
+            logger.error("初始化 cookie 失败");
         }
+
         // 初始化基础 header
         BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");
         BASE_HEADERS.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -160,32 +168,52 @@ public class HttpConnectionPoolUtils {
         BASE_HEADERS.put("Origin", "https://kns.cnki.net");
         BASE_HEADERS.put("Cookie", cookie);
         BASE_HEADERS.put("Connection", "keep-alive");
+
     }
 
 
     /**
-     * 对http请求进行基本设置
+     * 是否开启多线程；<br/>
+     * 该方法只能在 threadPoolFactory 初始化完成后调用；<br/>
+     *
+     * @return async
+     */
+    public boolean isAsync() {
+        return threadPoolFactory.getThreadNum() == 1;
+    }
+
+    /**
+     * 对http请求进行基本设置；<br/>
+     * 该方法调用 proxyIpManager.getIp() 方法，获取 ip；<br/>
+     * 在 proxyIpManager.getIp() 线程安全的前提下，该方法线程安全；<br/>
      *
      * @param httpRequestBase http请求
      */
-    private static void setRequestConfig(HttpRequestBase httpRequestBase) {
+    private void setRequestConfig(HttpRequestBase httpRequestBase) {
         // 获取代理 IP
-        ProxyIp ip = IP_PROXY.getIp();
+        ProxyIp ip = proxyIpManager.getIp();
         RequestConfig requestConfig = RequestConfig.custom()
                 // 指三次握手的超时时间
-                .setConnectTimeout(CONNECT_TIMEOUT)
+                .setConnectTimeout(connectionTimeout)
                 // 指 从 connectManager 连接池中获取 Connection 超时时间
-                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+                .setConnectionRequestTimeout(connectionRequestTimeout)
                 // 指连接上后，接收数据的超时时间
-                .setSocketTimeout(SOCKET_TIMEOUT)
+                .setSocketTimeout(socketTimeout)
                 // 设置代理
                 .setProxy(new HttpHost(ip.getIp(), ip.getPort()))
                 .build();
         httpRequestBase.setConfig(requestConfig);
     }
 
+    /**
+     * 获取 HttpClient 单例；<br/>
+     * 该方法线程安全；<br/>
+     *
+     * @param url
+     * @return
+     */
     @SuppressWarnings({"all"})
-    public static CloseableHttpClient getHttpClient(String url) {
+    public CloseableHttpClient getHttpClient(String url) {
         String[] split = url.split("/");
         String hostName = split[2];
         int port = 80;
@@ -209,16 +237,16 @@ public class HttpConnectionPoolUtils {
                     monitorExecutor.scheduleAtFixedRate(new TimerTask() {
                         @Override
                         public void run() {
-                            logger.warn("清理前：打印连接池状态：" + manager.getTotalStats());
+                            logger.warn("清理前：连接池状态：" + manager.getTotalStats());
                             // 关闭过期连接
                             manager.closeExpiredConnections();
                             // 关闭空闲连接
-                            manager.closeIdleConnections(IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
-                            logger.warn("closing expired and idle for over " + IDLE_TIMEOUT / 1000 + "s connection done");
-                            logger.warn("清理后：打印连接池状态：" + manager.getTotalStats());
-                            logger.warn("打印 HTTP 线程池状态：" + HTTP_THREAD_POOL.toString());
+                            manager.closeIdleConnections(idleTimeout, TimeUnit.MILLISECONDS);
+                            logger.warn("closing expired and idle for over " + idleTimeout / 1000 + "s connection done");
+                            logger.warn("清理后：连接池状态：" + manager.getTotalStats());
+                            logger.warn("HTTP 线程池状态：" + httpThreadPool.toString());
                         }
-                    }, MONITOR_INTERVAL, MONITOR_INTERVAL, TimeUnit.MILLISECONDS);
+                    }, monitorInterval, monitorInterval, TimeUnit.MILLISECONDS);
                 }
             }
         }
@@ -226,13 +254,14 @@ public class HttpConnectionPoolUtils {
     }
 
     /**
-     * 根据 host 和 port 构建httpclient实例
+     * 根据 host 和 port 构建httpclient实例；<br/>
+     * 该方法线程不安全<br/>
      *
      * @param host 要访问的域名
      * @param port 要访问的端口
      * @return httpclient
      */
-    public static CloseableHttpClient createHttpClient(String host, int port) {
+    public CloseableHttpClient createHttpClient(String host, int port) {
         ConnectionSocketFactory plainSocketFactory = PlainConnectionSocketFactory.getSocketFactory();
         LayeredConnectionSocketFactory sslSocketFactory = SSLConnectionSocketFactory.getSocketFactory();
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create().register("http", plainSocketFactory)
@@ -241,56 +270,51 @@ public class HttpConnectionPoolUtils {
         manager = new PoolingHttpClientConnectionManager(registry);
 
         // 最大连接数
-        manager.setMaxTotal(MAX_CONN);
+        manager.setMaxTotal(maxConnectionNum);
         // 路由最大连接数
-        manager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
+        manager.setDefaultMaxPerRoute(maxConnectionPerRoute);
 
 
         HttpHost httpHost = new HttpHost(host, port);
-        manager.setMaxPerRoute(new HttpRoute(httpHost), MAX_ROUTE);
+        manager.setMaxPerRoute(new HttpRoute(httpHost), maxRoute);
 
 
         // 请求失败时,进行请求重试
         HttpRequestRetryHandler handler = new HttpRequestRetryHandler() {
             @Override
             public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
-                if (i > 2) {
-                    //重试超过 2 次,放弃请求
-                    logger.error("retry has more than 2 time, give up request");
+                boolean retry = false;
+                if (i > crashRetryTimes) {
+                    //重试超过 crashRetryTimes 次,放弃请求
+                    logger.error("retry has more than " + crashRetryTimes + " time, give up request");
                     return false;
                 }
+                logger.warn("尚未到达重试上线" + i + "/" + crashRetryTimes + "，HttpRequestRetryHandler 尝试重试");
                 if (e instanceof NoHttpResponseException) {
                     // 服务器没有响应,可能是服务器断开了连接,应该重试
                     logger.error("receive no response from server, retry");
-                    return true;
-                }
-                if (e instanceof SSLHandshakeException) {
+                    retry = true;
+                } else if (e instanceof SSLHandshakeException) {
                     // SSL握手异常
                     logger.error("SSL hand shake exception, no retry");
-                    return false;
-                }
-                if (e instanceof InterruptedIOException) {
-                    // 超时
-                    logger.error("InterruptedIOException, no retry");
-                    return false;
-                }
-                if (e instanceof UnknownHostException) {
+                } else if (e instanceof InterruptedIOException) {
+                    // 主动打断 SocketIO，可能是使用了 abort 方法
+                    logger.error("InterruptedIOException, retry");
+                    retry = true;
+                } else if (e instanceof UnknownHostException) {
                     // 服务器不可达
                     logger.error("server host unknown, no retry");
-                    return false;
-                }
-                if (e instanceof SSLException) {
+                } else if (e instanceof SSLException) {
                     logger.error("SSLException, retry");
-                    return true;
+                    retry = true;
                 }
 
-                HttpClientContext context = HttpClientContext.adapt(httpContext);
-                HttpRequest request = context.getRequest();
-                if (!(request instanceof HttpEntityEnclosingRequest)) {
+                if (!(HttpClientContext.adapt(httpContext).getRequest() instanceof HttpEntityEnclosingRequest)) {
                     // 如果请求不是关闭连接的请求
-                    return true;
+                    retry = true;
                 }
-                return false;
+                logger.warn("HttpRequestRetryHandler 是否重试：" + retry);
+                return retry;
             }
         };
 
@@ -301,7 +325,7 @@ public class HttpConnectionPoolUtils {
                 // 所以重新设置 SocketTimeout 可以解决问题
                 // https://www.jianshu.com/p/5e1bdfc992b9 中也提到这种方法
                 // 但是，问题依旧没有解决
-                .setSoTimeout(SOCKET_TIMEOUT)
+                .setSoTimeout(socketTimeout)
                 .build();
 
         return HttpClients.custom()
@@ -312,13 +336,13 @@ public class HttpConnectionPoolUtils {
     }
 
     /**
-     * 发送 get 请求
+     * 发送 get 请求；<br/>
      *
      * @param url    URL
      * @param params 参数
      * @return Document
      */
-    public static Document get(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
+    public Document get(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
         HttpGet httpGet = new HttpGet();
         // 基础 header
         setHeader(httpGet, BASE_HEADERS);
@@ -328,17 +352,17 @@ public class HttpConnectionPoolUtils {
         // 设置参数
         setGetParams(httpGet, url, params);
 
-        return executeWithRetry(httpGet, url, CRASH_RETRY_TIMES, RETRY_INTERVAL);
+        return executeWithRetry(httpGet, url, crashRetryTimes, retryInterval);
     }
 
     /**
-     * 发送 post 请求
+     * 发送 post 请求；<br/>
      *
      * @param url    URL
      * @param params 参数
      * @return Document
      */
-    public static Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
+    public Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
         HttpPost httpPost = new HttpPost(url);
         // 基础 header
         setHeader(httpPost, BASE_HEADERS);
@@ -348,16 +372,17 @@ public class HttpConnectionPoolUtils {
         // form 表单
         setPostParams(httpPost, params);
 
-        return executeWithRetry(httpPost, url, CRASH_RETRY_TIMES, RETRY_INTERVAL);
+        return executeWithRetry(httpPost, url, crashRetryTimes, retryInterval);
     }
 
     /**
-     * 设置 post 请求的参数
+     * 设置 post 请求的参数；<br/>
+     * 该方法线程安全；<br/>
      *
      * @param httpPost post
      * @param params   form
      */
-    private static void setPostParams(HttpPost httpPost, Map<String, Object> params) {
+    private void setPostParams(HttpPost httpPost, Map<String, Object> params) {
         List<NameValuePair> nvps = new ArrayList<>();
         for (Map.Entry<String, Object> e : params.entrySet()) {
             nvps.add(new BasicNameValuePair(e.getKey(), String.valueOf(e.getValue())));
@@ -366,13 +391,14 @@ public class HttpConnectionPoolUtils {
     }
 
     /**
-     * 设置 get 请求的参数
+     * 设置 get 请求的参数；<br/>
+     * 该方法线程安全；<br/>
      *
      * @param httpGet get 对象
      * @param uri     网址
      * @param params  参数
      */
-    private static void setGetParams(HttpGet httpGet, String uri, Map<String, Object> params) throws URISyntaxException {
+    private void setGetParams(HttpGet httpGet, String uri, Map<String, Object> params) throws URISyntaxException {
         URIBuilder builder = new URIBuilder(uri);
         if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, Object> e :
@@ -383,7 +409,13 @@ public class HttpConnectionPoolUtils {
         httpGet.setURI(builder.build());
     }
 
-    private static void setHeader(HttpMessage httpMessage, Map<String, String> headers) {
+    /**
+     * 设置请求对象的 header；<br/>
+     *
+     * @param httpMessage HttpGet/HttpPost ...
+     * @param headers     header
+     */
+    private void setHeader(HttpMessage httpMessage, Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
             for (Map.Entry<String, String> e : headers.entrySet()) {
                 httpMessage.addHeader(e.getKey(), e.getValue());
@@ -392,20 +424,20 @@ public class HttpConnectionPoolUtils {
     }
 
     /**
-     * 使用线程池执行 HTTP 请求
+     * 使用线程池执行 HTTP 请求；<br/>
      *
      * @param request 请求
      * @param url     网址
      * @return Document
      * @throws Exception e
      */
-    private static Document execute(HttpRequestBase request, String url) throws Exception {
+    private Document execute(HttpRequestBase request, String url) throws Exception {
         Document document = null;
         HttpTask task = null;
         try {
             InputStream in = null;
             // 使用线程池提交请求
-            CloseableHttpResponse response = HTTP_THREAD_POOL.submit((task = new HttpTask(request, getHttpClient(url)))).get(KILL_THREAD_TIMEOUT, TimeUnit.MILLISECONDS);
+            CloseableHttpResponse response = httpThreadPool.submit((task = new HttpTask(request, getHttpClient(url)))).get(killThreadTimeout, TimeUnit.MILLISECONDS);
             try {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
@@ -424,7 +456,7 @@ public class HttpConnectionPoolUtils {
                 }
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            // 在外部关闭连接
+            // 在外部关闭连接，不然可能会出现线程卡死在 readSocket0() 的问题
             task.abortRequest();
             logger.error("任务 " + task + " 最终超时，关闭连接并抛出异常");
             throw e;
@@ -433,7 +465,17 @@ public class HttpConnectionPoolUtils {
     }
 
 
-    private static Document executeWithRetry(HttpRequestBase request, String url, int retry, long during) throws Exception {
+    /**
+     * 该方法主要是为了捕捉到 HttpRequestRetryHandler 无法捕捉到的非网络因素异常；<br/>
+     *
+     * @param request request
+     * @param url     url
+     * @param retry   重试次数
+     * @param during  重试间隔
+     * @return Document
+     * @throws Exception e
+     */
+    private Document executeWithRetry(HttpRequestBase request, String url, int retry, long during) throws Exception {
         int curr = Math.max(0, retry);
         Document document = null;
         Exception thr = null;
@@ -447,7 +489,7 @@ public class HttpConnectionPoolUtils {
             }
         }
         if (document == null) {
-            logger.error("重复执行 HTTP 请求无效，抛出异常");
+            logger.error("外部判断逻辑重试后依旧失败，抛出异常");
             throw thr != null ? thr : new Exception("无法获得结果，且未捕捉到异常");
         }
         return document;
@@ -455,9 +497,9 @@ public class HttpConnectionPoolUtils {
     }
 
     /**
-     * 关闭连接池
+     * 关闭连接池；<br/>
      */
-    public static void closeConnectionPool() {
+    public void closeConnectionPool() {
         try {
             httpClient.close();
             manager.close();
@@ -465,5 +507,11 @@ public class HttpConnectionPoolUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // 初始化 HTTP pool
+        httpThreadPool = threadPoolFactory.getThreadPool(ThreadPoolFactory.HTTP_CONNECTION_POOL_PREFIX);
     }
 }

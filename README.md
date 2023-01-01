@@ -37,35 +37,57 @@ doc/diet_disease.sql
     http://www.springframework.org/schema/aop
     https://www.springframework.org/schema/aop/spring-aop.xsd">
     
+        <!-- 数据库相关 Bean -->
         <bean id="dataSource" class="com.hh.function.system.DataSource">
             <property name="databaseUrl"
-                      value="<MySQL-URL>"/>
+                      value="数据库 URL"/>
             <property name="databaseUsername"
-                      value="<username>"/>
+                      value="用户名"/>
             <property name="databasePassword"
-                      value="<password>"/>
+                      value="密码"/>
         </bean>
     
         <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils">
             <property name="dataSource" ref="dataSource"/>
         </bean>
     
-        <bean id="xiaoxiangProxyIpManager" class="com.hh.function.ipproxy.XiaoxiangProxyIpManager">
-            <property name="url" value="<小象代理 IP 获取 url>"/>
-            <property name="appKey" value="<appKey>"/>
-            <property name="appSecret" value="<appSecret>"/>
-            <property name="cnt" value="<每次获得 IP 的个数>"/>
+    
+        <!-- 代理池相关 Bean-->
+        <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">
+            <property name="url" value="代理URL"/>
+            <property name="appKey" value="appKey"/>
+            <property name="appSecret" value="appSecret"/>
+            <property name="cnt" value="每次获得的个数"/>
         </bean>
     
+        <!--    <bean id="xiaoxiangSyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangSyncProxyIpManager">-->
+        <!--        <property name="config" ref="xiaoxiangConfig"/>-->
+        <!--    </bean>-->
+    
+        <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">
+            <property name="config" ref="xiaoxiangConfig"/>
+            <property name="getIpRandomly" value="false"/>
+        </bean>
+    
+    
+        <!-- 线程池相关 Bean -->
         <bean id="threadPoolFactory" class="com.hh.function.system.ThreadPoolFactory">
             <!-- 所有线程池的线程数量统一 -->
             <property name="threadNum" value="1"/>
         </bean>
     
+        <bean id="httpConnectionPool" class="com.hh.function.system.HttpConnectionPool">
+            <property name="threadPoolFactory" ref="threadPoolFactory"/>
+            <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>
+        </bean>
     
+    
+        <!-- aop 日志打印-->
         <bean id="shellBanner" class="com.hh.aop.ShellBanner"/>
     
-        <!-- 第三种：使用注解 -->
+    
+        <!-- 启用注解 -->
         <aop:aspectj-autoproxy/>
     </beans>
+
 

@@ -19,6 +19,5 @@ public class JsonUtils {
     public static JSONObject getJsonObjectFromFile(String fileName) throws IOException {
         return JSONObject.parseObject(getJsonFromFile(fileName));
     }
-    public static void main(String[] args) {
-    }
+
 }

@@ -1,7 +1,10 @@
-package com.hh.function.ipproxy;
+package com.hh.function.ipproxy.xiaoxiang;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.hh.function.ipproxy.IpPool;
+import com.hh.function.ipproxy.ProxyIp;
+import com.hh.function.ipproxy.ProxyIpManager;
 import com.hh.utils.DateUtils;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
@@ -19,14 +22,11 @@ import java.util.Date;
  * 单线程情况下的 IP管理
  */
 @Data
-public class XiaoxiangProxyIpManager implements ProxyIpManager, InitializingBean {
-    private String url;
-    private String appKey;
-    private String appSecret;
-    private String cnt;
+public abstract class XiaoxiangAbstractProxyIpManager implements ProxyIpManager, InitializingBean {
+    private XiaoxiangConfig config;
     protected IpPool ipPool;
     private Date lastUpdate;
-    protected final Logger logger = LogManager.getLogger(XiaoxiangProxyIpManager.class);
+    protected Logger logger;
 
     /**
      * 索取 IP 最短间隔
@@ -37,31 +37,22 @@ public class XiaoxiangProxyIpManager implements ProxyIpManager, InitializingBean
      */
     public static final int INTERVAL_BUFFER_CAPACITY = 1;
 
-    public XiaoxiangProxyIpManager() {
+    public XiaoxiangAbstractProxyIpManager() {
         // 初始化值为前 1 天的 0 点；
         lastUpdate = DateUtils.getDaysBeforeToday(1);
     }
 
-    @Override
-    public ProxyIp getIp() {
-        ProxyIp proxyIp = ipPool.getIpRandomly();
-        while (proxyIp == null) {
-            logger.warn("无可用 IP，尝试重新初始化代理 IP 池");
-            try {
-                initIpPool();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            proxyIp = ipPool.getIpRandomly();
-        }
-        return proxyIp;
-    }
-
+    /**
+     * 使用 Jsoup 访问动态代理池；
+     * 该方法“线程不安全”
+     *
+     * @throws Exception e
+     */
     @Override
     public void initIpPool() throws Exception {
         Connection con;
         try {
-            con = Jsoup.connect(url);
+            con = Jsoup.connect(config.getUrl());
             con.header("Accept", "text/html, */*; q=0.01");
             con.header("Content-Type", "application/json; charset=UTF-8");
             con.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36");
@@ -71,9 +62,9 @@ public class XiaoxiangProxyIpManager implements ProxyIpManager, InitializingBean
             con.ignoreContentType(true);
 
             // 设置请求参数
-            con.data("appKey", appKey);
-            con.data("appSecret", appSecret);
-            con.data("cnt", String.valueOf(cnt));
+            con.data("appKey", config.getAppKey());
+            con.data("appSecret", config.getAppSecret());
+            con.data("cnt", String.valueOf(config.getCnt()));
             con.data("wt", "json");
             con.data("method", "http");
 
@@ -110,10 +101,16 @@ public class XiaoxiangProxyIpManager implements ProxyIpManager, InitializingBean
         }
     }
 
+    /**
+     * Bean 初始化结束后，初始化代理 IP 池
+     *
+     * @throws Exception e
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         if (ipPool == null || ipPool.isEmpty()) {
             initIpPool();
         }
     }
+
 }

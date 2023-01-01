@@ -40,6 +40,7 @@ public class IpPool {
     public ProxyIp getIp(int i) {
         if (i >= 0 && !isEmpty()) {
             while (!isEmpty()) {
+                // 防止超限
                 i %= pool.size();
                 ProxyIp proxyIp = pool.get(i);
                 if (proxyIp.isExpired()) {

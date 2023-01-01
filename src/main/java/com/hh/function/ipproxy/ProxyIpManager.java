@@ -1,5 +1,7 @@
 package com.hh.function.ipproxy;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import java.io.IOException;
 
 /**

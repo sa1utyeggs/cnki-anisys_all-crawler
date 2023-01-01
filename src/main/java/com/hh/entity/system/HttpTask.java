@@ -1,7 +1,6 @@
 package com.hh.entity.system;
 
 import lombok.Data;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;

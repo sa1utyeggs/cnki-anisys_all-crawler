@@ -41,6 +41,15 @@ public class ProxyIp {
         return expirable && expireTime.getTime() <= (System.currentTimeMillis() + Const.IP_TIME * 1000);
     }
 
+    /**
+     * 判断 IP 是否可用
+     * @param ip ip
+     * @return boolean
+     */
+    public static boolean isValid(ProxyIp ip){
+        return !(ip == null || ip.isExpired());
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(ip);

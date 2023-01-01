@@ -1,16 +1,13 @@
 package com.hh.utils;
 
 import com.hh.entity.MainSentence;
+import com.hh.function.PaperDetail;
 import com.hh.function.system.Const;
 import com.hh.function.system.DataSource;
-import com.hh.utils.AssertUtils;
-import com.mysql.cj.MysqlType;
 import lombok.Data;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.sql.rowset.serial.SerialArray;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +20,7 @@ import java.util.Map;
 @Data
 public class DataBaseUtils {
     private DataSource dataSource;
+    private final Logger logger = LogManager.getLogger(PaperDetail.class);
 
     public static void main(String[] args) throws Exception {
         test();
@@ -40,6 +38,13 @@ public class DataBaseUtils {
      */
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    /**
+     * 关闭连接并删除 ThreadLocal
+     */
+    public void closeConnection(){
+        dataSource.closeConnection();
     }
 
     /**
@@ -103,7 +108,7 @@ public class DataBaseUtils {
                     // 由于这个表 只与 nlp 强关联，所以不适合在此做 异常抛出：AssertUtils.sysIsError(i3 == 0, "插入paper_main_sentence表失败");
                 } catch (Exception e) {
                     error++;
-                    System.out.println("    " + e.getMessage());
+                    logger.error(e.getMessage());
                 }
             }
 
@@ -401,7 +406,7 @@ public class DataBaseUtils {
             preparedStatement.setString(3, metabolite);
             flag = preparedStatement.executeUpdate();
             if (flag == 0) {
-                System.out.println("更新：" + metabolite + " | " + disease + " | " + number);
+                logger.info("更新：" + metabolite + " | " + disease + " | " + number);
             }
             connection.commit();
         } catch (Exception e) {
@@ -434,7 +439,7 @@ public class DataBaseUtils {
             preparedStatement.setInt(3, number);
             flag = preparedStatement.executeUpdate();
             if (flag == 0) {
-                System.out.println("插入错误：" + metabolite + " | " + disease + " | " + number);
+                logger.error("插入错误：" + metabolite + " | " + disease + " | " + number);
             }
             connection.commit();
             return flag;
@@ -497,7 +502,7 @@ public class DataBaseUtils {
             for (String s : metabolites) {
                 try {
                     i++;
-                    System.out.println("插入：" + s + " " + i + " / " + size);
+                    logger.info("插入：" + s + " " + i + " / " + size);
                     connection.setAutoCommit(false);
                     ps1.setString(1, s);
                     int update1 = ps1.executeUpdate();
@@ -562,7 +567,7 @@ public class DataBaseUtils {
             for (int i = 0; i < size; i++) {
                 String metabolite = metabolites.get(i);
                 int tmp = 1;
-                System.out.println(metabolite + "：" + i + " / " + size);
+                logger.info(metabolite + "：" + i + " / " + size);
                 // ps1
                 ps1.setString(1, metabolite);
                 maxPriority = ps1.executeQuery();
@@ -585,9 +590,9 @@ public class DataBaseUtils {
                                 throw new Exception("插入错误:  " + s + " " + tmp);
                             }
                         }
-                        System.out.println(tmp);
+                        logger.info(tmp);
                     } catch (Exception e) {
-                        System.out.println("    " + e.getMessage());
+                        logger.error(e.getMessage());
                         error++;
                     }
                 }
@@ -677,7 +682,7 @@ public class DataBaseUtils {
         return mainSentence;
     }
 
-    private static String preparePlaceHolders(int size) {
+    private String preparePlaceHolders(int size) {
         return String.join(",", Collections.nCopies(size, "?"));
 
     }
@@ -717,8 +722,8 @@ public class DataBaseUtils {
      * @param errorNum 错误数
      * @param sum      总数
      */
-    private static void endBanner(Integer errorNum, Integer sum) {
-        System.out.println("错误数： " + errorNum + " / " + sum);
+    private void endBanner(Integer errorNum, Integer sum) {
+        logger.warn("错误数： " + errorNum + " / " + sum);
     }
 
 

@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.hh.function.system.Const;
 import com.hh.function.system.ContextSingletonFactory;
 import com.hh.utils.DataBaseUtils;
-import com.hh.utils.HttpConnectionPoolUtils;
+import com.hh.function.system.HttpConnectionPool;
 import com.hh.utils.JsonUtils;
 import com.hh.utils.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.context.ApplicationContext;
@@ -23,8 +25,9 @@ import java.util.Map;
 public class PaperNum {
     private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
     private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
-
+    private static final HttpConnectionPool HTTP_CONNECTION_POOL = CONTEXT.getBean("httpConnectionPool", HttpConnectionPool.class);
     private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
+    private static final Logger logger = LogManager.getLogger(PaperNum.class);
 
     static {
         EXCESS_HEADERS.put("referer", "https://kns.cnki.net/kns8/defaultresult/index");
@@ -87,7 +90,7 @@ public class PaperNum {
             e.printStackTrace();
         } finally {
             // 显示失败的插入
-            System.out.println("本次查询失败的有：");
+            logger.warn("本次查询失败的有：");
             errorName.forEach(System.out::println);
         }
     }
@@ -105,8 +108,8 @@ public class PaperNum {
         Document document = PaperDetail.getPaperGridDocument(metabolite, disease, 1, "", 0, type);
         String pagerTitleCell = document.getElementsByClass("pagerTitleCell").text();
         String noContent = document.getElementsByClass("no-content").text();
-        System.out.println("pagerTitleCell: " + pagerTitleCell);
-        System.out.println("noContent: " + noContent);
+        logger.info("pagerTitleCell: " + pagerTitleCell);
+        logger.info("noContent: " + noContent);
         if (!noContent.isEmpty()) {
             return 0;
         }
@@ -139,7 +142,7 @@ public class PaperNum {
 //        Connection connection = CONNECTION_FACTORY.getCnkiConnection(Const.VISUAL_URL);
 //        CONNECTION_FACTORY.insertPostData(jsonObject, connection);
 //        Document doc = connection.post();
-        Document doc = HttpConnectionPoolUtils.post(Const.VISUAL_URL, jsonObject, null);
+        Document doc = HTTP_CONNECTION_POOL.post(Const.VISUAL_URL, jsonObject, null);
         Element anaDesc = doc.getElementsByClass("anaDesc").get(0);
         return anaDesc.select(">span").get(0).text();
     }
@@ -156,7 +159,7 @@ public class PaperNum {
 //        connection.header("referer", "https://kns.cnki.net/kns8/defaultresult/index");
 //        CONNECTION_FACTORY.insertPostData(argModel, connection);
 //        Document document = connection.post();
-        Document document = HttpConnectionPoolUtils.post(Const.SQL_VAL_URL, argModel, EXCESS_HEADERS);
+        Document document = HTTP_CONNECTION_POOL.post(Const.SQL_VAL_URL, argModel, EXCESS_HEADERS);
         Element sqlValInput = document.getElementById("sqlVal");
         // 断言不为 null
         assert sqlValInput != null;
@@ -195,6 +198,6 @@ public class PaperNum {
         // 放入数据
         // CONNECTION_FACTORY.insertPostData(data, connection);
 
-        return HttpConnectionPoolUtils.post(Const.SEARCH_URL, data, EXCESS_HEADERS);
+        return HTTP_CONNECTION_POOL.post(Const.SEARCH_URL, data, EXCESS_HEADERS);
     }
 }

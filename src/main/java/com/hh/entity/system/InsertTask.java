@@ -30,6 +30,8 @@ public class InsertTask implements Runnable {
             searchAndInsert(disease, true, false);
             // 完成后修改疾病数据状态
             dataBaseUtils.setDiseaseStatus(disease, Const.FINISHED);
+            // 完成一次任务后就关闭连接
+            dataBaseUtils.closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }

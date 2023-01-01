@@ -1,6 +1,5 @@
 package com.hh.function.system;
 
-import cn.hutool.json.JSON;
 import lombok.Data;
 
 import java.sql.Connection;
@@ -15,7 +14,7 @@ public class DataSource {
     private String databaseUrl;
     private String databaseUsername;
     private String databasePassword;
-    ThreadLocal<Connection> connectionThreadLocal;
+    private ThreadLocal<Connection> connectionThreadLocal;
 
     public DataSource() {
         connectionThreadLocal = new ThreadLocal<>();
@@ -35,15 +34,20 @@ public class DataSource {
         return connection;
     }
 
-    public void remove() {
+    public void closeConnection() {
         Connection connection = connectionThreadLocal.get();
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+        try {
+            if (connection != null && !connection.isClosed()) {
+                try {
+                    // 关闭连接
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                connectionThreadLocal.remove();
             }
-            connectionThreadLocal.remove();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

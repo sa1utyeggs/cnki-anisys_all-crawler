@@ -1,7 +1,10 @@
 package com.hh.utils;
 
 import com.hh.entity.MainSentence;
+import com.hh.function.PaperDetail;
 import com.opencsv.CSVWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
  * @author ab875
  */
 public class FileUtils {
+    private static final Logger logger = LogManager.getLogger(FileUtils.class);
 
 
     public static List<String> readCsvColumn(String path, int column, String delimiter) throws IOException {
@@ -117,9 +121,9 @@ public class FileUtils {
                 values[i] = fields[i].get(obj).toString();
             }
             lines.add(values);
-            System.out.println(Arrays.toString(values));
+            logger.info(Arrays.toString(values));
         }
-        System.out.println(lines);
+        logger.info(lines);
         stringListToCsv(head, lines, path);
     }
 
