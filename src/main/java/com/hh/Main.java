@@ -46,7 +46,7 @@ public class Main {
     public static void multiThreadStart() {
         ExecutorService threadPool = threadPoolFactory.getThreadPool(ThreadPoolFactory.WORK_POOL_PREFIX);
         try {
-            // 查询所有疾病信息；
+            // 查询所有未完成 疾病名与 id；
             List<String> undoneDiseases = dataBaseUtils.getAllUndoneDisease();
             // 遍历疾病信息，并根据当前疾病的数据挖掘状态做相应的操作；
             for (String undoneDisease : undoneDiseases) {

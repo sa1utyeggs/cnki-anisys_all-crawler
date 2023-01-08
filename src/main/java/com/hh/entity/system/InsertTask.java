@@ -17,21 +17,26 @@ import java.util.List;
 public class InsertTask implements Runnable {
     private String disease;
     private DataBaseUtils dataBaseUtils;
-
+    private boolean getAndInsertPaperNum;
+    private boolean test;
 
     public InsertTask(String disease) {
         dataBaseUtils = ContextSingletonFactory.getInstance().getBean("dataBaseUtils", DataBaseUtils.class);
         this.disease = disease;
+        this.getAndInsertPaperNum = true;
+        this.test = false;
     }
 
     @Override
     public void run() {
         try {
-            searchAndInsert(disease, true, false);
+            // 执行爬虫逻辑
+            searchAndInsert(disease, getAndInsertPaperNum, test);
             // 完成后修改疾病数据状态
             dataBaseUtils.setDiseaseStatus(disease, Const.FINISHED);
-            // 完成一次任务后就关闭连接
+            // 完成一次任务后就关闭数据库连接
             dataBaseUtils.closeConnection();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

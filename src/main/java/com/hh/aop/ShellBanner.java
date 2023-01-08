@@ -21,6 +21,8 @@ public class ShellBanner {
     @Around(executionExpression)
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
+        // 获得类对象名
+        String classSimpleName = proceedingJoinPoint.getTarget().getClass().getSimpleName();
         String methodName = signature.getName();
         Class[] parameterTypes = signature.getParameterTypes();
         String[] parameterNames = signature.getParameterNames();
@@ -31,7 +33,7 @@ public class ShellBanner {
         for (int i = 0; i < length; i++) {
             params.put(parameterTypes[i].getSimpleName() + " " + parameterNames[i], parameterValues[i].toString());
         }
-        logger.info("start:" + methodName + "(" + params + ")");
+        logger.info("start:" + classSimpleName + "." + methodName + "(" + params + ")");
 
         try {
             // 方法执行
