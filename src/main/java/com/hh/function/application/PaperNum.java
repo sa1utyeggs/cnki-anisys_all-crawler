@@ -1,4 +1,4 @@
-package com.hh.function;
+package com.hh.function.application;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hh.function.system.Const;

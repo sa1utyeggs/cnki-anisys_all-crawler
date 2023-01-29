@@ -509,8 +509,11 @@ public class HttpConnectionPool implements InitializingBean {
         }
     }
 
+    /**
+     * 由于 Spring 容器特性，需要重写该方法保证属性的注入
+     */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         // 初始化 HTTP pool
         httpThreadPool = threadPoolFactory.getThreadPool(ThreadPoolFactory.HTTP_CONNECTION_POOL_PREFIX);
     }

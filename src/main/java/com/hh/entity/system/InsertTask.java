@@ -1,7 +1,7 @@
 package com.hh.entity.system;
 
-import com.hh.function.PaperDetail;
-import com.hh.function.PaperNum;
+import com.hh.function.application.PaperDetail;
+import com.hh.function.application.PaperNum;
 import com.hh.function.system.Const;
 import com.hh.function.system.ContextSingletonFactory;
 import com.hh.utils.DataBaseUtils;
@@ -36,7 +36,6 @@ public class InsertTask implements Runnable {
             dataBaseUtils.setDiseaseStatus(disease, Const.FINISHED);
             // 完成一次任务后就关闭数据库连接
             dataBaseUtils.closeConnection();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

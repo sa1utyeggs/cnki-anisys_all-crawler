@@ -1,7 +1,7 @@
 package com.hh.utils;
 
-import com.hh.entity.MainSentence;
-import com.hh.function.PaperDetail;
+import com.hh.entity.application.MainSentence;
+import com.hh.function.application.PaperDetail;
 import com.hh.function.system.Const;
 import com.hh.function.system.DataSource;
 import lombok.Data;
@@ -43,7 +43,7 @@ public class DataBaseUtils {
     /**
      * 关闭连接并删除 ThreadLocal
      */
-    public void closeConnection(){
+    public void closeConnection() {
         dataSource.closeConnection();
     }
 
@@ -249,6 +249,12 @@ public class DataBaseUtils {
         }
     }
 
+    /**
+     * 获取所有未完成的疾病名
+     *
+     * @return list
+     * @throws SQLException e
+     */
     public List<String> getAllUndoneDisease() throws SQLException {
         Connection connection = getConnection();
 

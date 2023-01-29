@@ -34,6 +34,9 @@ public class DataSource {
         return connection;
     }
 
+    /**
+     * 关闭数据库连接，并移除 threadLocal 中的对象
+     */
     public void closeConnection() {
         Connection connection = connectionThreadLocal.get();
         try {

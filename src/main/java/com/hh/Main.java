@@ -1,11 +1,11 @@
 package com.hh;
 
-import com.hh.entity.MainSentence;
+import com.hh.entity.application.MainSentence;
 import com.hh.entity.system.InsertTask;
 import com.hh.function.system.Const;
 import com.hh.function.system.ContextSingletonFactory;
-import com.hh.function.PaperDetail;
-import com.hh.function.PaperNum;
+import com.hh.function.application.PaperDetail;
+import com.hh.function.application.PaperNum;
 import com.hh.function.system.ThreadPoolFactory;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.FileUtils;

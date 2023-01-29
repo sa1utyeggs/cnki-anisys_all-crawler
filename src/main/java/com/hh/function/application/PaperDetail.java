@@ -1,8 +1,8 @@
-package com.hh.function;
+package com.hh.function.application;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.hh.entity.MainSentence;
+import com.hh.entity.application.MainSentence;
 import com.hh.function.system.Const;
 import com.hh.function.system.ContextSingletonFactory;
 import com.hh.function.system.HttpConnectionPool;
