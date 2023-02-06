@@ -124,38 +124,24 @@ public class HttpConnectionPool implements InitializingBean {
      * 请求 header
      */
     public final Map<String, String> BASE_HEADERS = new HashMap<>(16);
+
+    /**
+     * 开启选项
+     */
     private Boolean enableCookie;
+    private Boolean enableProxy;
 
     /**
      * 其余 Spring 容器 Bean
      */
     private ProxyIpManager proxyIpManager;
     private ThreadPoolFactory threadPoolFactory;
-    private CookieManager cookieManager ;
+    private CookieManager cookieManager;
 
     /**
      * http 请求执行线程池
      */
     private ExecutorService httpThreadPool;
-
-    public HttpConnectionPool() {
-
-
-        // 初始化基础 header
-        BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");
-        BASE_HEADERS.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-        BASE_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36");
-        BASE_HEADERS.put("Host", "kns.cnki.net");
-        BASE_HEADERS.put("Origin", "https://kns.cnki.net");
-        if (enableCookie) {
-            // 初始化 cookie
-            String cookie = cookieManager.getDefaultCookie();
-            BASE_HEADERS.put("Cookie", cookie);
-        }
-        BASE_HEADERS.put("Connection", "keep-alive");
-
-    }
-
 
     /**
      * 是否开启多线程；<br/>
@@ -175,19 +161,21 @@ public class HttpConnectionPool implements InitializingBean {
      * @param httpRequestBase http请求
      */
     private void setRequestConfig(HttpRequestBase httpRequestBase) {
-        // 获取代理 IP
-        ProxyIp ip = proxyIpManager.getIp();
-        RequestConfig requestConfig = RequestConfig.custom()
+        RequestConfig.Builder builder = RequestConfig.custom()
                 // 指三次握手的超时时间
                 .setConnectTimeout(connectionTimeout)
                 // 指 从 connectManager 连接池中获取 Connection 超时时间
                 .setConnectionRequestTimeout(connectionRequestTimeout)
                 // 指连接上后，接收数据的超时时间
-                .setSocketTimeout(socketTimeout)
-                // 设置代理
-                .setProxy(new HttpHost(ip.getIp(), ip.getPort()))
-                .build();
-        httpRequestBase.setConfig(requestConfig);
+                .setSocketTimeout(socketTimeout);
+
+        if (enableProxy) {
+            // 获取代理 IP
+            ProxyIp ip = proxyIpManager.getIp();
+            // 设置代理
+            builder.setProxy(new HttpHost(ip.getIp(), ip.getPort()));
+        }
+        httpRequestBase.setConfig(builder.build());
     }
 
     /**
@@ -501,5 +489,18 @@ public class HttpConnectionPool implements InitializingBean {
     public void afterPropertiesSet() {
         // 初始化 HTTP pool
         httpThreadPool = threadPoolFactory.getThreadPool(ThreadPoolFactory.HTTP_CONNECTION_POOL_PREFIX);
+
+        // 初始化基础 header
+        BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");
+        BASE_HEADERS.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        BASE_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36");
+        BASE_HEADERS.put("Host", "kns.cnki.net");
+        BASE_HEADERS.put("Origin", "https://kns.cnki.net");
+        if (enableCookie) {
+            // 初始化 cookie
+            String cookie = cookieManager.getDefaultCookie();
+            BASE_HEADERS.put("Cookie", cookie);
+        }
+        BASE_HEADERS.put("Connection", "keep-alive");
     }
 }

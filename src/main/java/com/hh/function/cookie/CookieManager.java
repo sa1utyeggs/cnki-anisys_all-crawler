@@ -9,6 +9,7 @@ import com.hh.utils.FileUtils;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,31 +21,11 @@ import java.util.List;
  * 使用策略模式实现 cookie 的获取
  */
 @Data
-public class CookieManager {
+public class CookieManager implements InitializingBean {
     private final Logger logger = LogManager.getLogger(CookieManager.class);
     private String fileName;
     private List<String> cookies;
     private CookiePolicy policy;
-
-    public CookieManager() {
-        try {
-            // 读取文件
-            String sCookie = FileUtils.readFromResource(fileName);
-            // 规范化 cookie
-            sCookie = URLUtil.normalize(sCookie);
-            JSONObject json = JSON.parseObject(sCookie);
-            JSONArray array = json.getJSONArray("list");
-
-            // 初始化
-            cookies = new ArrayList<>(array.size());
-            for (Object o : array) {
-                cookies.add((String) o);
-            }
-        } catch (IOException e) {
-            logger.error("初始化 cookie 失败");
-            e.printStackTrace();
-        }
-    }
 
     public String getCookie() {
         // 保证下标正确
@@ -63,4 +44,28 @@ public class CookieManager {
         return policy.getDefaultCookie(cookies);
     }
 
+    private void init(){
+        try {
+            // 读取文件
+            String sCookie = FileUtils.readFromResource(fileName);
+            // 规范化 cookie
+            // sCookie = URLUtil.normalize(sCookie);
+            JSONObject json = JSONObject.parseObject(sCookie);
+            JSONArray array = json.getJSONArray("list");
+
+            // 初始化
+            cookies = new ArrayList<>(array.size());
+            for (Object o : array) {
+                cookies.add((String) ((JSONObject) o).get("text"));
+            }
+        } catch (IOException e) {
+            logger.error("初始化 cookie 失败");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        init();
+    }
 }
