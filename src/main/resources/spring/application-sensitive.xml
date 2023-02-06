@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 数据库相关 -->
+    <!-- DataSource -->
+    <bean id="dataSource" class="com.hh.function.system.DataSource">
+        <property name="databaseUrl"
+                  value="数据库 URL"/>
+        <property name="databaseUsername"
+                  value="用户名"/>
+        <property name="databasePassword"
+                  value="密码"/>
+    </bean>
+
+
+
+    <!-- 小象代理配置类 -->
+    <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">
+        <property name="url" value="代理URL"/>
+        <property name="appKey" value="appKey"/>
+        <property name="appSecret" value="appSecret"/>
+        <property name="cnt" value="每次获得的个数"/>
+    </bean>
+
+
+</beans>

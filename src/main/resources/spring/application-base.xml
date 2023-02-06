@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+https://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/aop
+https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 数据库相关 -->
+
+    <!-- 自定义数据库访问类 -->
+    <!-- 可自行编写数据库访问类（例如使用 MyBatis）-->
+    <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+
+
+
+    <!-- 线程池相关 Bean -->
+    <bean id="threadPoolFactory" class="com.hh.function.system.ThreadPoolFactory">
+        <!-- 所有线程池的线程数量统一 -->
+        <property name="threadNum" value="1"/>
+    </bean>
+
+    <!-- HTTP 连接池 -->
+    <bean id="httpConnectionPool" class="com.hh.function.system.HttpConnectionPool">
+        <property name="threadPoolFactory" ref="threadPoolFactory"/>
+        <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>
+        <property name="cookieManager" ref="cookieManager"/>
+        <property name="enableCookie" value="false"/>
+    </bean>
+
+
+    <!-- aop 日志打印-->
+    <bean id="shellBanner" class="com.hh.aop.ShellBanner"/>
+
+
+    <!-- 启用注解 -->
+    <aop:aspectj-autoproxy/>
+</beans>

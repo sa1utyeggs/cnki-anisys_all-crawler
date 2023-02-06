@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * @author ab875
  * Cookie 控制类
+ * 使用策略模式实现 cookie 的获取
  */
 @Data
 public class CookieManager {
@@ -48,6 +49,14 @@ public class CookieManager {
     public String getCookie() {
         // 保证下标正确
         return policy.getCookie(cookies);
+    }
+
+    public void addCookie(String sCookie){
+        cookies.add(sCookie);
+    }
+
+    public void removeCookie(String sCookie){
+        cookies.remove(sCookie);
     }
 
     public String getDefaultCookie() {

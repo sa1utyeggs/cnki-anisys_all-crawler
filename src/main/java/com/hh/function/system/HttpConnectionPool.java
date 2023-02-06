@@ -124,6 +124,7 @@ public class HttpConnectionPool implements InitializingBean {
      * 请求 header
      */
     public final Map<String, String> BASE_HEADERS = new HashMap<>(16);
+    private Boolean enableCookie;
 
     /**
      * 其余 Spring 容器 Bean
@@ -139,8 +140,6 @@ public class HttpConnectionPool implements InitializingBean {
 
     public HttpConnectionPool() {
 
-        // 初始化 cookie
-        String cookie = cookieManager.getDefaultCookie();
 
         // 初始化基础 header
         BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");
@@ -148,7 +147,11 @@ public class HttpConnectionPool implements InitializingBean {
         BASE_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36");
         BASE_HEADERS.put("Host", "kns.cnki.net");
         BASE_HEADERS.put("Origin", "https://kns.cnki.net");
-        BASE_HEADERS.put("Cookie", cookie);
+        if (enableCookie) {
+            // 初始化 cookie
+            String cookie = cookieManager.getDefaultCookie();
+            BASE_HEADERS.put("Cookie", cookie);
+        }
         BASE_HEADERS.put("Connection", "keep-alive");
 
     }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+https://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/aop
+https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+
+    <!-- 代理池相关 Bean-->
+
+    <!-- 支持异步代理控制类 -->
+    <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">
+        <property name="config" ref="xiaoxiangConfig"/>
+        <property name="getIpRandomly" value="false"/>
+    </bean>
+
+
+    <!-- Cookie 相关 Bean-->
+
+    <!-- Cookie 策略-->
+    <!-- random -->
+    <bean id="randomCookiePolicy" class="com.hh.function.cookie.policy.RandomCookiePolicy">
+    </bean>
+    <!-- index -->
+    <bean id="indexCookiePolicy" class="com.hh.function.cookie.policy.IndexCookiePolicy">
+        <!-- index policy 需要指定 index -->
+        <property name="args">
+            <map>
+                <entry key="index" value="0"/>
+            </map>
+        </property>
+    </bean>
+    <!-- cookie 管理类 -->
+    <bean id="cookieManager" class="com.hh.function.cookie.CookieManager">
+        <property name="fileName" value="cookie.json"/>
+        <property name="policy" ref="randomCookiePolicy"/>
+    </bean>
+
+
+
+
+    <!-- 启用注解 -->
+    <aop:aspectj-autoproxy/>
+</beans>
