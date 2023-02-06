@@ -4,6 +4,7 @@ import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.hh.function.cookie.policy.CookiePolicy;
 import com.hh.utils.FileUtils;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,7 @@ public class CookieManager {
     private final Logger logger = LogManager.getLogger(CookieManager.class);
     private String fileName;
     private List<String> cookies;
+    private CookiePolicy policy;
 
     public CookieManager() {
         try {
@@ -43,17 +45,13 @@ public class CookieManager {
         }
     }
 
-    public String getCookie(int index) {
-        int size = 0;
-        if (cookies == null || (size = cookies.size()) == 0) {
-            return null;
-        }
+    public String getCookie() {
         // 保证下标正确
-        return cookies.get(Math.abs(index) % size);
+        return policy.getCookie(cookies);
     }
 
     public String getDefaultCookie() {
-        return getCookie(0);
+        return policy.getDefaultCookie(cookies);
     }
 
 }

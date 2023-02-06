@@ -42,8 +42,24 @@ https://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
     <!-- Cookie 相关 Bean-->
+
+    <!-- Cookie 策略-->
+    <!-- random -->
+    <bean id="randomCookiePolicy" class="com.hh.function.cookie.policy.RandomCookiePolicy">
+    </bean>
+    <!-- index -->
+    <bean id="indexCookiePolicy" class="com.hh.function.cookie.policy.IndexCookiePolicy">
+        <!-- index policy 需要指定 index -->
+        <property name="args">
+            <map>
+                <entry key="index" value="0"/>
+            </map>
+        </property>
+    </bean>
+    <!-- cookie 管理类 -->
     <bean id="cookieManager" class="com.hh.function.cookie.CookieManager">
         <property name="fileName" value="cookie.json"/>
+        <property name="policy" ref="randomCookiePolicy"/>
     </bean>
 
 

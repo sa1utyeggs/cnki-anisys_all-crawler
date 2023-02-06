@@ -1,15 +1,10 @@
 package com.hh.function.system;
 
-import cn.hutool.core.util.URLUtil;
 import com.hh.entity.system.HttpTask;
 import com.hh.function.cookie.CookieManager;
-import com.hh.function.ipproxy.AsyncProxyIpManager;
 import com.hh.function.ipproxy.ProxyIp;
 import com.hh.function.ipproxy.ProxyIpManager;
-import com.hh.function.ipproxy.SyncProxyIpManager;
-import com.hh.utils.JsonUtils;
 import lombok.Data;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -40,16 +35,13 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
