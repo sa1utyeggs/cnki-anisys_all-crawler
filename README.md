@@ -1,5 +1,5 @@
 # 介绍
-知网特定信息爬虫（不能爬取非登录用户无法访问的数据）
+知网特定信息爬虫（实现部分不能爬取非登录用户无法访问的数据）
 
 使用时，可以将 DataBaseUtils 中的数据库改成自己用的，或者使用 test = true 来避免使用数据库逻辑；
 
@@ -22,72 +22,10 @@ getMetabolitesDiseasePaperNum() 方法是入口，其余同上；
 doc/diet_disease.sql
 
 # applicationContext.xml
-当前版本引入 Spring 容器管理；需要在 resource 中加入一个 applicationContext.xml 文件；
+当前版本引入 Spring 容器管理；
+
+考虑到敏感数据（数据库连接参数、代理 IP API 参数）的问题，使用 resources/spring/application-sensitive.xml文件存储敏感数据。
 
 
-
-考虑到敏感数据（数据库连接参数、代理 IP API 参数）的问题，这里提供 applicationContext.xml 文件的模板：
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:aop="http://www.springframework.org/schema/aop"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
-    https://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/aop
-    https://www.springframework.org/schema/aop/spring-aop.xsd">
-    
-        <!-- 数据库相关 Bean -->
-        <bean id="dataSource" class="com.hh.function.system.DataSource">
-            <property name="databaseUrl"
-                      value="数据库 URL"/>
-            <property name="databaseUsername"
-                      value="用户名"/>
-            <property name="databasePassword"
-                      value="密码"/>
-        </bean>
-    
-        <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils">
-            <property name="dataSource" ref="dataSource"/>
-        </bean>
-    
-    
-        <!-- 代理池相关 Bean-->
-        <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">
-            <property name="url" value="代理URL"/>
-            <property name="appKey" value="appKey"/>
-            <property name="appSecret" value="appSecret"/>
-            <property name="cnt" value="每次获得的个数"/>
-        </bean>
-    
-        <!--    <bean id="xiaoxiangSyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangSyncProxyIpManager">-->
-        <!--        <property name="config" ref="xiaoxiangConfig"/>-->
-        <!--    </bean>-->
-    
-        <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">
-            <property name="config" ref="xiaoxiangConfig"/>
-            <property name="getIpRandomly" value="false"/>
-        </bean>
-    
-    
-        <!-- 线程池相关 Bean -->
-        <bean id="threadPoolFactory" class="com.hh.function.system.ThreadPoolFactory">
-            <!-- 所有线程池的线程数量统一 -->
-            <property name="threadNum" value="1"/>
-        </bean>
-    
-        <bean id="httpConnectionPool" class="com.hh.function.system.HttpConnectionPool">
-            <property name="threadPoolFactory" ref="threadPoolFactory"/>
-            <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>
-        </bean>
-    
-    
-        <!-- aop 日志打印-->
-        <bean id="shellBanner" class="com.hh.aop.ShellBanner"/>
-    
-    
-        <!-- 启用注解 -->
-        <aop:aspectj-autoproxy/>
-    </beans>
-
-
+#备注
+正在重构本项目，可能会出现各种bug；
