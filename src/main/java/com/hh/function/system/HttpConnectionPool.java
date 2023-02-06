@@ -2,6 +2,7 @@ package com.hh.function.system;
 
 import cn.hutool.core.util.URLUtil;
 import com.hh.entity.system.HttpTask;
+import com.hh.function.cookie.CookieManager;
 import com.hh.function.ipproxy.AsyncProxyIpManager;
 import com.hh.function.ipproxy.ProxyIp;
 import com.hh.function.ipproxy.ProxyIpManager;
@@ -128,16 +129,17 @@ public class HttpConnectionPool implements InitializingBean {
     private final Object SYNC_LOCK = new Object();
 
     /**
-     * 请求 header 与 cookie
+     * 请求 header
      */
     public final Map<String, String> BASE_HEADERS = new HashMap<>(16);
-    private String cookie;
 
     /**
-     * Spring 容器 Bean
+     * 其余 Spring 容器 Bean
      */
     private ProxyIpManager proxyIpManager;
     private ThreadPoolFactory threadPoolFactory;
+    private CookieManager cookieManager ;
+
     /**
      * http 请求执行线程池
      */
@@ -146,19 +148,7 @@ public class HttpConnectionPool implements InitializingBean {
     public HttpConnectionPool() {
 
         // 初始化 cookie
-        try {
-            URL resource = JsonUtils.class.getResource("/");
-            if (resource != null) {
-                String baseUrl = resource.getPath();
-                File cookieFile = new File(baseUrl + "cookie.txt");
-                // 从文件里读 cookie
-                cookie = FileUtils.readFileToString(cookieFile, StandardCharsets.UTF_8);
-                // 注意替换 ; / ? : @ = &
-                cookie = URLUtil.normalize(cookie);
-            }
-        } catch (Exception e) {
-            logger.error("初始化 cookie 失败");
-        }
+        String cookie = cookieManager.getDefaultCookie();
 
         // 初始化基础 header
         BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");

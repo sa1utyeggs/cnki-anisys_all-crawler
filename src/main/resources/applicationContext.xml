@@ -3,13 +3,68 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop
-        https://www.springframework.org/schema/aop/spring-aop.xsd">
+https://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/aop
+https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils"/>
+    <!-- 数据库相关 -->
+    <!-- DataSource -->
+    <bean id="dataSource" class="com.hh.function.system.DataSource">
+        <property name="databaseUrl"
+                  value="数据库 URL"/>
+        <property name="databaseUsername"
+                  value="用户名"/>
+        <property name="databasePassword"
+                  value="密码"/>
+    </bean>
+
+    <!-- 自定义数据库访问类 -->
+    <!-- 可自行编写数据库访问类（例如使用 MyBatis）-->
+    <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <!-- 代理池相关 Bean-->
+    <!-- 小象代理配置类 -->
+    <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">
+        <property name="url" value="代理URL"/>
+        <property name="appKey" value="appKey"/>
+        <property name="appSecret" value="appSecret"/>
+        <property name="cnt" value="每次获得的个数"/>
+    </bean>
+
+    <!-- 支持异步代理控制类 -->
+    <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">
+        <property name="config" ref="xiaoxiangConfig"/>
+        <property name="getIpRandomly" value="false"/>
+    </bean>
+
+
+    <!-- Cookie 相关 Bean-->
+    <bean id="cookieManager" class="com.hh.function.cookie.CookieManager">
+        <property name="fileName" value="cookie.json"/>
+    </bean>
+
+
+    <!-- 线程池相关 Bean -->
+    <bean id="threadPoolFactory" class="com.hh.function.system.ThreadPoolFactory">
+        <!-- 所有线程池的线程数量统一 -->
+        <property name="threadNum" value="1"/>
+    </bean>
+
+    <!-- HTTP 连接池 -->
+    <bean id="httpConnectionPool" class="com.hh.function.system.HttpConnectionPool">
+        <property name="threadPoolFactory" ref="threadPoolFactory"/>
+        <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>
+        <property name="cookieManager" ref="cookieManager"/>
+    </bean>
+
+
+    <!-- aop 日志打印-->
     <bean id="shellBanner" class="com.hh.aop.ShellBanner"/>
 
-    <!-- 第三种：使用注解 -->
+
+    <!-- 启用注解 -->
     <aop:aspectj-autoproxy/>
 </beans>

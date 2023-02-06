@@ -1,5 +1,7 @@
 package com.hh.utils;
 
+import cn.hutool.core.util.URLUtil;
+import com.hh.function.cookie.CookieManager;
 import com.opencsv.CSVWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,6 +23,21 @@ import java.util.List;
  */
 public class FileUtils {
     private static final Logger logger = LogManager.getLogger(FileUtils.class);
+    private static String baseUrl;
+
+    static {
+        try {
+            URL resource = CookieManager.class.getResource("/");
+            if (resource != null) {
+                baseUrl = resource.getPath();
+            }
+        } catch (Exception e) {
+            logger.error("初始化 resource、baseUrl 失败");
+            e.printStackTrace();
+        }
+    }
+
+    // csv 文件相关操作
 
 
     public static List<String> readCsvColumn(String path, int column, String delimiter) throws IOException {
@@ -48,7 +66,6 @@ public class FileUtils {
         }
         return returns;
     }
-
 
     public static List<List<String>> readCsvColumns(String path, Integer... columns) {
         ArrayList<List<String>> ans = new ArrayList<>(100);
@@ -127,6 +144,20 @@ public class FileUtils {
         // 使用第一个词作为搜索词
         String[] split = string.split(delimiter);
         return split[0];
+    }
+
+    // resource 文件夹中的文件操作
+
+    /**
+     * 从 resource 中读取文件
+     *
+     * @param name 文件名（包括下级目录）
+     * @return string
+     * @throws IOException 读取失败
+     */
+    public static String readFromResource(String name) throws IOException {
+        // 从文件里读 cookie
+        return org.apache.commons.io.FileUtils.readFileToString(new File(baseUrl + name), StandardCharsets.UTF_8);
     }
 
     public static String getShortestSearchWord(String string, String delimiter) {
