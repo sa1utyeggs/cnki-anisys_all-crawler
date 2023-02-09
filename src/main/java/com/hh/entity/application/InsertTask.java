@@ -1,4 +1,4 @@
-package com.hh.entity.system;
+package com.hh.entity.application;
 
 import com.hh.function.application.PaperDetail;
 import com.hh.function.application.PaperNum;

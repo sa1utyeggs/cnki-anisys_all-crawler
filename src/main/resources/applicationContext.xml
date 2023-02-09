@@ -3,88 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-http://www.springframework.org/schema/beans/spring-beans.xsd
-http://www.springframework.org/schema/aop
-http://www.springframework.org/schema/aop/spring-aop.xsd">
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <!-- 导入所有配置文件 -->
     <import resource="classpath:spring/application-*.xml"/>
 
-    <!--    &lt;!&ndash; 数据库相关 &ndash;&gt;-->
-    <!--    &lt;!&ndash; DataSource &ndash;&gt;-->
-    <!--    <bean id="dataSource" class="com.hh.function.system.DataSource">-->
-    <!--        <property name="databaseUrl"-->
-    <!--                  value="数据库 URL"/>-->
-    <!--        <property name="databaseUsername"-->
-    <!--                  value="用户名"/>-->
-    <!--        <property name="databasePassword"-->
-    <!--                  value="密码"/>-->
-    <!--    </bean>-->
-
-    <!--    &lt;!&ndash; 自定义数据库访问类 &ndash;&gt;-->
-    <!--    &lt;!&ndash; 可自行编写数据库访问类（例如使用 MyBatis）&ndash;&gt;-->
-    <!--    <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils">-->
-    <!--        <property name="dataSource" ref="dataSource"/>-->
-    <!--    </bean>-->
-
-
-    <!--    &lt;!&ndash; 代理池相关 Bean&ndash;&gt;-->
-    <!--    &lt;!&ndash; 小象代理配置类 &ndash;&gt;-->
-    <!--    <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">-->
-    <!--        <property name="url" value="代理URL"/>-->
-    <!--        <property name="appKey" value="appKey"/>-->
-    <!--        <property name="appSecret" value="appSecret"/>-->
-    <!--        <property name="cnt" value="每次获得的个数"/>-->
-    <!--    </bean>-->
-
-    <!--    &lt;!&ndash; 支持异步代理控制类 &ndash;&gt;-->
-    <!--    <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">-->
-    <!--        <property name="config" ref="xiaoxiangConfig"/>-->
-    <!--        <property name="getIpRandomly" value="false"/>-->
-    <!--    </bean>-->
-
-
-    <!--    &lt;!&ndash; Cookie 相关 Bean&ndash;&gt;-->
-
-    <!--    &lt;!&ndash; Cookie 策略&ndash;&gt;-->
-    <!--    &lt;!&ndash; random &ndash;&gt;-->
-    <!--    <bean id="randomCookiePolicy" class="com.hh.function.cookie.policy.RandomCookiePolicy">-->
-    <!--    </bean>-->
-    <!--    &lt;!&ndash; index &ndash;&gt;-->
-    <!--    <bean id="indexCookiePolicy" class="com.hh.function.cookie.policy.IndexCookiePolicy">-->
-    <!--        &lt;!&ndash; index policy 需要指定 index &ndash;&gt;-->
-    <!--        <property name="args">-->
-    <!--            <map>-->
-    <!--                <entry key="index" value="0"/>-->
-    <!--            </map>-->
-    <!--        </property>-->
-    <!--    </bean>-->
-    <!--    &lt;!&ndash; cookie 管理类 &ndash;&gt;-->
-    <!--    <bean id="cookieManager" class="com.hh.function.cookie.CookieManager">-->
-    <!--        <property name="fileName" value="cookie.json"/>-->
-    <!--        <property name="policy" ref="randomCookiePolicy"/>-->
-    <!--    </bean>-->
-
-
-    <!--    &lt;!&ndash; 线程池相关 Bean &ndash;&gt;-->
-    <!--    <bean id="threadPoolFactory" class="com.hh.function.system.ThreadPoolFactory">-->
-    <!--        &lt;!&ndash; 所有线程池的线程数量统一 &ndash;&gt;-->
-    <!--        <property name="threadNum" value="1"/>-->
-    <!--    </bean>-->
-
-    <!--    &lt;!&ndash; HTTP 连接池 &ndash;&gt;-->
-    <!--    <bean id="httpConnectionPool" class="com.hh.function.system.HttpConnectionPool">-->
-    <!--        <property name="threadPoolFactory" ref="threadPoolFactory"/>-->
-    <!--        <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>-->
-    <!--        <property name="cookieManager" ref="cookieManager"/>-->
-    <!--        <property name="enableCookie" value="false"/>-->
-    <!--    </bean>-->
-
-
-    <!--    &lt;!&ndash; aop 日志打印&ndash;&gt;-->
-    <!--    <bean id="shellBanner" class="com.hh.aop.ShellBanner"/>-->
-
-
-    <!-- 启用注解 -->
+    <!-- 第三种：使用注解 -->
     <aop:aspectj-autoproxy/>
 </beans>

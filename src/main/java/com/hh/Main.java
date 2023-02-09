@@ -1,20 +1,20 @@
 package com.hh;
 
 import com.hh.entity.application.MainSentence;
-import com.hh.entity.system.InsertTask;
-import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingletonFactory;
+import com.hh.entity.application.InsertTask;
 import com.hh.function.application.PaperDetail;
 import com.hh.function.application.PaperNum;
+import com.hh.function.system.Const;
+import com.hh.function.system.ContextSingletonFactory;
 import com.hh.function.system.ThreadPoolFactory;
 import com.hh.utils.DataBaseUtils;
 import com.hh.utils.FileUtils;
 import org.springframework.context.ApplicationContext;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -33,7 +33,7 @@ public class Main {
         exclusions.add("目的");
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args){
         // test()
         // start();
         multiThreadStart();

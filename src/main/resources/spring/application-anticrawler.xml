@@ -7,10 +7,12 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- 代理池相关 Bean-->
 
     <!-- 支持异步代理控制类 -->
-    <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">
-        <property name="config" ref="xiaoxiangConfig"/>
-        <property name="getIpRandomly" value="false"/>
-    </bean>
+    <!-- 此处以小象代理为基础，若希望使用代理，可以根据自身需要重写 代理类 -->
+
+    <!--    <bean id="xiaoxiangAsyncProxyIpManager" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangAsyncProxyIpManager">-->
+    <!--        <property name="config" ref="xiaoxiangConfig"/>-->
+    <!--        <property name="getIpRandomly" value="false"/>-->
+    <!--    </bean>-->
 
 
     <!-- Cookie 相关 Bean-->

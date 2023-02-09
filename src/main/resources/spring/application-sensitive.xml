@@ -4,6 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 https://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!-- 所有敏感信息 -->
+
     <!-- 数据库相关 -->
     <!-- DataSource -->
     <bean id="dataSource" class="com.hh.function.system.DataSource">
@@ -16,8 +18,7 @@ https://www.springframework.org/schema/beans/spring-beans.xsd">
     </bean>
 
 
-
-    <!-- 小象代理配置类 -->
+    <!-- 小象代理需要的相关信息 -->
     <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">
         <property name="url" value="代理URL"/>
         <property name="appKey" value="appKey"/>

@@ -5,12 +5,6 @@
       <configuration>
         <fileset id="fileset" name="ApplicationContext" removed="false">
           <file>file://$MODULE_DIR$/src/main/resources/applicationContext.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/application-normal.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/application-sensitive.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/spring/application-anticrawler.xml</file>
-        </fileset>
-        <fileset id="fileset" name="Spring 应用程序上下文" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/applicationContext.xml</file>
         </fileset>
       </configuration>
     </facet>
