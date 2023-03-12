@@ -51,6 +51,10 @@ public class Const {
 
     public static final String SOURCE_ZHIWANG = "中国知网";
 
+
+    public static final String HTTP_GET = "get";
+    public static final String HTTP_POST = "post";
+
     static {
         EXCLUSION_WORDS.add("方法");
         EXCLUSION_WORDS.add("目的");

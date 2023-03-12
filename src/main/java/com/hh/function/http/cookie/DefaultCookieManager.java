@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hh.function.http.cookie.policy.CookiePolicy;
 import com.hh.utils.FileUtils;
+import com.hh.utils.JsonUtils;
 import lombok.Data;
 import org.apache.http.cookie.Cookie;
 import org.apache.logging.log4j.LogManager;
@@ -49,17 +50,13 @@ public class DefaultCookieManager implements InitializingBean, CookieManager {
 
     private void init(){
         try {
-            // 读取文件
-            String sCookie = FileUtils.readFromResource(fileName);
-            // 规范化 cookie
-            // sCookie = URLUtil.normalize(sCookie);
-            JSONObject json = JSONObject.parseObject(sCookie);
+            JSONObject json = JsonUtils.getJsonObjectFromFile(fileName);
             JSONArray array = json.getJSONArray("list");
 
             // 初始化
             cookies = new ArrayList<>(array.size());
             for (Object o : array) {
-                cookies.add((String) ((JSONObject) o).get("text"));
+                cookies.add((String) o);
             }
         } catch (IOException e) {
             logger.error("初始化 cookie 失败");

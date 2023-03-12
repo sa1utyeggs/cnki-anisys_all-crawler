@@ -2,7 +2,7 @@ package com.hh.function.application;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.hh.entity.application.MainSentence;
+import com.hh.entity.application.cnki.MainSentence;
 import com.hh.function.base.Const;
 import com.hh.function.base.ContextSingletonFactory;
 import com.hh.function.http.HttpConnectionPool;
@@ -30,6 +30,8 @@ public class PaperDetail {
 
     static {
         EXCESS_HEADERS.put("referer", "https://kns.cnki.net/kns8/defaultresult/index");
+        EXCESS_HEADERS.put("Host", "kns.cnki.net");
+        EXCESS_HEADERS.put("Origin", "https://kns.cnki.net");
     }
 
     public static void main(String[] args) throws Exception {

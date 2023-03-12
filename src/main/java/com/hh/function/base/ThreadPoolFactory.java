@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Data
 public class ThreadPoolFactory {
-    public static final String WORK_POOL_PREFIX = "cnki-worker-pool-thread-";
-    public static final String HTTP_CONNECTION_POOL_PREFIX = "cnki-http-pool-thread-";
+    public static final String WORK_POOL_PREFIX = "worker-pool-thread-";
+    public static final String HTTP_CONNECTION_POOL_PREFIX = "http-pool-thread-";
 
     private int threadNum;
 

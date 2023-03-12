@@ -1,4 +1,4 @@
-package com.hh.function.http.cookie.policy;
+package com.hh.function.http.useragent.policy;
 
 import com.hh.utils.CheckUtils;
 import lombok.Data;
@@ -13,16 +13,16 @@ import java.util.Random;
  * 传入参数时，map 需要包含 INDEX 字段
  */
 @Data
-public class RandomCookiePolicy implements CookiePolicy {
+public class RandomUserAgentPolicy implements UserAgentPolicy {
     private final Random random;
-    private final Logger logger = LogManager.getLogger(RandomCookiePolicy.class);
+    private final Logger logger = LogManager.getLogger(RandomUserAgentPolicy.class);
 
-    public RandomCookiePolicy() {
+    public RandomUserAgentPolicy() {
         this.random = new Random();
     }
 
     @Override
-    public String getCookie(List<String> cookies) {
+    public String getUserAgent(List<String> cookies) {
         if (!CheckUtils.checkArgs(cookies)) {
             return null;
         }

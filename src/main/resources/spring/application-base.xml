@@ -22,10 +22,14 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- HTTP 连接池 -->
     <bean id="httpConnectionPool" class="com.hh.function.http.HttpConnectionPool">
         <property name="threadPoolFactory" ref="threadPoolFactory"/>
-        <property name="enableCookie" value="false"/>
+        <property name="enableCookie" value="true"/>
+        <property name="enableUserAgent" value="true"/>
         <property name="cookieManager" ref="cookieManager"/>
-        <!-- enableProxy 字段为 false 则不需要加载 proxyIpManager -->
+        <property name="userAgentManager" ref="userAgentManager"/>
+        <!-- 若不使用代理，则 enableProxy 字段为 false 是必要的 -->
         <property name="enableProxy" value="false"/>
+        <property name="proxyIpManager" ref="noneProxyIpManager"/>
+        <!-- 若需要使用代理，请使用小象代理，或根据 ipproxy.xiaoxiang 包中的代码自定义 Bean -->
         <!-- <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>-->
     </bean>
 

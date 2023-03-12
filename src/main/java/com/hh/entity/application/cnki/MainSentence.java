@@ -1,4 +1,4 @@
-package com.hh.entity.application;
+package com.hh.entity.application.cnki;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

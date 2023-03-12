@@ -1,6 +1,6 @@
 package com.hh.function.application;
 
-import com.hh.entity.application.MainSentence;
+import com.hh.entity.application.cnki.MainSentence;
 import com.hh.function.base.Const;
 import com.hh.function.base.DatabaseService;
 import com.hh.utils.AssertUtils;

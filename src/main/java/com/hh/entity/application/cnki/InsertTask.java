@@ -1,4 +1,4 @@
-package com.hh.entity.application;
+package com.hh.entity.application.cnki;
 
 import com.hh.function.application.CnkiDatabaseService;
 import com.hh.function.application.PaperDetail;

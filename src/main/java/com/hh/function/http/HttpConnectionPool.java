@@ -1,10 +1,15 @@
 package com.hh.function.http;
 
+import com.hh.entity.application.Task;
 import com.hh.entity.system.HttpTask;
+import com.hh.function.base.Const;
 import com.hh.function.base.ThreadPoolFactory;
-import com.hh.function.http.cookie.DefaultCookieManager;
+import com.hh.function.http.cookie.CookieManager;
 import com.hh.function.http.ipproxy.ProxyIp;
 import com.hh.function.http.ipproxy.ProxyIpManager;
+import com.hh.function.http.useragent.UserAgentManager;
+import com.hh.utils.CheckUtils;
+import com.hh.utils.HttpUtils;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
@@ -29,7 +34,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -130,6 +134,7 @@ public class HttpConnectionPool implements InitializingBean {
      * 开启选项
      */
     private Boolean enableCookie;
+    private Boolean enableUserAgent;
     private Boolean enableProxy;
 
     /**
@@ -137,7 +142,8 @@ public class HttpConnectionPool implements InitializingBean {
      */
     private ProxyIpManager proxyIpManager;
     private ThreadPoolFactory threadPoolFactory;
-    private DefaultCookieManager cookieManager;
+    private CookieManager cookieManager;
+    private UserAgentManager userAgentManager;
 
     /**
      * http 请求执行线程池
@@ -150,14 +156,16 @@ public class HttpConnectionPool implements InitializingBean {
      *
      * @return async
      */
+    @Deprecated
     public boolean isAsync() {
         return threadPoolFactory.getThreadNum() == 1;
     }
 
     /**
      * 对 http 请求进行基本设置；<br/>
-     * 该方法调用 proxyIpManager.getIp() 方法，获取 ip；<br/>
+     * 该方法调用 proxyIpManager.getIp() 方法，获取 ip；
      * 在 proxyIpManager.getIp() 线程安全的前提下，该方法线程安全；<br/>
+     * 设置请求头的通用元信息（包括：Cookie、UserAgent）
      *
      * @param httpRequestBase http请求
      */
@@ -176,7 +184,6 @@ public class HttpConnectionPool implements InitializingBean {
             // 设置代理
             builder.setProxy(new HttpHost(ip.getIp(), ip.getPort()));
         }
-
         httpRequestBase.setConfig(builder.build());
     }
 
@@ -255,42 +262,39 @@ public class HttpConnectionPool implements InitializingBean {
 
 
         // 请求失败时,进行请求重试
-        HttpRequestRetryHandler handler = new HttpRequestRetryHandler() {
-            @Override
-            public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
-                boolean retry = false;
-                if (i > crashRetryTimes) {
-                    //重试超过 crashRetryTimes 次,放弃请求
-                    logger.error("retry has more than " + crashRetryTimes + " time, give up request");
-                    return false;
-                }
-                logger.warn("尚未到达重试上线" + i + "/" + crashRetryTimes + "，HttpRequestRetryHandler 尝试重试");
-                if (e instanceof NoHttpResponseException) {
-                    // 服务器没有响应,可能是服务器断开了连接,应该重试
-                    logger.error("receive no response from server, retry");
-                    retry = true;
-                } else if (e instanceof SSLHandshakeException) {
-                    // SSL握手异常
-                    logger.error("SSL hand shake exception, no retry");
-                } else if (e instanceof InterruptedIOException) {
-                    // 主动打断 SocketIO，可能是使用了 abort 方法
-                    logger.error("InterruptedIOException, retry");
-                    retry = true;
-                } else if (e instanceof UnknownHostException) {
-                    // 服务器不可达
-                    logger.error("server host unknown, no retry");
-                } else if (e instanceof SSLException) {
-                    logger.error("SSLException, retry");
-                    retry = true;
-                }
-
-                if (!(HttpClientContext.adapt(httpContext).getRequest() instanceof HttpEntityEnclosingRequest)) {
-                    // 如果请求不是关闭连接的请求
-                    retry = true;
-                }
-                logger.warn("HttpRequestRetryHandler 是否重试：" + retry);
-                return retry;
+        HttpRequestRetryHandler handler = (e, i, httpContext) -> {
+            boolean retry = false;
+            if (i > crashRetryTimes) {
+                //重试超过 crashRetryTimes 次,放弃请求
+                logger.error("retry has more than " + crashRetryTimes + " time, give up request");
+                return false;
             }
+            logger.warn("尚未到达重试上线" + i + "/" + crashRetryTimes + "，HttpRequestRetryHandler 尝试重试");
+            if (e instanceof NoHttpResponseException) {
+                // 服务器没有响应,可能是服务器断开了连接,应该重试
+                logger.error("receive no response from server, retry");
+                retry = true;
+            } else if (e instanceof SSLHandshakeException) {
+                // SSL握手异常
+                logger.error("SSL hand shake exception, no retry");
+            } else if (e instanceof InterruptedIOException) {
+                // 主动打断 SocketIO，可能是使用了 abort 方法
+                logger.error("InterruptedIOException, retry");
+                retry = true;
+            } else if (e instanceof UnknownHostException) {
+                // 服务器不可达
+                logger.error("server host unknown, no retry");
+            } else if (e instanceof SSLException) {
+                logger.error("SSLException, retry");
+                retry = true;
+            }
+
+            if (!(HttpClientContext.adapt(httpContext).getRequest() instanceof HttpEntityEnclosingRequest)) {
+                // 如果请求不是关闭连接的请求
+                retry = true;
+            }
+            logger.warn("HttpRequestRetryHandler 是否重试：" + retry);
+            return retry;
         };
 
         SocketConfig socketConfig = SocketConfig.custom()
@@ -318,37 +322,175 @@ public class HttpConnectionPool implements InitializingBean {
      * @return Document
      */
     public Document get(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
-        // 开始包装请求
-        HttpGet httpGet = new HttpGet();
-        // 基础 header
-        addHeaders(httpGet, BASE_HEADERS);
-        // 额外 header
-        addHeaders(httpGet, excessHeaders);
-        setRequestConfig(httpGet);
-        // 设置参数
-        setGetParams(httpGet, url, params);
+        CloseableHttpResponse response = getWithResponse(url, params, excessHeaders);
+        return HttpUtils.getDocument(response);
+    }
 
-        return executeWithRetry(httpGet, url, crashRetryTimes, retryInterval);
+
+    /**
+     * 发送 post 请求，返回 Document 数据
+     *
+     * @param url           URL
+     * @param params        POST form 表单
+     * @param excessHeaders 额外 header
+     * @return Document
+     * @throws Exception e
+     */
+    public CloseableHttpResponse getWithResponse(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
+        return getWithResponse(url, params, excessHeaders, null);
+    }
+
+
+    /**
+     * 发送 get 请求，返回 Document 数据（某些数据将会回填至 task）
+     *
+     * @param url           URL
+     * @param params        POST form 表单
+     * @param excessHeaders 额外 header
+     * @param task          任务本身
+     * @return Document
+     * @throws Exception e
+     */
+    public CloseableHttpResponse getWithResponse(String url, Map<String, Object> params, Map<String, String> excessHeaders, Task task) throws Exception {
+        // 开始包装请求
+        HttpGet base = new HttpGet();
+
+        // 设置所有 headers
+        setAllHeaders(base, excessHeaders);
+        // 设置参数
+        setGetParams(base, url, params);
+        // 回填信息
+        backFillData(base, task);
+
+        return executeResponseWithRetry(base, url, crashRetryTimes, retryInterval);
     }
 
     /**
-     * 发送 post 请求；<br/>
+     * 发送 post 请求，返回 Document 数据
+     *
+     * @param url           URL
+     * @param params        POST form 表单
+     * @param excessHeaders 额外 header
+     * @return Document
+     * @throws Exception e
+     */
+    public Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
+        return post(url, params, excessHeaders, null);
+    }
+
+    /**
+     * 发送 post 请求，返回 Document 数据<br/>
+     * 某些数据将会回填至 task
+     *
+     * @param url           URL
+     * @param params        POST form 表单
+     * @param excessHeaders 额外 header
+     * @param task          任务本身
+     * @return Document
+     * @throws Exception e
+     */
+    public Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders, Task task) throws Exception {
+        CloseableHttpResponse response = postWithResponse(url, params, excessHeaders, task);
+        return HttpUtils.getDocument(response);
+    }
+
+
+    /**
+     * 发送 post 请求 <br/>
      *
      * @param url    URL
      * @param params 参数
-     * @return Document
+     * @return HTTP Response
      */
-    public Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
-        HttpPost httpPost = new HttpPost(url);
-        // 基础 header
-        addHeaders(httpPost, BASE_HEADERS);
-        // 额外 header
-        addHeaders(httpPost, excessHeaders);
-        setRequestConfig(httpPost);
-        // form 表单
-        setPostParams(httpPost, params);
+    public CloseableHttpResponse postWithResponse(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
+        return postWithResponse(url, params, excessHeaders, null);
+    }
 
-        return executeWithRetry(httpPost, url, crashRetryTimes, retryInterval);
+
+    /**
+     * 发送 post 请求 <br/>
+     * 数据将回填至 task <br/>
+     *
+     * @param url    URL
+     * @param params 参数
+     * @param task   任务
+     * @return HTTP Response
+     */
+    public CloseableHttpResponse postWithResponse(String url, Map<String, Object> params, Map<String, String> excessHeaders, Task task) throws Exception {
+        HttpPost base = new HttpPost(url);
+
+        // 设置所有 headers
+        setAllHeaders(base, excessHeaders);
+        // form 表单
+        setPostParams(base, params);
+        // 回填信息
+        backFillData(base, task);
+
+        return executeResponseWithRetry(base, url, crashRetryTimes, retryInterval);
+    }
+
+
+    /**
+     * @param url           url
+     * @param method        get/post
+     * @param params        get/post 参数
+     * @param excessHeaders 额外的 header（若与其它 header 冲突，excessHeaders 将会覆写）
+     * @return HTTP Response
+     * @throws Exception e
+     */
+    public CloseableHttpResponse test(String url, String method, Map<String, Object> params, Map<String, String> excessHeaders, Task task) throws Exception {
+        method = method.toLowerCase();
+        // 开始包装请求
+        HttpRequestBase base;
+        if (Const.HTTP_POST.equals(method)) {
+            base = new HttpPost(url);
+            setPostParams((HttpPost) base, params);
+        } else {
+            base = new HttpGet();
+            setGetParams((HttpGet) base, url, params);
+        }
+
+        // 设置所有 headers
+        setAllHeaders(base, excessHeaders);
+
+        // 回填信息
+        backFillData(base, task);
+
+        // log
+        logger.info("request: " + base.toString());
+        logger.info("header: " + Arrays.toString(base.getAllHeaders()));
+        logger.info("proxy ip: " + base.getConfig().getProxy());
+        return executeResponseWithRetry(base, url, crashRetryTimes, retryInterval);
+    }
+
+    /**
+     * 设置包括 BASE_HEADERS、各类 Manager 设置的 header、使用者指定的额外 headers、代理信息
+     *
+     * @param base          request
+     * @param excessHeaders 用户指定的额外 headers
+     */
+    private void setAllHeaders(HttpRequestBase base, Map<String, String> excessHeaders) {
+        // 基础 header
+        setHeader(base, BASE_HEADERS);
+        // 注入 Cookie 和 User-Agent
+        setMetaHeader(base);
+        // 设置代理等信息
+        setRequestConfig(base);
+        // 额外 header
+        setHeader(base, excessHeaders);
+    }
+
+    /**
+     * @param base request
+     * @param task 任务
+     */
+    private void backFillData(HttpRequestBase base, Task task) {
+        // 回填信息
+        if (CheckUtils.checkArgs(base, task)) {
+            // 将当前所有的 header 回填入 task 存储中；
+            task.setHeaders(base.getAllHeaders());
+            task.setStorage("request_config", base.getConfig());
+        }
     }
 
     /**
@@ -391,55 +533,36 @@ public class HttpConnectionPool implements InitializingBean {
      * @param httpMessage HttpGet/HttpPost ...
      * @param headers     header
      */
-    private void addHeaders(HttpMessage httpMessage, Map<String, String> headers) {
+    private void setHeader(HttpMessage httpMessage, Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
             for (Map.Entry<String, String> e : headers.entrySet()) {
-                httpMessage.addHeader(e.getKey(), e.getValue());
+                httpMessage.setHeader(e.getKey(), e.getValue());
             }
         }
     }
 
     /**
-     * 使用线程池执行 HTTP 请求；<br/>
+     * 该方法返回 HTTP Response 而不是 Document 对象
      *
      * @param request 请求
-     * @param url     网址
-     * @return Document
-     * @throws Exception e
+     * @param url     url
+     * @return HTTP Response
+     * @throws InterruptedException e1
+     * @throws ExecutionException   e2
+     * @throws TimeoutException     e3
      */
-    private Document execute(HttpRequestBase request, String url) throws Exception {
-        Document document = null;
+    private CloseableHttpResponse executeResponse(HttpRequestBase request, String url) throws InterruptedException, ExecutionException, TimeoutException {
         HttpTask task = null;
         try {
-            InputStream in = null;
             // 使用线程池提交请求
-            CloseableHttpResponse response = httpThreadPool.submit((task = new HttpTask(request, getHttpClient(url)))).get(killThreadTimeout, TimeUnit.MILLISECONDS);
-            try {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    in = entity.getContent();
-                    document = Jsoup.parse(IOUtils.toString(in, StandardCharsets.UTF_8));
-                    // 消费 entity
-                    EntityUtils.consume(entity);
-                }
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-                if (response != null) {
-                    // 将 response 关闭后，就能将连接放回连接池
-                    response.close();
-                }
-            }
+            return httpThreadPool.submit((task = new HttpTask(request, getHttpClient(url)))).get(killThreadTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             // 在外部关闭连接，不然可能会出现线程卡死在 readSocket0() 的问题
             task.abortRequest();
             logger.error("任务 " + task + " 最终超时，关闭连接并抛出异常");
             throw e;
         }
-        return document;
     }
-
 
     /**
      * 该方法主要是为了捕捉到 HttpRequestRetryHandler 无法捕捉到的非网络因素异常；<br/>
@@ -448,33 +571,35 @@ public class HttpConnectionPool implements InitializingBean {
      * @param url     url
      * @param retry   重试次数
      * @param during  重试间隔
-     * @return Document
+     * @return HTTP Response
      * @throws Exception e
      */
-    private Document executeWithRetry(HttpRequestBase request, String url, int retry, long during) throws Exception {
+    private CloseableHttpResponse executeResponseWithRetry(HttpRequestBase request, String url, int retry, long during) throws Exception {
         int curr = Math.max(0, retry);
-        Document document = null;
+        CloseableHttpResponse response = null;
         Exception thr = null;
-        while (document == null && curr-- >= 0) {
+        while (response == null && curr-- >= 0) {
             try {
-                document = execute(request, url);
+                response = executeResponse(request, url);
             } catch (Exception e) {
                 thr = e;
                 // 如果立刻重试，大概率会失败
                 Thread.sleep(during);
             }
         }
-        if (document == null) {
+        if (response == null) {
             logger.error("外部判断逻辑重试后依旧失败，抛出异常");
             throw thr != null ? thr : new Exception("无法获得结果，且未捕捉到异常");
         }
-        return document;
+        return response;
 
     }
+
 
     /**
      * 关闭连接池；<br/>
      */
+    @Deprecated
     public void closeConnectionPool() {
         try {
             httpClient.close();
@@ -497,13 +622,34 @@ public class HttpConnectionPool implements InitializingBean {
         BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");
         BASE_HEADERS.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         BASE_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36");
-        BASE_HEADERS.put("Host", "kns.cnki.net");
-        BASE_HEADERS.put("Origin", "https://kns.cnki.net");
-        if (enableCookie) {
-            // 初始化 cookie
-            String cookie = cookieManager.getDefaultCookie();
-            BASE_HEADERS.put("Cookie", cookie);
+
+//        BASE_HEADERS.put("Host", "kns.cnki.net");
+//        BASE_HEADERS.put("Origin", "https://kns.cnki.net");
+
+//        if (enableCookie) {
+//            // 初始化 cookie
+//            String cookie = cookieManager.getDefaultCookie();
+//            BASE_HEADERS.put("Cookie", cookie);
+//        }
+        if (enableUserAgent) {
+            // 初始化 userAgent
+            String userAgent = userAgentManager.getDefaultUserAgent();
+            BASE_HEADERS.put("User-Agent", userAgent);
         }
         BASE_HEADERS.put("Connection", "keep-alive");
+    }
+
+    /**
+     * 设置 Cookie、UserAgent 等信息；
+     */
+    private void setMetaHeader(HttpMessage httpMessage) {
+        if (enableCookie) {
+            // cookie
+            httpMessage.setHeader("Cookie", cookieManager.getCookie());
+        }
+        if (enableUserAgent) {
+            // userAgent
+            httpMessage.setHeader("User-Agent", userAgentManager.getUserAgent());
+        }
     }
 }

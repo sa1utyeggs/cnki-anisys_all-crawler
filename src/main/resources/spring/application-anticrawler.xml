@@ -5,6 +5,8 @@
 http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- 代理池相关 Bean-->
+    <!-- 无代理 -->
+    <bean id="noneProxyIpManager" class="com.hh.function.http.ipproxy.noneproxy.NoneProxyIpManager"/>
 
     <!-- 支持异步代理控制类 -->
     <!-- 此处以小象代理为基础，若希望使用代理，可以根据自身需要重写 代理类 -->
@@ -18,7 +20,6 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- Cookie 相关 Bean-->
 
     <!-- Cookie 策略-->
-
     <!-- random -->
     <bean id="randomCookiePolicy" class="com.hh.function.http.cookie.policy.RandomCookiePolicy">
     </bean>
@@ -34,8 +35,31 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- cookie 管理类 -->
     <bean id="cookieManager" class="com.hh.function.http.cookie.DefaultCookieManager">
-        <property name="fileName" value="cookie.json"/>
+        <property name="fileName" value="http/cookie.json"/>
         <property name="policy" ref="randomCookiePolicy"/>
+    </bean>
+
+
+
+    <!-- UserAgent 相关 Bean -->
+    <!-- UserAgent 策略-->
+    <!-- random -->
+    <bean id="randomUserAgentPolicy" class="com.hh.function.http.useragent.policy.RandomUserAgentPolicy">
+    </bean>
+    <!-- index -->
+    <bean id="indexUserAgentPolicy" class="com.hh.function.http.useragent.policy.IndexUserAgentPolicy">
+        <!-- index policy 需要指定 index -->
+        <property name="args">
+            <map>
+                <entry key="index" value="0"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- UserAgent 管理类 -->
+    <bean id="userAgentManager" class="com.hh.function.http.useragent.DefaultUserAgentManager">
+        <property name="fileName" value="http/useragent.json"/>
+        <property name="policy" ref="randomUserAgentPolicy"/>
     </bean>
 
 </beans>
