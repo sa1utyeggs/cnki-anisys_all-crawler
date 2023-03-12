@@ -2,12 +2,12 @@ package com.hh;
 
 import com.hh.entity.application.MainSentence;
 import com.hh.entity.application.InsertTask;
+import com.hh.function.application.CnkiDatabaseService;
 import com.hh.function.application.PaperDetail;
 import com.hh.function.application.PaperNum;
-import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingletonFactory;
-import com.hh.function.system.ThreadPoolFactory;
-import com.hh.utils.DataBaseUtils;
+import com.hh.function.base.Const;
+import com.hh.function.base.ContextSingletonFactory;
+import com.hh.function.base.ThreadPoolFactory;
 import com.hh.utils.FileUtils;
 import org.springframework.context.ApplicationContext;
 
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static ApplicationContext context = ContextSingletonFactory.getInstance();
-    public static DataBaseUtils dataBaseUtils = context.getBean("dataBaseUtils", DataBaseUtils.class);
+    public static CnkiDatabaseService dataBaseUtils = context.getBean("dataBaseUtils", CnkiDatabaseService.class);
     public static ThreadPoolFactory threadPoolFactory = context.getBean("threadPoolFactory", ThreadPoolFactory.class);
     public static HashSet<String> exclusions = new HashSet<>();
 
@@ -36,7 +36,7 @@ public class Main {
     public static void main(String[] args){
         // test()
         // start();
-        multiThreadStart();
+        // multiThreadStart();
     }
 
     public static void test() {

@@ -1,7 +1,7 @@
-package com.hh.function.ipproxy;
+package com.hh.function.http.ipproxy;
 
 
-import com.hh.function.system.Const;
+import com.hh.function.base.Const;
 import lombok.Builder;
 import lombok.Data;
 

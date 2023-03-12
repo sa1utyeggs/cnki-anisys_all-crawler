@@ -1,8 +1,4 @@
-package com.hh.function.ipproxy;
-
-import org.springframework.beans.factory.InitializingBean;
-
-import java.io.IOException;
+package com.hh.function.http.ipproxy;
 
 /**
  * @author 86183

@@ -1,10 +1,13 @@
-package com.hh.utils;
+package com.hh.function.application;
 
 import com.hh.entity.application.MainSentence;
-import com.hh.function.application.PaperDetail;
-import com.hh.function.system.Const;
-import com.hh.function.system.DataSource;
+import com.hh.function.base.Const;
+import com.hh.function.base.DatabaseService;
+import com.hh.utils.AssertUtils;
+import com.hh.utils.FileUtils;
+import com.hh.utils.StringUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,35 +20,10 @@ import java.util.Map;
 /**
  * @author 86183
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class DataBaseUtils {
-    private DataSource dataSource;
-    private final Logger logger = LogManager.getLogger(PaperDetail.class);
-
-    public static void main(String[] args) throws Exception {
-        test();
-    }
-
-    public static void test() throws Exception {
-        System.out.println(new DataBaseUtils().getConnection());
-    }
-
-    /**
-     * 获得连接
-     *
-     * @return 连接
-     * @throws SQLException sql
-     */
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
-    }
-
-    /**
-     * 关闭连接并删除 ThreadLocal
-     */
-    public void closeConnection() {
-        dataSource.closeConnection();
-    }
+public class CnkiDatabaseService extends DatabaseService {
+    private final Logger logger = LogManager.getLogger(CnkiDatabaseService.class);
 
     /**
      * 插入文献信息
@@ -227,25 +205,43 @@ public class DataBaseUtils {
         }
     }
 
+    /**
+     * 获取所有疾病名
+     *
+     * @return list
+     * @throws SQLException e
+     */
     public List<String> getAllDisease() throws SQLException {
         Connection connection = getConnection();
 
         ArrayList<String> diseases = new ArrayList<>();
         // ps：获得代谢物的名称
-        PreparedStatement ps = connection.prepareStatement("select name from disease;");
-        ResultSet rs = null;
-        try {
-            rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement("select name from disease;");
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 diseases.add(rs.getString(1));
             }
             return diseases;
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            ps.close();
+        }
+    }
 
+    /**
+     * 获取所有代谢物名
+     *
+     * @return list
+     * @throws SQLException e
+     */
+    public List<String> getAllMetabolite() throws SQLException {
+        Connection connection = getConnection();
+
+        ArrayList<String> diseases = new ArrayList<>();
+        // ps：获得代谢物的名称
+        try (PreparedStatement ps = connection.prepareStatement("select name from metabolite;");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                diseases.add(rs.getString(1));
+            }
+            return diseases;
         }
     }
 

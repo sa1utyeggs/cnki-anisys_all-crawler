@@ -1,4 +1,4 @@
-package com.hh.function.cookie.policy;
+package com.hh.function.http.cookie.policy;
 
 import com.hh.utils.AssertUtils;
 import lombok.Data;

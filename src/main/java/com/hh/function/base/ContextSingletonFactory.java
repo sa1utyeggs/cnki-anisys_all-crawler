@@ -1,4 +1,4 @@
-package com.hh.function.system;
+package com.hh.function.base;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

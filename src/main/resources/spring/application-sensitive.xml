@@ -8,7 +8,7 @@ https://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- 数据库相关 -->
     <!-- DataSource -->
-    <bean id="dataSource" class="com.hh.function.system.DataSource">
+    <bean id="dataSource" class="com.hh.function.base.DataSource">
         <property name="databaseUrl"
                   value="数据库 URL"/>
         <property name="databaseUsername"
@@ -19,7 +19,7 @@ https://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
     <!-- 小象代理需要的相关信息 -->
-    <bean name="xiaoxiangConfig" class="com.hh.function.ipproxy.xiaoxiang.XiaoxiangConfig">
+    <bean name="xiaoxiangConfig" class="com.hh.function.http.ipproxy.xiaoxiang.XiaoxiangConfig">
         <property name="url" value="代理URL"/>
         <property name="appKey" value="appKey"/>
         <property name="appSecret" value="appSecret"/>

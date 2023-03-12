@@ -1,10 +1,10 @@
 package com.hh.entity.application;
 
+import com.hh.function.application.CnkiDatabaseService;
 import com.hh.function.application.PaperDetail;
 import com.hh.function.application.PaperNum;
-import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingletonFactory;
-import com.hh.utils.DataBaseUtils;
+import com.hh.function.base.Const;
+import com.hh.function.base.ContextSingletonFactory;
 import lombok.Data;
 
 import java.sql.SQLException;
@@ -16,12 +16,12 @@ import java.util.List;
 @Data
 public class InsertTask implements Runnable {
     private String disease;
-    private DataBaseUtils dataBaseUtils;
+    private CnkiDatabaseService dataBaseUtils;
     private boolean getAndInsertPaperNum;
     private boolean test;
 
     public InsertTask(String disease) {
-        dataBaseUtils = ContextSingletonFactory.getInstance().getBean("dataBaseUtils", DataBaseUtils.class);
+        dataBaseUtils = ContextSingletonFactory.getInstance().getBean("dataBaseUtils", CnkiDatabaseService.class);
         this.disease = disease;
         this.getAndInsertPaperNum = true;
         this.test = false;

@@ -16,7 +16,7 @@ import java.util.HashMap;
 @Aspect
 public class ShellBanner {
     private static final Logger logger = LogManager.getLogger(ShellBanner.class);
-    private final String executionExpression = "execution(* com.hh.utils.DataBaseUtils.*(..))";
+    private final String executionExpression = "execution(* com.hh.function.application.CnkiDatabaseService.*(..))";
 
     @Around(executionExpression)
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {

@@ -1,19 +1,12 @@
 package com.hh.function.application;
 
-import com.alibaba.fastjson.JSONObject;
-import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingletonFactory;
-import com.hh.utils.DataBaseUtils;
-import com.hh.function.system.HttpConnectionPool;
-import com.hh.utils.JsonUtils;
-import com.hh.utils.StringUtils;
+import com.hh.function.base.ContextSingletonFactory;
+import com.hh.function.http.HttpConnectionPool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.context.ApplicationContext;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +17,7 @@ import java.util.Map;
  */
 public class PaperNum {
     private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
-    private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
+    private static final CnkiDatabaseService DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", CnkiDatabaseService.class);
     private static final HttpConnectionPool HTTP_CONNECTION_POOL = CONTEXT.getBean("httpConnectionPool", HttpConnectionPool.class);
     private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
     private static final Logger logger = LogManager.getLogger(PaperNum.class);

@@ -1,11 +1,10 @@
-package com.hh.function.ipproxy.xiaoxiang;
+package com.hh.function.http.ipproxy.xiaoxiang;
 
-import com.hh.function.ipproxy.ProxyIp;
-import com.hh.function.ipproxy.SyncProxyIpManager;
+import com.hh.function.http.ipproxy.ProxyIp;
+import com.hh.function.http.ipproxy.SyncProxyIpManager;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author 86183

@@ -1,12 +1,11 @@
-package com.hh.function.cookie;
+package com.hh.function.http.cookie;
 
-import cn.hutool.core.util.URLUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.hh.function.cookie.policy.CookiePolicy;
+import com.hh.function.http.cookie.policy.CookiePolicy;
 import com.hh.utils.FileUtils;
 import lombok.Data;
+import org.apache.http.cookie.Cookie;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,25 +20,29 @@ import java.util.List;
  * 使用策略模式实现 cookie 的获取
  */
 @Data
-public class CookieManager implements InitializingBean {
-    private final Logger logger = LogManager.getLogger(CookieManager.class);
+public class DefaultCookieManager implements InitializingBean, CookieManager {
+    private final Logger logger = LogManager.getLogger(DefaultCookieManager.class);
     private String fileName;
     private List<String> cookies;
     private CookiePolicy policy;
 
+    @Override
     public String getCookie() {
         // 保证下标正确
         return policy.getCookie(cookies);
     }
 
+    @Override
     public void addCookie(String sCookie){
         cookies.add(sCookie);
     }
 
+    @Override
     public void removeCookie(String sCookie){
         cookies.remove(sCookie);
     }
 
+    @Override
     public String getDefaultCookie() {
         return policy.getDefaultCookie(cookies);
     }
@@ -65,7 +68,7 @@ public class CookieManager implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         init();
     }
 }

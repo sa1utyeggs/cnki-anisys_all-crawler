@@ -1,4 +1,4 @@
-package com.hh.function.ipproxy;
+package com.hh.function.http.ipproxy;
 
 import lombok.Data;
 

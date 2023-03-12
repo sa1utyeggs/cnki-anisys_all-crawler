@@ -1,9 +1,10 @@
-package com.hh.function.system;
+package com.hh.function.http;
 
 import com.hh.entity.system.HttpTask;
-import com.hh.function.cookie.CookieManager;
-import com.hh.function.ipproxy.ProxyIp;
-import com.hh.function.ipproxy.ProxyIpManager;
+import com.hh.function.base.ThreadPoolFactory;
+import com.hh.function.http.cookie.DefaultCookieManager;
+import com.hh.function.http.ipproxy.ProxyIp;
+import com.hh.function.http.ipproxy.ProxyIpManager;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
@@ -136,7 +137,7 @@ public class HttpConnectionPool implements InitializingBean {
      */
     private ProxyIpManager proxyIpManager;
     private ThreadPoolFactory threadPoolFactory;
-    private CookieManager cookieManager;
+    private DefaultCookieManager cookieManager;
 
     /**
      * http 请求执行线程池
@@ -154,7 +155,7 @@ public class HttpConnectionPool implements InitializingBean {
     }
 
     /**
-     * 对http请求进行基本设置；<br/>
+     * 对 http 请求进行基本设置；<br/>
      * 该方法调用 proxyIpManager.getIp() 方法，获取 ip；<br/>
      * 在 proxyIpManager.getIp() 线程安全的前提下，该方法线程安全；<br/>
      *
@@ -175,6 +176,7 @@ public class HttpConnectionPool implements InitializingBean {
             // 设置代理
             builder.setProxy(new HttpHost(ip.getIp(), ip.getPort()));
         }
+
         httpRequestBase.setConfig(builder.build());
     }
 
@@ -316,11 +318,12 @@ public class HttpConnectionPool implements InitializingBean {
      * @return Document
      */
     public Document get(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
+        // 开始包装请求
         HttpGet httpGet = new HttpGet();
         // 基础 header
-        setHeader(httpGet, BASE_HEADERS);
+        addHeaders(httpGet, BASE_HEADERS);
         // 额外 header
-        setHeader(httpGet, excessHeaders);
+        addHeaders(httpGet, excessHeaders);
         setRequestConfig(httpGet);
         // 设置参数
         setGetParams(httpGet, url, params);
@@ -338,9 +341,9 @@ public class HttpConnectionPool implements InitializingBean {
     public Document post(String url, Map<String, Object> params, Map<String, String> excessHeaders) throws Exception {
         HttpPost httpPost = new HttpPost(url);
         // 基础 header
-        setHeader(httpPost, BASE_HEADERS);
+        addHeaders(httpPost, BASE_HEADERS);
         // 额外 header
-        setHeader(httpPost, excessHeaders);
+        addHeaders(httpPost, excessHeaders);
         setRequestConfig(httpPost);
         // form 表单
         setPostParams(httpPost, params);
@@ -388,7 +391,7 @@ public class HttpConnectionPool implements InitializingBean {
      * @param httpMessage HttpGet/HttpPost ...
      * @param headers     header
      */
-    private void setHeader(HttpMessage httpMessage, Map<String, String> headers) {
+    private void addHeaders(HttpMessage httpMessage, Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) {
             for (Map.Entry<String, String> e : headers.entrySet()) {
                 httpMessage.addHeader(e.getKey(), e.getValue());

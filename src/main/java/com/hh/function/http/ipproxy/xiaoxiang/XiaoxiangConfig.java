@@ -1,4 +1,4 @@
-package com.hh.function.ipproxy.xiaoxiang;
+package com.hh.function.http.ipproxy.xiaoxiang;
 
 import lombok.Data;
 

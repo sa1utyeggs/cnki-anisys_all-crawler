@@ -1,4 +1,4 @@
-package com.hh.function.system;
+package com.hh.function.base;
 
 import lombok.Data;
 

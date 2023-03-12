@@ -1,7 +1,6 @@
 package com.hh.utils;
 
-import cn.hutool.core.util.URLUtil;
-import com.hh.function.cookie.CookieManager;
+import com.hh.function.http.cookie.DefaultCookieManager;
 import com.opencsv.CSVWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +26,7 @@ public class FileUtils {
 
     static {
         try {
-            URL resource = CookieManager.class.getResource("/");
+            URL resource = DefaultCookieManager.class.getResource("/");
             if (resource != null) {
                 baseUrl = resource.getPath();
             }

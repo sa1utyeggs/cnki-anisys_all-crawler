@@ -1,6 +1,4 @@
-package com.hh.function.cookie.policy;
-
-import javafx.beans.binding.ObjectExpression;
+package com.hh.function.http.cookie.policy;
 
 import java.util.Collection;
 import java.util.List;

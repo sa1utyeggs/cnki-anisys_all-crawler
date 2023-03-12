@@ -8,19 +8,19 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- 自定义数据库访问类 -->
     <!-- 可自行编写数据库访问类（例如使用 MyBatis）-->
-    <bean id="dataBaseUtils" class="com.hh.utils.DataBaseUtils">
+    <bean id="dataBaseUtils" class="com.hh.function.application.CnkiDatabaseService">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
 
     <!-- 线程池相关 Bean -->
-    <bean id="threadPoolFactory" class="com.hh.function.system.ThreadPoolFactory">
+    <bean id="threadPoolFactory" class="com.hh.function.base.ThreadPoolFactory">
         <!-- 所有线程池的线程数量统一 -->
         <property name="threadNum" value="1"/>
     </bean>
 
     <!-- HTTP 连接池 -->
-    <bean id="httpConnectionPool" class="com.hh.function.system.HttpConnectionPool">
+    <bean id="httpConnectionPool" class="com.hh.function.http.HttpConnectionPool">
         <property name="threadPoolFactory" ref="threadPoolFactory"/>
         <property name="enableCookie" value="false"/>
         <property name="cookieManager" ref="cookieManager"/>

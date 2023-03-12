@@ -1,8 +1,8 @@
-package com.hh.function.ipproxy.xiaoxiang;
+package com.hh.function.http.ipproxy.xiaoxiang;
 
-import com.hh.function.ipproxy.AsyncProxyIpManager;
-import com.hh.function.ipproxy.ProxyIp;
-import com.hh.function.system.ThreadPoolFactory;
+import com.hh.function.http.ipproxy.AsyncProxyIpManager;
+import com.hh.function.http.ipproxy.ProxyIp;
+import com.hh.function.base.ThreadPoolFactory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;

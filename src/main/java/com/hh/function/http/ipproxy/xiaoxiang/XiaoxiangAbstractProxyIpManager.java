@@ -1,13 +1,12 @@
-package com.hh.function.ipproxy.xiaoxiang;
+package com.hh.function.http.ipproxy.xiaoxiang;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.hh.function.ipproxy.IpPool;
-import com.hh.function.ipproxy.ProxyIp;
-import com.hh.function.ipproxy.ProxyIpManager;
+import com.hh.function.http.ipproxy.IpPool;
+import com.hh.function.http.ipproxy.ProxyIp;
+import com.hh.function.http.ipproxy.ProxyIpManager;
 import com.hh.utils.DateUtils;
 import lombok.Data;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

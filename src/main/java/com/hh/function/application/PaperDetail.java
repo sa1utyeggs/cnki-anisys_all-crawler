@@ -3,9 +3,9 @@ package com.hh.function.application;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hh.entity.application.MainSentence;
-import com.hh.function.system.Const;
-import com.hh.function.system.ContextSingletonFactory;
-import com.hh.function.system.HttpConnectionPool;
+import com.hh.function.base.Const;
+import com.hh.function.base.ContextSingletonFactory;
+import com.hh.function.http.HttpConnectionPool;
 import com.hh.utils.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class PaperDetail {
     private static final ApplicationContext CONTEXT = ContextSingletonFactory.getInstance();
-    private static final DataBaseUtils DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", DataBaseUtils.class);
+    private static final CnkiDatabaseService DATA_BASE_UTILS = CONTEXT.getBean("dataBaseUtils", CnkiDatabaseService.class);
     private static final HttpConnectionPool HTTP_CONNECTION_POOL = CONTEXT.getBean("httpConnectionPool", HttpConnectionPool.class);
     private static final Map<String, String> EXCESS_HEADERS = new HashMap<>(8);
     private static final Logger logger = LogManager.getLogger(PaperDetail.class);
