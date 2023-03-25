@@ -7,6 +7,10 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- 代理池相关 Bean-->
     <!-- 无代理 -->
     <bean id="noneProxyIpManager" class="com.hh.function.http.ipproxy.noneproxy.NoneProxyIpManager"/>
+    <bean id="fixedProxyIpManager" class="com.hh.function.http.ipproxy.fixed.FixedProxyIpManager">
+        <property name="host" value="127.0.0.1"/>
+        <property name="port" value="22039"/>
+    </bean>
 
     <!-- 支持异步代理控制类 -->
     <!-- 此处以小象代理为基础，若希望使用代理，可以根据自身需要重写 代理类 -->

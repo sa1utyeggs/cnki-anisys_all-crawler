@@ -1,7 +1,7 @@
 package com.hh;
 
-import com.hh.entity.application.cnki.MainSentence;
-import com.hh.entity.application.cnki.InsertTask;
+import com.hh.task.cnki.MainSentence;
+import com.hh.task.cnki.InsertTask;
 import com.hh.function.application.CnkiDatabaseService;
 import com.hh.function.application.PaperDetail;
 import com.hh.function.application.PaperNum;
