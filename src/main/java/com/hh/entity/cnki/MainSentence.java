@@ -1,9 +1,9 @@
-package com.hh.task.cnki;
+package com.hh.entity.cnki;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.HashMap;
@@ -16,7 +16,8 @@ import java.util.HashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-@ToString
+@TableName("paper_main_sentence")
+@Builder
 public class MainSentence {
     public static final HashMap<Integer, String> RELATION_EXPLAIN;
 
@@ -27,6 +28,13 @@ public class MainSentence {
         RELATION_EXPLAIN.put(2, "正相关");
         RELATION_EXPLAIN.put(3, "负相关");
     }
+
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    private Long paperId;
+
+    private Double confidence;
 
     /**
      * 句子内容

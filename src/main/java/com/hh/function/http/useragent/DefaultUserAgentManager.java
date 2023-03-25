@@ -28,7 +28,6 @@ public class DefaultUserAgentManager implements InitializingBean, UserAgentManag
     @Override
     public String getUserAgent() {
         // 保证下标正确
-        System.out.println(policy.getUserAgent(userAgents));
         return policy.getUserAgent(userAgents);
     }
 

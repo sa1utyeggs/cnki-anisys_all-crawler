@@ -1,6 +1,6 @@
 package com.hh;
 
-import com.hh.task.cnki.MainSentence;
+import com.hh.entity.cnki.MainSentence;
 import com.hh.task.cnki.InsertTask;
 import com.hh.function.application.CnkiDatabaseService;
 import com.hh.function.application.PaperDetail;

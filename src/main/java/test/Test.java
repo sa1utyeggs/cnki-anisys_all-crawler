@@ -10,6 +10,7 @@ import com.hh.function.base.ContextSingletonFactory;
 import com.hh.function.base.ThreadPoolFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,21 +27,25 @@ public class Test {
     public static CnkiDatabaseService dataBaseUtils = context.getBean("dataBaseUtils", CnkiDatabaseService.class);
     public static ThreadPoolFactory threadPoolFactory = context.getBean("threadPoolFactory", ThreadPoolFactory.class);
 
+
     // public static DataSource dataSource = context.getBean("dataSource", DataSource.class);
 
     public static void main(String[] args1) throws Exception {
-        System.out.println("123");
         getAlias();
     }
 
-    public static void getAlias(){
-        AliasTask task = new AliasTask("metabolite");
-        ArrayList<Task<?>> tasks = new ArrayList<>();
-        tasks.add(task);
+    public static void getAlias() throws SQLException {
+        List<String> allDisease = dataBaseUtils.getAllDisease();
+        ArrayList<Task<?>> tasks = new ArrayList<>(allDisease.size());
+        for (String s : allDisease) {
+            AliasTask task = new AliasTask(AliasTask.TYPE_DISEASE, s);
+            tasks.add(task);
+        }
         List<Future<?>> futures = multiThreadStart(tasks);
+        System.out.println(futures.size());
     }
 
-    public static void getRank(){
+    public static void getRank() {
         String url = "https://www.qidian.com/rank/";
         Map<String, String> excessHeaders = new HashMap<>(4);
         Map<String, Object> params = new HashMap<>(4);

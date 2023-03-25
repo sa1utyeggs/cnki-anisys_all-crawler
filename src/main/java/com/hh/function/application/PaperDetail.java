@@ -2,7 +2,7 @@ package com.hh.function.application;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.hh.task.cnki.MainSentence;
+import com.hh.entity.cnki.MainSentence;
 import com.hh.function.base.Const;
 import com.hh.function.base.ContextSingletonFactory;
 import com.hh.function.http.HttpConnectionPool;

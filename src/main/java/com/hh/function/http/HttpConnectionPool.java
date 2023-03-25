@@ -72,7 +72,7 @@ public class HttpConnectionPool implements InitializingBean {
     /**
      * 指客户端和服务器建立连接后，客户端从服务器读取数据的 timeout
      */
-    private int socketTimeout = 10000;
+    private int socketTimeout = 30_000;
 
     /**
      * 指 MAX_TOTAL：连接池有个最大连接数
@@ -93,7 +93,7 @@ public class HttpConnectionPool implements InitializingBean {
     /**
      * 空闲线程检查时间
      */
-    private int monitorInterval = 20_000;
+    private int monitorInterval = 60_000;
 
     /**
      * 重试的时间间隔
@@ -219,14 +219,14 @@ public class HttpConnectionPool implements InitializingBean {
                     monitorExecutor.scheduleAtFixedRate(new TimerTask() {
                         @Override
                         public void run() {
-                            logger.warn("清理前：连接池状态：" + manager.getTotalStats());
+                            logger.info("清理前：连接池状态：" + manager.getTotalStats());
                             // 关闭过期连接
                             manager.closeExpiredConnections();
                             // 关闭空闲连接
                             manager.closeIdleConnections(idleTimeout, TimeUnit.MILLISECONDS);
-                            logger.warn("closing expired and idle for over " + idleTimeout / 1000 + "s connection done");
-                            logger.warn("清理后：连接池状态：" + manager.getTotalStats());
-                            logger.warn("HTTP 线程池状态：" + httpThreadPool.toString());
+                            logger.info("closing expired and idle for over " + idleTimeout / 1000 + "s connection done");
+                            logger.info("清理后：连接池状态：" + manager.getTotalStats());
+                            logger.info("HTTP 线程池状态：" + httpThreadPool.toString());
                         }
                     }, monitorInterval, monitorInterval, TimeUnit.MILLISECONDS);
                 }
@@ -644,7 +644,7 @@ public class HttpConnectionPool implements InitializingBean {
 
         // 初始化基础 header
         BASE_HEADERS.put("Accept", "text/html, */*; q=0.01");
-        BASE_HEADERS.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        // BASE_HEADERS.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         BASE_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36");
 
 //        BASE_HEADERS.put("Host", "kns.cnki.net");

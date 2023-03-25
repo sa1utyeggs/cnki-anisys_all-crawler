@@ -7,6 +7,7 @@ import com.hh.function.application.PaperNum;
 import com.hh.function.base.Const;
 import com.hh.function.base.ContextSingletonFactory;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * @author 86183
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class InsertTask extends Task<Object> {
     private String disease;

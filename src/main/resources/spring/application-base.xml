@@ -40,7 +40,7 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
         <property name="cookieManager" ref="cookieManager"/>
         <property name="userAgentManager" ref="userAgentManager"/>
         <!-- 若不使用代理，则 enableProxy 字段为 false 是必要的 -->
-        <property name="enableProxy" value="true"/>
+        <property name="enableProxy" value="false"/>
         <property name="proxyIpManager" ref="fixedProxyIpManager"/>
         <!-- 若需要使用代理，请使用小象代理，或根据 ipproxy.xiaoxiang 包中的代码自定义 Bean -->
         <!-- <property name="proxyIpManager" ref="xiaoxiangAsyncProxyIpManager"/>-->
