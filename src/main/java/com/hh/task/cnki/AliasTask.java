@@ -154,7 +154,7 @@ public class AliasTask extends Task<Boolean> {
 
     @Override
     public Boolean call() throws Exception {
-        if (Strings.isNotBlank(keyWord)) {
+        if (Strings.isNotBlank(keyword)) {
             process(keyword);
             return true;
         }

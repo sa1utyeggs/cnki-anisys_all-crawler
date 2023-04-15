@@ -29,6 +29,15 @@ public class MainSentence {
         RELATION_EXPLAIN.put(3, "负相关");
     }
 
+    public MainSentence(String text, String relation, String head, Integer headOffset, String tail, Integer tailOffset) {
+        this.text = text;
+        this.relation = relation;
+        this.head = head;
+        this.headOffset = headOffset;
+        this.tail = tail;
+        this.tailOffset = tailOffset;
+    }
+
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 

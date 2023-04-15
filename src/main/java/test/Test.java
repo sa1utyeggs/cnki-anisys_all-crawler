@@ -1,15 +1,19 @@
 package test;
 
-import com.hh.task.Task;
-import com.hh.task.cnki.AliasTask;
-import com.hh.task.qidian.RankTask;
-import com.hh.task.test.TestTask;
 import com.hh.function.application.CnkiDatabaseService;
 import com.hh.function.base.Const;
 import com.hh.function.base.ContextSingletonFactory;
 import com.hh.function.base.ThreadPoolFactory;
+import com.hh.function.resis_anti_crawler.verify.image.yunma.YunmaBase;
+import com.hh.function.resis_anti_crawler.verify.image.yunma.YunmaImageIdentifier;
+import com.hh.task.Task;
+import com.hh.task.cnki.AliasTask;
+import com.hh.task.qidian.RankTask;
+import com.hh.task.test.TestTask;
+import com.hh.utils.JsonUtils;
 import org.springframework.context.ApplicationContext;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +35,14 @@ public class Test {
     // public static DataSource dataSource = context.getBean("dataSource", DataSource.class);
 
     public static void main(String[] args1) throws Exception {
-        getAlias();
+        testDoOCR_File();
+    }
+
+    public static void testDoOCR_File() throws Exception {
+        YunmaImageIdentifier ii = context.getBean("yunmaImageIdentifier", YunmaImageIdentifier.class);
+        String path = JsonUtils.class.getResource("/").getPath() + "test/img/3n3D.jpeg";
+        String identify = ii.identify(path);
+        System.out.println(identify);
     }
 
     public static void getAlias() throws SQLException {

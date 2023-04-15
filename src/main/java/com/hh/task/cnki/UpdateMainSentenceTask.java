@@ -8,9 +8,7 @@ import com.hh.function.http.useragent.DefaultUserAgentManager;
 import com.hh.mapper.cnki.*;
 import com.hh.task.Task;
 import com.hh.utils.StringUtils;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -26,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@AllArgsConstructor
 @Builder
 public class UpdateMainSentenceTask extends Task<Boolean> {
     private final Logger logger = LogManager.getLogger(UpdateMainSentenceTask.class);

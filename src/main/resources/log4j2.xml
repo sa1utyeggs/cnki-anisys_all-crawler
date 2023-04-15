@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration status="warn" monitorInterval="5">
     <properties>
-        <property name="LOG_HOME">/logs</property>
+        <property name="LOG_HOME">logs</property>
     </properties>
 
     <Appenders>

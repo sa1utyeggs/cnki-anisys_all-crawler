@@ -660,29 +660,6 @@ public class CnkiDatabaseService extends DatabaseService {
         }
     }
 
-    public MainSentence getMainSentence(Long id) throws SQLException {
-
-        Connection connection = getConnection();
-        // ps1：获得某个代谢物别名的最大 优先级
-        PreparedStatement ps = connection.prepareStatement("select `text`,head,tail,head_offset,tail_offset,relation from paper_main_sentence where id = ?");
-
-        ResultSet rs = null;
-        MainSentence mainSentence = null;
-        try {
-            ps.setLong(1, id);
-            rs = ps.executeQuery();
-            rs.next();
-            mainSentence = new MainSentence(rs.getString(1), MainSentence.RELATION_EXPLAIN.get(rs.getInt(6)), rs.getString(2), rs.getInt(4), rs.getString(3), rs.getInt(5));
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            ps.close();
-
-
-        }
-        return mainSentence;
-    }
 
     private String preparePlaceHolders(int size) {
         return String.join(",", Collections.nCopies(size, "?"));
@@ -705,7 +682,22 @@ public class CnkiDatabaseService extends DatabaseService {
         try {
             rs = ps.executeQuery();
             while (rs.next()) {
-                mainSentences.add(new MainSentence(StringUtils.formatComma(rs.getString(1)), MainSentence.RELATION_EXPLAIN.get(rs.getInt(6)), rs.getString(2), rs.getInt(4), rs.getString(3), rs.getInt(5)));
+                mainSentences.add(new MainSentence(
+                        0L,
+                        0L,
+                        0.0,
+                        // text
+                        StringUtils.formatComma(rs.getString(1)),
+                        // relation
+                        MainSentence.RELATION_EXPLAIN.get(rs.getInt(6)),
+                        // head
+                        rs.getString(2),
+                        // head offset
+                        rs.getInt(4),
+                        // tail
+                        rs.getString(3),
+                        // tail offset
+                        rs.getInt(5)));
             }
 
         } finally {
