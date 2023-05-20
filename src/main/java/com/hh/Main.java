@@ -36,7 +36,7 @@ public class Main {
     public static void main(String[] args){
         // test()
         // start();
-        // multiThreadStart();
+        multiThreadStart();
     }
 
     public static void test() {
@@ -48,6 +48,7 @@ public class Main {
         try {
             // 查询所有未完成 疾病名与 id；
             List<String> undoneDiseases = dataBaseUtils.getAllUndoneDisease();
+            System.out.println(undoneDiseases.size());
             // 遍历疾病信息，并根据当前疾病的数据挖掘状态做相应的操作；
             for (String undoneDisease : undoneDiseases) {
                 // 提交任务

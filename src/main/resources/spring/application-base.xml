@@ -29,7 +29,7 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- 线程池相关 Bean -->
     <bean id="threadPoolFactory" class="com.hh.function.base.ThreadPoolFactory">
         <!-- 所有线程池的线程数量统一 -->
-        <property name="threadNum" value="1"/>
+        <property name="threadNum" value="2"/>
     </bean>
 
     <!-- HTTP 连接池 -->

@@ -61,7 +61,7 @@ public class InsertTask extends Task<Object> {
             for (String metabolite : metabolites) {
                 // 若 没完成 则 继续完成
                 if (!dataBaseUtils.isMetaboliteDiseaseChecked(metabolite, disease)) {
-                    PaperDetail.insertPaperInfo(metabolite, disease, Const.SEARCH_KY, Const.EXCLUSION_WORDS, maxPaperNumPerTime, false);
+                    PaperDetail.insertPaperInfo(metabolite, disease, Const.SEARCH_KY, Const.EXCLUSION_WORDS, maxPaperNumPerTime, true);
                 }
             }
         } catch (SQLException e) {

@@ -1,0 +1,986 @@
+<!doctype html>
+<html>
+<head>
+    <script>var name="seo-jump-referrer";try{var reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)"),seoReferer=document.cookie.match(reg);seoReferer&&seoReferer[2]&&(Object.defineProperty(document,"referrer",{value:decodeURIComponent(seoReferer[2])}),document.cookie=name+"=;domain=.qidian.com;path=/;expires=Thu, 01-Jan-1970 00:00:01 GMT")}catch(a){console.log(a)}if(window.outerWidth<=1024&&navigator.userAgent.match(/(Android|iPhone|SymbianOS|Windows Phone|iPad|iPod|HarmonyOS)/i)&&!navigator.userAgent.match(/spider/i)){var url=getMUrl();url&&(location.search?/source=m_jump/.test(location.search)?url+=location.search.replace("source=m_jump","source=pc_jump"):/source=pc_jump/.test(location.search)?url+=location.search:url+=location.search+"&source=pc_jump":url+="?source=pc_jump",setCookie(name,document.referrer,".qidian.com","/",6e4),console.log(url),window.location.href=url)}function setCookie(a,t,c,o,e){e&&(e=new Date(+new Date+e));var i=a+"="+escape(t)+(e?"; expires="+e.toGMTString():"")+(o?"; path="+o:"")+(c?"; domain="+c:"");return i.length<4096&&(document.cookie=i),this}function getMUrl(){var a="",t=`https://${a}m.qidian.com/`,c="",o=document.URL;"/"===location.pathname&&(c=`https://${a}m.qidian.com/`),"/xuanhuan/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid21/`),"/qihuan/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid1/`),"/wuxia/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid2/`),"/xianxia/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid22/`),"/dushi/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid4/`),"/xianshi/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid15/`),"/junshi/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid6/`),"/lishi/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid5/`),"/youxi/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid7/`),"/tiyu/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid8/`),"/kehuan/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid9/`),"/zhutianwuxian/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid20109/`),"/lingyi/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid10/`),"/2cy/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid12/`),"/duanpian/"===location.pathname&&(c=`https://${a}m.qidian.com/category/catid20076/`);var e=location.pathname.match(/\/soushu\/(\S+|)/i);if(e&&(c=`${t}soushu/${e[1]}`),(e=o.match(/\/book\/(strongrec|sanjiang)/i))&&(c=`${t}${e[1]}/`),e=o.match(/\/(mm\/|)(free|finish)/i)){var i="mm"===e[1]?"/female":"";c=`${t}${e[2]}${i}/`}if(e=o.match(/\/(mm\/|)all\/((chanId(\d+)|)(-subCateId(\d+)|)(-(\S+)|)\/|)/i)){var i="mm/"===e[1]?"female":"male";e[6]?c=`${t}category/catid${e[4]}/subcatid${e[6]}-${i}/`:e[4]&&-1==["13100","14300","13700","14100","14400","14500","19100"].indexOf(e[4])?(i=["80","81","82","83","84","85","86","87","88","30083","30120"].indexOf(e[4])>-1?"/female":"",c=`${t}category/catid${e[4]}${i}/`):c=`${t}category${i="mm/"===e[1]?"/female":""}/`}(e=o.match(/\/rank(\/mm|)(\/(yuepiao|readindex|hotsales|newfans|collect|recom|newauthor)|)/i))&&(c=`${t}rank${i="/mm"===e[1]?"/female":""}${e[2]}/`);return(e=o.match(/\/dashen/i))&&(c=t+"dashen/"),(e=o.match(/\/honor\/(\d+)/))&&(c=`${t}book/${e[1]}/badge`),(e=o.match(/\/info\/(\d+)/))&&(c=`${t}book/${e[1]}.html`,o.match(/#Catalog/)&&(c=`${t}book/${e[1]}/catalog/`)),(e=o.match(/\/book\/(\d+)/))&&(c=`${t}book/${e[1]}/`,o.match(/#Catalog/)&&(c=`${t}book/${e[1]}/catalog/`)),(e=o.match(/\/book\/(\d+)\/catalog/))&&(c=`${t}book/${e[1]}/catalog/`),(e=o.match(/\/booklist/))&&(c=`https://${a}m.qidian.com${location.pathname}`),(e=o.match(/\/booklist\/detail\/(\d+)\/(\d+)/))&&(c=`https://${a}m.qidian.com/booklist/detail/${e[1]}/`),(e=o.match(/\/chapter/))&&(c=t+"book///"),(e=o.match(/\/www.qidian.com\/chapter/))&&(c=t+"chapter///"),(e=o.match(/\/lastpage\/(\d+)/))&&(c=`${t}lastpage/${e[1]}/`),(e=o.match(/\/www.qidian.com\/lastpage\/(\d+)/))&&(c=`${t}lastpage/${e[1]}/`),(e=o.match(/\/gm/))&&(c=`https://${a}m.qidian.com${location.pathname}`),c}</script>
+    <meta charset="UTF-8">
+    <title>小说人气排行榜单_起点小说人气排行-起点中文网</title>
+    <meta name="keywords" content="小说排行榜,小说人气排行榜">
+    <meta name="description" content="起点中文网小说人气排行榜单,为您提供起点中文网人气排行榜,想看更多小说人气排行榜,欢迎访问起点小说人气排行榜专区。">
+    <meta name="robots" content="all">
+    <meta name="googlebot" content="all">
+    <meta name="baiduspider" content="all">
+    <meta http-equiv="mobile-agent" content="format=wml; url=https://m.qidian.com">
+    <meta http-equiv="mobile-agent" content="format=xhtml; url=https://m.qidian.com">
+    <meta http-equiv="mobile-agent" content="format=html5; url=http://m.qidian.com">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="mobile-agent" content="format=html5;url=https://m.qidian.com/rank/male/">
+    <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.qidian.com/rank/male/">
+    <script>document.domain="qidian.com"</script>
+    <script>function setCookie(e,o,n,t,i){i&&(i=new Date(+new Date+i));var a=e+"="+escape(o)+(i?"; expires="+i.toGMTString():"")+(t?"; path="+t:"")+(n?"; domain="+n:"");a.length<4096&&(document.cookie=a)}function getCookie(e){var o,n=new RegExp("(^| )"+e+"=([^;]*)(;|$)");return(o=document.cookie.match(n))?o[2]:null}function createSender(e){var o=new Image;o.onload=o.onerror=function(){o=null},o.src=e}1==getCookie("tf")&&setCookie("tf",1,"qidian.com","/",0)</script>
+    <link data-ignore="true" rel="shortcut icon" type="image/x-icon" href="//qdfepccdn.qidian.com/www.qidian.com/favicon/qd_icon.ico">
+    <link data-ignore="true" rel="Bookmark" type="image/x-icon" href="//qdfepccdn.qidian.com/www.qidian.com/favicon/qd_icon.ico">
+    <meta name="servertime" content="1684335938">
+    <script src="https://imgservices-1252317822.image.myqcloud.com/coco/s09222022/4f2a5dd7.p6bvj2.js"></script>
+    <script>function gtag(){dataLayer.push(arguments)}!function(){var a=document.createElement("script");a.src="//www.googletagmanager.com/gtag/js?id=UA-199934072-2",a.async=1;var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(a,e)}(),window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-199934072-2"),gtag("config","G-PFYW0QLV3P")</script>
+    <script>!function(e,t,n,p,y,c,o){e.QDAnalyticsObject=y,e.yep=e.yep||function(){(e.yep.q=e.yep.q||[]).push(arguments)},e.yep.l=1*new Date,c=t.createElement(n),o=t.getElementsByTagName(n)[0],c.async=1,c.src="https://noah2-1252317822.file.myqcloud.com/npm/@noah-common/yep@0.0.46/dist/yep.js",o.parentNode.insertBefore(c,o)}(window,document,"script",0,"yep"),yep("set",{appid:10038,rate:.02})</script>
+    <script>var _hmt=_hmt||[];!function(){var e=document.createElement("script");window.location.hostname;e.src="https://hm.baidu.com/hm.js?f00f67093ce2f38f215010b699629083",e.async=1;var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script>
+    <script data-ignore="true" src="//qdfepccdn.qidian.com/www.qidian.com/fock/116594983210.js"></script>
+    <script data-ignore="true" src="//qdfepccdn.qidian.com/www.qidian.com/fock/l0ir4.js"></script>
+    <script data-ignore="true" src="//qdfepccdn.qidian.com/www.qidian.com/fock/e1669345466848.js"></script>
+    <script defer src="//qdfepccdn.qidian.com/www.qidian.com/js/manifest.046fe.bundle.js" crossorigin="anonymous"></script>
+    <script defer src="//qdfepccdn.qidian.com/www.qidian.com/js/vendors.b3357.bundle.js" crossorigin="anonymous"></script>
+    <script defer src="//qdfepccdn.qidian.com/www.qidian.com/js/views/www.qidian.com/rank/index.e113a.bundle.js" crossorigin="anonymous"></script>
+    <link href="//qdfepccdn.qidian.com/www.qidian.com/css/views/www.qidian.com/rank/index.31d5eaa9.css" rel="stylesheet" crossorigin="anonymous">
+</head>
+<body>
+<div class="wrap">
+    <div class="top-nav" data-l1="1">
+        <div class="box-center cf">
+            <div class="login-box fr" id="login-box">
+                <div class="sign-in hidden">
+                    <span>你好，</span><a class="black" id="user-name" href="//my.qidian.com/" target="_blank" data-eid="qd_A08"></a><em>|</em><a class="black" id="msg-btn" href="//my.qidian.com/message/sys/" target="_blank" data-eid="qd_A09">消息<cite id="msg-box">(<i></i>)</cite></a><em>|</em><a id="exit-btn" href="javascript:" data-eid="qd_A10">退出</a>
+                </div>
+                <div class="sign-out">
+                    <a id="login-btn" class="black" href="javascript:" data-eid="qd_A06">登录</a><em>|</em><a id="reg-btn" href="//passport.qidian.com/reg.html?appid=10&amp;areaid=1&amp;target=iframe&amp;ticket=1&amp;auto=1&amp;autotime=30&amp;returnUrl=https%3A%2F%2Fwww.qidian.com" rel="nofollow" target="_blank" data-eid="qd_A07">注册</a>
+                </div>
+            </div>
+            <div class="nav-link fl">
+                <a class="act" href="//www.qidian.com/" data-eid="qd_A01">起点中文网</a> <a class="third-remove" href="//www.qdmm.com/" rel="nofollow" target="_blank" data-eid="qd_A02">起点女生网</a><em class="third-remove">|</em> <a class="third-remove" href="http://chuangshi.qq.com" rel="nofollow" target="_blank" data-eid="qd_A03">创世中文网</a><em class="third-remove">|</em> <a class="third-remove" href="http://yunqi.qq.com" rel="nofollow" target="_blank" data-eid="qd_A04">云起书院</a><em class="third-remove">|</em> <a href="javascript:" id="switchEl" data-eid="qd_A182">繁体版</a>
+            </div>
+        </div>
+    </div>
+    <div class="top-op-box" id="j-topOpBox"></div>
+    <div class="logo-wrap box-center" data-l1="2">
+        <div class="box-center cf">
+            <div class="book-shelf fr">
+                <a href="//my.qidian.com/bookcase/" target="_blank" data-eid="qd_A14"><em class="iconfont shelf"></em><i>我的书架</i></a>
+            </div>
+            <div class="logo fl">
+                <a href="//www.qidian.com/" data-eid="qd_A11"></a>
+            </div>
+            <div class="search-wrap fl">
+                <form id="header2FormUrl" action="//www.qidian.com/so/">
+                    <p><input class="search-box" id="s-box" name="kw" placeholder="我在荒岛肝属性"></p>
+                    <input class="submit-input" type="submit" id="searchSubmit" data-eid="qd_A13"> <a onclick="return!1" href="//www.qidian.com/soushu/"><label id="search-btn" class="search-btn"><em class="iconfont" data-eid="qd_A13"></em></label></a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>document.getElementById("header2FormUrl").onsubmit=function(e){e.preventDefault();var t=document.getElementById("s-box").value||document.getElementById("s-box").placeholder;window.open(document.getElementById("header2FormUrl").action+t+".html")},document.getElementById("search-btn").onclick=function(){var e=document.getElementById("s-box").value||document.getElementById("s-box").placeholder;window.open(document.getElementById("header2FormUrl").action+e+".html")}</script>
+    <div class="main-nav-wrap" data-l1="3">
+        <div class="main-nav box-center cf" id="type-hover">
+            <div class="classify-list fl so-awesome" id="classify-list" data-l1="3">
+                <dl class="cf">
+                    <dd class="left">
+                        <a href="/xuanhuan/" title="玄幻小说" target="_blank" data-eid="qd_A71"><cite><em class="iconfont"></em> <span class="info"><i>玄幻</i><b>721722</b></span></cite></a>
+                    </dd>
+                    <dd>
+                        <a href="/qihuan/" title="奇幻小说" target="_blank" data-eid="qd_A72"><cite><em class="iconfont"></em> <span class="info"><i>奇幻 </i><b>159241</b></span></cite></a>
+                    </dd>
+                    <dd class="even left">
+                        <a href="/wuxia/" title="武侠小说" target="_blank" data-eid="qd_A73"><cite><em class="iconfont"></em> <span class="info"><i>武侠</i><b>45378</b></span></cite></a>
+                    </dd>
+                    <dd class="even">
+                        <a href="/xianxia/" title="仙侠小说" target="_blank" data-eid="qd_A74"><cite><em class="iconfont"></em> <span class="info"><i>仙侠</i><b>236460</b></span></cite></a>
+                    </dd>
+                    <dd class="left">
+                        <a href="/dushi/" title="都市小说" target="_blank" data-eid="qd_A75"><cite><em class="iconfont"></em> <span class="info"><i>都市</i><b>374244</b></span></cite></a>
+                    </dd>
+                    <dd>
+                        <a href="/xianshi/" title="现实小说" target="_blank" data-eid="qd_A76"><cite><em class="iconfont"></em> <span class="info"><i>现实</i><b>43492</b></span></cite></a>
+                    </dd>
+                    <dd class="even left">
+                        <a href="/junshi/" title="军事小说" target="_blank" data-eid="qd_A77"><cite><em class="iconfont"></em> <span class="info"><i>军事</i><b>20623</b></span></cite></a>
+                    </dd>
+                    <dd class="even">
+                        <a href="/lishi/" title="历史小说" target="_blank" data-eid="qd_A78"><cite><em class="iconfont"></em> <span class="info"><i>历史</i><b>77225</b></span></cite></a>
+                    </dd>
+                    <dd class="left">
+                        <a href="/youxi/" title="游戏小说" target="_blank" data-eid="qd_A79"><cite><em class="iconfont"></em> <span class="info"><i>游戏</i><b>108311</b></span></cite></a>
+                    </dd>
+                    <dd>
+                        <a href="/tiyu/" title="体育小说" target="_blank" data-eid="qd_A80"><cite><em class="iconfont tiyu"></em> <span class="info"><i>体育</i><b>9109</b></span></cite></a>
+                    </dd>
+                    <dd class="even left">
+                        <a href="/kehuan/" title="科幻小说" target="_blank" data-eid="qd_A81"><cite><em class="iconfont"></em> <span class="info"><i>科幻</i><b>157333</b></span></cite></a>
+                    </dd>
+                    <dd class="even">
+                        <a href="/zhutianwuxian/" title="诸天无限小说" target="_blank" data-eid="qd_A81"><cite><em class="iconfont"></em> <span class="info"><i>诸天无限</i><b>52280</b></span></cite></a>
+                    </dd>
+                    <dd class="left">
+                        <a href="/lingyi/" title="悬疑小说" target="_blank" data-eid="qd_A82"><cite><em class="iconfont lingyi"></em> <span class="info"><i>悬疑</i><b>66996</b></span></cite></a>
+                    </dd>
+                    <dd>
+                        <a href="/2cy/" title="轻小说" target="_blank" data-eid="qd_A84"><cite><em class="iconfont erciyuan"></em> <span class="info"><i>轻小说</i><b>113490</b></span></cite></a>
+                    </dd>
+                </dl>
+            </div>
+            <ul>
+                <li class="first"><b><strong></strong></b><span><em> <i></i> <i></i> <i></i> </em>作品分类</span></li>
+                <li class="nav-li"><a href="//www.qidian.com/all/" data-eid="qd_A15">全部作品</a></li>
+                <li class="nav-li"><a href="//www.qidian.com/rank/" data-eid="qd_A16" class="act">排行</a></li>
+                <li class="nav-li"><a href="//www.qidian.com/finish/" data-eid="qd_A17">完本</a></li>
+                <li class="nav-li"><a href="//www.qidian.com/free/" data-eid="qd_A18">免费</a></li>
+                <li class="nav-li"><a class="third-remove" href="https://write.qq.com/?siteid=1" target="_blank" data-eid="qd_A19">作家专区</a></li>
+                <li class="nav-li"><a href="//www.qidian.com/soushu/" target="_blank" data-eid="qd_A13">搜索</a></li>
+                <li class="nav-li"><a href="//www.qdmm.com/" target="_blank" data-eid="qd_A83">女生网</a></li>
+                <li class="nav-li"><a class="third-remove" href="https://www.yuewen.com/app.html#appqd" target="_blank" data-eid="qd_A20"><b class="iconfont client"></b>客户端</a></li>
+                <li class="game web" id="game-web"><a class="web-game" href="https://game.qidian.com?qd_game_key=qdzw_homepage_Topbar" rel="nofollow" target="_blank" data-eid="qd_A21"><b class="iconfont"></b>页游</a>
+                    <div class="game-dropdown hidden" id="web-dropdown">
+                        <cite></cite>
+                        <div class="web-game-list">
+                            <dl class="lately" id="lately">
+                                <dt>
+                                    最近玩过
+                                </dt>
+                                <dd data-rid="1">
+                                    <a class="name" href="javascript:" target="_blank" data-eid="qd_A29"></a><strong></strong><a class="link" href="javascript:" target="_blank" data-eid="qd_A29">GO<i>&gt;</i></a>
+                                </dd>
+                                <dd data-rid="2">
+                                    <a class="name" href="javascript:" target="_blank" data-eid="qd_A30"></a><strong></strong><a class="link" href="javascript:" target="_blank" data-eid="qd_A30">GO<i>&gt;</i></a>
+                                </dd>
+                            </dl>
+                            <dl class="web-list" id="log-web-list">
+                                <dt>
+                                    今日开服
+                                </dt>
+                                <dd class="act" data-rid="1">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/bzsc2.html?qd_game_key=1-991001" data-eid="qd_A31" target="_blank">起点百战沙城</a><strong>449区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/bzsc2.html?qd_game_key=1-991001" data-eid="qd_A31" target="_blank"><img src="//img.qidian.com/webgame/game/bzsc2192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                                <dd data-rid="2">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/cqbz.html?qd_game_key=1-991001" data-eid="qd_A32" target="_blank">传奇霸主</a><strong>400区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/cqbz.html?qd_game_key=1-991001" data-eid="qd_A32" target="_blank"><img src="//img.qidian.com/webgame/game/cqbz192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                                <dd data-rid="3">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/rxfs.html?qd_game_key=1-991001" data-eid="qd_A33" target="_blank">热血封神</a><strong>466区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/rxfs.html?qd_game_key=1-991001" data-eid="qd_A33" target="_blank"><img src="//img.qidian.com/webgame/game/rxfs192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                                <dd data-rid="4">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/ylcs.html?qd_game_key=1-991001" data-eid="qd_A34" target="_blank">游龙传说</a><strong>11区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/ylcs.html?qd_game_key=1-991001" data-eid="qd_A34" target="_blank"><img src="//img.qidian.com/webgame/game/ylcs192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                                <dd data-rid="5">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/wzzx22.html?qd_game_key=1-991001" data-eid="qd_A35" target="_blank">王者之心2</a><strong>53区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/wzzx22.html?qd_game_key=1-991001" data-eid="qd_A35" target="_blank"><img src="//img.qidian.com/webgame/game/wzzx22192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                                <dd data-rid="6">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/yscq.html?qd_game_key=1-991001" data-eid="qd_A36" target="_blank">原始传奇</a><strong>634区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/yscq.html?qd_game_key=1-991001" data-eid="qd_A36" target="_blank"><img src="//img.qidian.com/webgame/game/yscq192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                                <dd data-rid="7">
+                                    <h3> <span></span> <i>12-05</i><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/jtz.html?qd_game_key=1-991001" data-eid="qd_A37" target="_blank">九天传</a><strong>102区</strong></h3>
+                                    <p><a href="http://cpgame.qd.game.qidian.com/home/game_server/login/name/jtz.html?qd_game_key=1-991001" data-eid="qd_A37" target="_blank"><img src="//img.qidian.com/webgame/game/jtz192x46.jpg"><i class="op-tag"></i></a></p>
+                                </dd>
+                            </dl>
+                            <div class="bottom">
+                                <p><a href="https://game.qidian.com/Home/SyGame/syTopList?qd_game_key=pch5&amp;qd_dd_p1=124" data-eid="qd_A38" target="_blank"><img src="//bossaudioandcomic-1252317822.image.myqcloud.com/activity/document/f293b1cd7eb1f676af36d22c2ca6a191.gif"><span class="op-tag"></span></a></p>
+                            </div>
+                        </div>
+                    </div></li>
+            </ul>
+        </div>
+    </div>
+    <div style="display:none">
+        <span> <a href="//www.qidian.com/">首页</a> <em class="iconfont"></em> <h1>小说人气排行榜</h1> </span>
+    </div>
+    <div class="rank-box box-center cf">
+        <div class="rank-nav-list fl" data-l1="4">
+            <ul>
+                <li class="act"><a href="//www.qidian.com/rank/" data-eid="qd_C01">人气榜单</a><cite></cite></li>
+            </ul>
+            <p class="line"></p>
+            <h4>热门作品排行</h4>
+            <ul class="list_type_detective">
+                <li class=""><a href="//www.qidian.com/rank/yuepiao/" data-eid="qd_C19">月票榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/hotsales/" data-eid="qd_C03">畅销榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/readindex/" data-eid="qd_C68">阅读指数榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/newfans/" data-eid="qd_C69">书友榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/recom/" data-eid="qd_C05">推荐榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/collect/" data-eid="qd_C06">收藏榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/vipup/" data-eid="qd_C07">更新榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/vipcollect/" data-eid="qd_C08">VIP收藏榜</a><cite></cite></li>
+            </ul>
+            <p class="line"></p>
+            <h4>新书排行</h4>
+            <ul class="list_type_detective">
+                <li class=""><a href="//www.qidian.com/rank/signnewbook/" data-eid="qd_C11">签约作者新书榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/pubnewbook/" data-eid="qd_C12">公众作者新书榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/newsign/" data-eid="qd_C13">新人签约新书榜</a><cite></cite></li>
+                <li class=""><a href="//www.qidian.com/rank/newauthor/" data-eid="qd_C14">新人作者新书榜</a><cite></cite></li>
+            </ul>
+            <p class="line"></p>
+            <h4>其他排行</h4>
+            <ul>
+                <li><a href="//www.qidian.com/rank/mm/" data-eid="qd_C16">女生精选榜</a></li>
+                <li><a href="//www.qidian.com/rank/mm/yuepiao/" data-eid="qd_C17">女生月票榜</a></li>
+            </ul>
+        </div>
+        <div class="main-content-wrap fl" data-l1="5">
+            <div class="rank-header">
+                <h3 class="lang"><a class="link" href="//www.qidian.com/help/index/6" data-eid="qd_C19" target="_blank">榜单规则</a>人气榜单<span><em>2023-05-17 23:05</em>更新</span></h3>
+                <div class="type-list">
+                    <p><a data-chanid="-1" class="act" href="javascript:" data-eid="qd_C20">全部分类</a><em>·</em> <a data-chanid="21" class="" href="javascript:" data-eid="qd_C21">玄幻</a><em>·</em> <a data-chanid="1" class="" href="javascript:" data-eid="qd_C22">奇幻</a><em>·</em> <a data-chanid="2" class="" href="javascript:" data-eid="qd_C23">武侠</a><em>·</em> <a data-chanid="22" class="" href="javascript:" data-eid="qd_C24">仙侠</a><em>·</em> <a data-chanid="4" class="" href="javascript:" data-eid="qd_C25">都市</a><em>·</em> <a data-chanid="15" class="" href="javascript:" data-eid="qd_C26">现实</a><em>·</em> <a data-chanid="6" class="" href="javascript:" data-eid="qd_C27">军事</a><em>·</em> <a data-chanid="5" class="" href="javascript:" data-eid="qd_C28">历史</a><em>·</em> <a data-chanid="7" class="" href="javascript:" data-eid="qd_C29">游戏</a><em>·</em> <a data-chanid="8" class="" href="javascript:" data-eid="qd_C30">体育</a><em>·</em> <a data-chanid="9" class="" href="javascript:" data-eid="qd_C31">科幻</a><em>·</em> <a data-chanid="20109" class="" href="javascript:" data-eid="qd_C31">诸天无限</a><em>·</em> <a data-chanid="10" class="" href="javascript:" data-eid="qd_C32">悬疑</a><em>·</em> <a data-chanid="12" class="" href="javascript:" data-eid="qd_C33">轻小说</a></p>
+                </div>
+            </div>
+            <div class="rank-body">
+                <div class="rank-list-row cf mb20">
+                    <div class="rank-list">
+                        <h3 class="wrap-title lang">月票榜<i><a class="more" href="//www.qidian.com/rank/yuepiao/" data-eid="qd_C45" rel="nofollow">更多<em class="iconfont"></em></a></i></h3>
+                        <div class="book-list">
+                            <ul>
+                                <li class="unfold" data-rid="1">
+                                    <div class="book-wrap cf">
+                                        <div class="book-info fl">
+                                            <h3>NO.1</h3>
+                                            <h2><a href="//book.qidian.com/info/1036370336" title="宿命之环最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1036370336">宿命之环</a></h2>
+                                            <p class="digital"><em>109375</em>月票</p>
+                                            <p class="author"><a class="type" href="//www.qidian.com/xuanhuan" target="_blank" data-eid="qd_C42">玄幻</a><i>·</i><a class="writer" href="//my.qidian.com/author/4362088/" target="_blank" data-eid="qd_C41">爱潜水的乌贼</a></p>
+                                        </div>
+                                        <div class="book-cover">
+                                            <a class="link" href="//book.qidian.com/info/1036370336" target="_blank" data-eid="qd_C39" data-bid="1036370336"><img src="//bookcover.yuewen.com/qdbimg/349573/1036370336/90" alt="宿命之环在线阅读"> </a><span></span>
+                                        </div>
+                                    </div></li>
+                                <li data-rid="2">
+                                    <div class="num-box">
+                                        <span class="num2">2</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="光阴之外最新章节在线阅读" href="//book.qidian.com/info/1031777108" target="_blank" data-eid="qd_C40" data-bid="1031777108"><h2>光阴之外</h2></a> <i class="total">63927</i>
+                                    </div></li>
+                                <li data-rid="3">
+                                    <div class="num-box">
+                                        <span class="num3">3</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="光明壁垒最新章节在线阅读" href="//book.qidian.com/info/1031732984" target="_blank" data-eid="qd_C40" data-bid="1031732984"><h2>光明壁垒</h2></a> <i class="total">61466</i>
+                                    </div></li>
+                                <li data-rid="4">
+                                    <div class="num-box">
+                                        <span class="num4">4</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="深空彼岸最新章节在线阅读" href="//book.qidian.com/info/1027339371" target="_blank" data-eid="qd_C40" data-bid="1027339371"><h2>深空彼岸</h2></a> <i class="total">58687</i>
+                                    </div></li>
+                                <li data-rid="5">
+                                    <div class="num-box">
+                                        <span class="num5">5</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="灵境行者最新章节在线阅读" href="//book.qidian.com/info/1031940621" target="_blank" data-eid="qd_C40" data-bid="1031940621"><h2>灵境行者</h2></a> <i class="total">58667</i>
+                                    </div></li>
+                                <li data-rid="6">
+                                    <div class="num-box">
+                                        <span class="num6">6</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="深海余烬最新章节在线阅读" href="//book.qidian.com/info/1034360760" target="_blank" data-eid="qd_C40" data-bid="1034360760"><h2>深海余烬</h2></a> <i class="total">53277</i>
+                                    </div></li>
+                                <li data-rid="7">
+                                    <div class="num-box">
+                                        <span class="num7">7</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="这游戏也太真实了最新章节在线阅读" href="//book.qidian.com/info/1029391348" target="_blank" data-eid="qd_C40" data-bid="1029391348"><h2>这游戏也太真实了</h2></a> <i class="total">46580</i>
+                                    </div></li>
+                                <li data-rid="8">
+                                    <div class="num-box">
+                                        <span class="num8">8</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="国民法医最新章节在线阅读" href="//book.qidian.com/info/1033893441" target="_blank" data-eid="qd_C40" data-bid="1033893441"><h2>国民法医</h2></a> <i class="total">46249</i>
+                                    </div></li>
+                                <li data-rid="9">
+                                    <div class="num-box">
+                                        <span class="num9">9</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="明克街13号最新章节在线阅读" href="//book.qidian.com/info/1030870265" target="_blank" data-eid="qd_C40" data-bid="1030870265"><h2>明克街13号</h2></a> <i class="total">43499</i>
+                                    </div></li>
+                                <li data-rid="10">
+                                    <div class="num-box">
+                                        <span class="num10">10</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="我本无意成仙最新章节在线阅读" href="//book.qidian.com/info/1036170277" target="_blank" data-eid="qd_C40" data-bid="1036170277"><h2>我本无意成仙</h2></a> <i class="total">42488</i>
+                                    </div></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rank-list sort-list">
+                        <h3 class="wrap-title lang">畅销榜<a class="more" href="//www.qidian.com/rank/hotsales/" data-eid="qd_C46" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        <div class="book-list">
+                            <ul>
+                                <li class="unfold" data-rid="1">
+                                    <div class="book-wrap cf">
+                                        <div class="book-info fl">
+                                            <h3>NO.1</h3>
+                                            <h2><a href="//book.qidian.com/info/1031940621" title="灵境行者最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1031940621">灵境行者</a></h2>
+                                            <p class="digital f16">销量冠军</p>
+                                            <p class="author"><a class="type" href="//www.qidian.com/kehuan" target="_blank" data-eid="qd_C42">科幻</a><i>·</i><a class="writer" href="//my.qidian.com/author/9639927/" target="_blank" data-eid="qd_C41">卖报小郎君</a></p>
+                                        </div>
+                                        <div class="book-cover">
+                                            <a class="link" href="//book.qidian.com/info/1031940621" target="_blank" data-eid="qd_C39" data-bid="1031940621"><img src="//bookcover.yuewen.com/qdbimg/349573/1031940621/90" alt="灵境行者在线阅读"> </a><span></span>
+                                        </div>
+                                    </div></li>
+                                <li data-rid="2">
+                                    <div class="num-box">
+                                        <span class="num2">2</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="光阴之外最新章节在线阅读" href="//book.qidian.com/info/1031777108" target="_blank" data-eid="qd_C40" data-bid="1031777108"><h2>光阴之外</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="3">
+                                    <div class="num-box">
+                                        <span class="num3">3</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="深空彼岸最新章节在线阅读" href="//book.qidian.com/info/1027339371" target="_blank" data-eid="qd_C40" data-bid="1027339371"><h2>深空彼岸</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="4">
+                                    <div class="num-box">
+                                        <span class="num4">4</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="宿命之环最新章节在线阅读" href="//book.qidian.com/info/1036370336" target="_blank" data-eid="qd_C40" data-bid="1036370336"><h2>宿命之环</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="5">
+                                    <div class="num-box">
+                                        <span class="num5">5</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="诡秘之主最新章节在线阅读" href="//book.qidian.com/info/1010868264" target="_blank" data-eid="qd_C40" data-bid="1010868264"><h2>诡秘之主</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="6">
+                                    <div class="num-box">
+                                        <span class="num6">6</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="光明壁垒最新章节在线阅读" href="//book.qidian.com/info/1031732984" target="_blank" data-eid="qd_C40" data-bid="1031732984"><h2>光明壁垒</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="7">
+                                    <div class="num-box">
+                                        <span class="num7">7</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="苟在妖武乱世修仙最新章节在线阅读" href="//book.qidian.com/info/1036305137" target="_blank" data-eid="qd_C40" data-bid="1036305137"><h2>苟在妖武乱世修仙</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="8">
+                                    <div class="num-box">
+                                        <span class="num8">8</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="这游戏也太真实了最新章节在线阅读" href="//book.qidian.com/info/1029391348" target="_blank" data-eid="qd_C40" data-bid="1029391348"><h2>这游戏也太真实了</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="9">
+                                    <div class="num-box">
+                                        <span class="num9">9</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="道诡异仙最新章节在线阅读" href="//book.qidian.com/info/1031794030" target="_blank" data-eid="qd_C40" data-bid="1031794030"><h2>道诡异仙</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="10">
+                                    <div class="num-box">
+                                        <span class="num10">10</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="深海余烬最新章节在线阅读" href="//book.qidian.com/info/1034360760" target="_blank" data-eid="qd_C40" data-bid="1034360760"><h2>深海余烬</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rank-list sort-list">
+                        <div class="tab-title">
+                            <h3 class="wrap-title lang">阅读指数榜<a class="more" href="//www.qidian.com/rank/readIndex/" data-eid="qd_C47" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        </div>
+                        <div class="tab-list">
+                            <div class="book-list">
+                                <ul>
+                                    <li class="unfold" data-rid="1">
+                                        <div class="book-wrap cf">
+                                            <div class="book-info fl">
+                                                <h3>NO.1</h3>
+                                                <h2><a href="//book.qidian.com/info/1036370336" title="宿命之环最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1036370336">宿命之环</a></h2>
+                                                <p class="digital f16">本周最强</p>
+                                                <p class="author"><a class="type" href="//www.qidian.com/xuanhuan" target="_blank" data-eid="qd_C42">玄幻</a><i>·</i><a class="writer" href="//my.qidian.com/author/4362088/" target="_blank" data-eid="qd_C41">爱潜水的乌贼</a></p>
+                                            </div>
+                                            <div class="book-cover">
+                                                <a class="link" href="//book.qidian.com/info/1036370336" target="_blank" data-eid="qd_C39" data-bid="1036370336"><img src="//bookcover.yuewen.com/qdbimg/349573/1036370336/90" alt="宿命之环在线阅读"> </a><span></span>
+                                            </div>
+                                        </div></li>
+                                    <li data-rid="2">
+                                        <div class="num-box">
+                                            <span class="num2">2</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="道诡异仙最新章节在线阅读" href="//book.qidian.com/info/1031794030" target="_blank" data-eid="qd_C40" data-bid="1031794030"><h2>道诡异仙</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="3">
+                                        <div class="num-box">
+                                            <span class="num3">3</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="谁让他修仙的！最新章节在线阅读" href="//book.qidian.com/info/1036504904" target="_blank" data-eid="qd_C40" data-bid="1036504904"><h2>谁让他修仙的！</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="4">
+                                        <div class="num-box">
+                                            <span class="num4">4</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="诡秘之主最新章节在线阅读" href="//book.qidian.com/info/1010868264" target="_blank" data-eid="qd_C40" data-bid="1010868264"><h2>诡秘之主</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="5">
+                                        <div class="num-box">
+                                            <span class="num5">5</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="灵境行者最新章节在线阅读" href="//book.qidian.com/info/1031940621" target="_blank" data-eid="qd_C40" data-bid="1031940621"><h2>灵境行者</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="6">
+                                        <div class="num-box">
+                                            <span class="num6">6</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="深海余烬最新章节在线阅读" href="//book.qidian.com/info/1034360760" target="_blank" data-eid="qd_C40" data-bid="1034360760"><h2>深海余烬</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="7">
+                                        <div class="num-box">
+                                            <span class="num7">7</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="深空彼岸最新章节在线阅读" href="//book.qidian.com/info/1027339371" target="_blank" data-eid="qd_C40" data-bid="1027339371"><h2>深空彼岸</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="8">
+                                        <div class="num-box">
+                                            <span class="num8">8</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="光阴之外最新章节在线阅读" href="//book.qidian.com/info/1031777108" target="_blank" data-eid="qd_C40" data-bid="1031777108"><h2>光阴之外</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="9">
+                                        <div class="num-box">
+                                            <span class="num9">9</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="隐秘死角最新章节在线阅读" href="//book.qidian.com/info/1036789359" target="_blank" data-eid="qd_C40" data-bid="1036789359"><h2>隐秘死角</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                    <li data-rid="10">
+                                        <div class="num-box">
+                                            <span class="num10">10</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="苟在妖武乱世修仙最新章节在线阅读" href="//book.qidian.com/info/1036305137" target="_blank" data-eid="qd_C40" data-bid="1036305137"><h2>苟在妖武乱世修仙</h2></a> <span class="iconfont"></span>
+                                        </div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rank-list mr0">
+                        <div class="tab-title">
+                            <div class="tab-wrap">
+                                <a class="act" href="javascript:" data-eid="qd_C52">周</a><em>·</em><a href="javascript:" data-eid="qd_C53">月</a><em>·</em><a href="javascript:" data-eid="qd_C54">总</a>
+                            </div>
+                            <h3 class="wrap-title lang">推荐榜<a class="more" href="//www.qidian.com/rank/recom/" data-eid="qd_C51" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        </div>
+                        <div class="tab-list">
+                            <div class="book-list">
+                                <ul>
+                                    <li class="unfold" data-rid="1">
+                                        <div class="book-wrap cf">
+                                            <div class="book-info fl">
+                                                <h3>NO.1</h3>
+                                                <h2><a href="//book.qidian.com/info/1030736414" title="世间白蛇仙最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1030736414">世间白蛇仙</a></h2>
+                                                <p class="digital"><em></em>推荐票</p>
+                                                <p class="author"><a class="type" href="//www.qidian.com/xianxia" target="_blank" data-eid="qd_C42">仙侠</a><i>·</i><a class="writer" href="//my.qidian.com/author/405106790/" target="_blank" data-eid="qd_C41">饥鱼</a></p>
+                                            </div>
+                                            <div class="book-cover">
+                                                <a class="link" href="//book.qidian.com/info/1030736414" target="_blank" data-eid="qd_C39" data-bid="1030736414"><img src="//bookcover.yuewen.com/qdbimg/349573/1030736414/90" alt="世间白蛇仙在线阅读"> </a><span></span>
+                                            </div>
+                                        </div></li>
+                                    <li data-rid="2">
+                                        <div class="num-box">
+                                            <span class="num2">2</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="保护我方族长最新章节在线阅读" href="//book.qidian.com/info/1024121691" target="_blank" data-eid="qd_C40" data-bid="1024121691"><h2>保护我方族长</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="3">
+                                        <div class="num-box">
+                                            <span class="num3">3</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="皓玉真仙最新章节在线阅读" href="//book.qidian.com/info/1025172188" target="_blank" data-eid="qd_C40" data-bid="1025172188"><h2>皓玉真仙</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="4">
+                                        <div class="num-box">
+                                            <span class="num4">4</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="谍影凌云最新章节在线阅读" href="//book.qidian.com/info/1034379627" target="_blank" data-eid="qd_C40" data-bid="1034379627"><h2>谍影凌云</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="5">
+                                        <div class="num-box">
+                                            <span class="num5">5</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="嘉佑嬉事最新章节在线阅读" href="//book.qidian.com/info/1028893533" target="_blank" data-eid="qd_C40" data-bid="1028893533"><h2>嘉佑嬉事</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="6">
+                                        <div class="num-box">
+                                            <span class="num6">6</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="宿命之环最新章节在线阅读" href="//book.qidian.com/info/1036370336" target="_blank" data-eid="qd_C40" data-bid="1036370336"><h2>宿命之环</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="7">
+                                        <div class="num-box">
+                                            <span class="num7">7</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="当不成儒圣我就掀起变革最新章节在线阅读" href="//book.qidian.com/info/1033670098" target="_blank" data-eid="qd_C40" data-bid="1033670098"><h2>当不成儒圣我就掀起变革</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="8">
+                                        <div class="num-box">
+                                            <span class="num8">8</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="师姐，我不想努力了最新章节在线阅读" href="//book.qidian.com/info/1033402986" target="_blank" data-eid="qd_C40" data-bid="1033402986"><h2>师姐，我不想努力了</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="9">
+                                        <div class="num-box">
+                                            <span class="num9">9</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="机武风暴最新章节在线阅读" href="//book.qidian.com/info/1034419446" target="_blank" data-eid="qd_C40" data-bid="1034419446"><h2>机武风暴</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="10">
+                                        <div class="num-box">
+                                            <span class="num10">10</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="青葫剑仙最新章节在线阅读" href="//book.qidian.com/info/1017331719" target="_blank" data-eid="qd_C40" data-bid="1017331719"><h2>青葫剑仙</h2></a> <i class="total"></i>
+                                        </div></li>
+                                </ul>
+                            </div>
+                            <div class="book-list hidden">
+                                <ul>
+                                    <li class="unfold" data-rid="1">
+                                        <div class="book-wrap cf">
+                                            <div class="book-info fl">
+                                                <h3>NO.1</h3>
+                                                <h2><a href="//book.qidian.com/info/1034379627" title="谍影凌云最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1034379627">谍影凌云</a></h2>
+                                                <p class="digital"><em></em>推荐票</p>
+                                                <p class="author"><a class="type" href="//www.qidian.com/junshi" target="_blank" data-eid="qd_C42">军事</a><i>·</i><a class="writer" href="//my.qidian.com/author/430524696/" target="_blank" data-eid="qd_C41">罗飞羽</a></p>
+                                            </div>
+                                            <div class="book-cover">
+                                                <a class="link" href="//book.qidian.com/info/1034379627" target="_blank" data-eid="qd_C39" data-bid="1034379627"><img src="//bookcover.yuewen.com/qdbimg/349573/1034379627/90" alt="谍影凌云在线阅读"> </a><span></span>
+                                            </div>
+                                        </div></li>
+                                    <li data-rid="2">
+                                        <div class="num-box">
+                                            <span class="num2">2</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="皓玉真仙最新章节在线阅读" href="//book.qidian.com/info/1025172188" target="_blank" data-eid="qd_C40" data-bid="1025172188"><h2>皓玉真仙</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="3">
+                                        <div class="num-box">
+                                            <span class="num3">3</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="保护我方族长最新章节在线阅读" href="//book.qidian.com/info/1024121691" target="_blank" data-eid="qd_C40" data-bid="1024121691"><h2>保护我方族长</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="4">
+                                        <div class="num-box">
+                                            <span class="num4">4</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="世间白蛇仙最新章节在线阅读" href="//book.qidian.com/info/1030736414" target="_blank" data-eid="qd_C40" data-bid="1030736414"><h2>世间白蛇仙</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="5">
+                                        <div class="num-box">
+                                            <span class="num5">5</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="嘉佑嬉事最新章节在线阅读" href="//book.qidian.com/info/1028893533" target="_blank" data-eid="qd_C40" data-bid="1028893533"><h2>嘉佑嬉事</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="6">
+                                        <div class="num-box">
+                                            <span class="num6">6</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="宿命之环最新章节在线阅读" href="//book.qidian.com/info/1036370336" target="_blank" data-eid="qd_C40" data-bid="1036370336"><h2>宿命之环</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="7">
+                                        <div class="num-box">
+                                            <span class="num7">7</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="当不成儒圣我就掀起变革最新章节在线阅读" href="//book.qidian.com/info/1033670098" target="_blank" data-eid="qd_C40" data-bid="1033670098"><h2>当不成儒圣我就掀起变革</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="8">
+                                        <div class="num-box">
+                                            <span class="num8">8</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="青葫剑仙最新章节在线阅读" href="//book.qidian.com/info/1017331719" target="_blank" data-eid="qd_C40" data-bid="1017331719"><h2>青葫剑仙</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="9">
+                                        <div class="num-box">
+                                            <span class="num9">9</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="师姐，我不想努力了最新章节在线阅读" href="//book.qidian.com/info/1033402986" target="_blank" data-eid="qd_C40" data-bid="1033402986"><h2>师姐，我不想努力了</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="10">
+                                        <div class="num-box">
+                                            <span class="num10">10</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="机武风暴最新章节在线阅读" href="//book.qidian.com/info/1034419446" target="_blank" data-eid="qd_C40" data-bid="1034419446"><h2>机武风暴</h2></a> <i class="total"></i>
+                                        </div></li>
+                                </ul>
+                            </div>
+                            <div class="book-list hidden">
+                                <ul>
+                                    <li class="unfold" data-rid="1">
+                                        <div class="book-wrap cf">
+                                            <div class="book-info fl">
+                                                <h3>NO.1</h3>
+                                                <h2><a href="//book.qidian.com/info/1010399782" title="太初最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1010399782">太初</a></h2>
+                                                <p class="digital"><em></em>推荐票</p>
+                                                <p class="author"><a class="type" href="//www.qidian.com/xuanhuan" target="_blank" data-eid="qd_C42">玄幻</a><i>·</i><a class="writer" href="//my.qidian.com/author/32610/" target="_blank" data-eid="qd_C41">高楼大厦</a></p>
+                                            </div>
+                                            <div class="book-cover">
+                                                <a class="link" href="//book.qidian.com/info/1010399782" target="_blank" data-eid="qd_C39" data-bid="1010399782"><img src="//bookcover.yuewen.com/qdbimg/349573/1010399782/90" alt="太初在线阅读"> </a><span></span>
+                                            </div>
+                                        </div></li>
+                                    <li data-rid="2">
+                                        <div class="num-box">
+                                            <span class="num2">2</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="王者时刻最新章节在线阅读" href="//book.qidian.com/info/1011831862" target="_blank" data-eid="qd_C40" data-bid="1011831862"><h2>王者时刻</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="3">
+                                        <div class="num-box">
+                                            <span class="num3">3</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="诡秘之主最新章节在线阅读" href="//book.qidian.com/info/1010868264" target="_blank" data-eid="qd_C40" data-bid="1010868264"><h2>诡秘之主</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="4">
+                                        <div class="num-box">
+                                            <span class="num4">4</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="无疆最新章节在线阅读" href="//book.qidian.com/info/1009265821" target="_blank" data-eid="qd_C40" data-bid="1009265821"><h2>无疆</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="5">
+                                        <div class="num-box">
+                                            <span class="num5">5</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="圣墟最新章节在线阅读" href="//book.qidian.com/info/1004608738" target="_blank" data-eid="qd_C40" data-bid="1004608738"><h2>圣墟</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="6">
+                                        <div class="num-box">
+                                            <span class="num6">6</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="大梦主最新章节在线阅读" href="//book.qidian.com/info/1016534035" target="_blank" data-eid="qd_C40" data-bid="1016534035"><h2>大梦主</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="7">
+                                        <div class="num-box">
+                                            <span class="num7">7</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="斗战狂潮最新章节在线阅读" href="//book.qidian.com/info/1003694333" target="_blank" data-eid="qd_C40" data-bid="1003694333"><h2>斗战狂潮</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="8">
+                                        <div class="num-box">
+                                            <span class="num8">8</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="凡人修仙之仙界篇最新章节在线阅读" href="//book.qidian.com/info/1010734492" target="_blank" data-eid="qd_C40" data-bid="1010734492"><h2>凡人修仙之仙界篇</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="9">
+                                        <div class="num-box">
+                                            <span class="num9">9</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="三寸人间最新章节在线阅读" href="//book.qidian.com/info/1010327039" target="_blank" data-eid="qd_C40" data-bid="1010327039"><h2>三寸人间</h2></a> <i class="total"></i>
+                                        </div></li>
+                                    <li data-rid="10">
+                                        <div class="num-box">
+                                            <span class="num10">10</span>
+                                        </div>
+                                        <div class="name-box"> <a class="name" title="开天录最新章节在线阅读" href="//book.qidian.com/info/1010981643" target="_blank" data-eid="qd_C40" data-bid="1010981643"><h2>开天录</h2></a> <i class="total"></i>
+                                        </div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rank-list">
+                        <h3 class="wrap-title lang">收藏榜<a class="more" href="//www.qidian.com/rank/collect/" data-eid="qd_C55" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        <div class="book-list">
+                            <ul>
+                                <li class="unfold" data-rid="1">
+                                    <div class="book-wrap cf">
+                                        <div class="book-info fl">
+                                            <h3>NO.1</h3>
+                                            <h2><a href="//book.qidian.com/info/1004608738" title="圣墟最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1004608738">圣墟</a></h2>
+                                            <p class="digital"><em>7279349</em>收藏数</p>
+                                            <p class="author"><a class="type" href="//www.qidian.com/xuanhuan" target="_blank" data-eid="qd_C42">玄幻</a><i>·</i><a class="writer" href="//my.qidian.com/author/4362453/" target="_blank" data-eid="qd_C41">辰东</a></p>
+                                        </div>
+                                        <div class="book-cover">
+                                            <a class="link" href="//book.qidian.com/info/1004608738" target="_blank" data-eid="qd_C39" data-bid="1004608738"><img src="//bookcover.yuewen.com/qdbimg/349573/1004608738/90" alt="圣墟在线阅读"> </a><span></span>
+                                        </div>
+                                    </div></li>
+                                <li data-rid="2">
+                                    <div class="num-box">
+                                        <span class="num2">2</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="诡秘之主最新章节在线阅读" href="//book.qidian.com/info/1010868264" target="_blank" data-eid="qd_C40" data-bid="1010868264"><h2>诡秘之主</h2></a> <i class="total">7038114</i>
+                                    </div></li>
+                                <li data-rid="3">
+                                    <div class="num-box">
+                                        <span class="num3">3</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="大奉打更人最新章节在线阅读" href="//book.qidian.com/info/1019664125" target="_blank" data-eid="qd_C40" data-bid="1019664125"><h2>大奉打更人</h2></a> <i class="total">5862456</i>
+                                    </div></li>
+                                <li data-rid="4">
+                                    <div class="num-box">
+                                        <span class="num4">4</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="灵境行者最新章节在线阅读" href="//book.qidian.com/info/1031940621" target="_blank" data-eid="qd_C40" data-bid="1031940621"><h2>灵境行者</h2></a> <i class="total">5734140</i>
+                                    </div></li>
+                                <li data-rid="5">
+                                    <div class="num-box">
+                                        <span class="num5">5</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="夜的命名术最新章节在线阅读" href="//book.qidian.com/info/1021617576" target="_blank" data-eid="qd_C40" data-bid="1021617576"><h2>夜的命名术</h2></a> <i class="total">5365175</i>
+                                    </div></li>
+                                <li data-rid="6">
+                                    <div class="num-box">
+                                        <span class="num6">6</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="修真聊天群（聊天群的日常生活）最新章节在线阅读" href="//book.qidian.com/info/3602691" target="_blank" data-eid="qd_C40" data-bid="3602691"><h2>修真聊天群（聊天群的日常生活）</h2></a> <i class="total">4866497</i>
+                                    </div></li>
+                                <li data-rid="7">
+                                    <div class="num-box">
+                                        <span class="num7">7</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="斗破苍穹最新章节在线阅读" href="//book.qidian.com/info/1209977" target="_blank" data-eid="qd_C40" data-bid="1209977"><h2>斗破苍穹</h2></a> <i class="total">4781810</i>
+                                    </div></li>
+                                <li data-rid="8">
+                                    <div class="num-box">
+                                        <span class="num8">8</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="一念永恒最新章节在线阅读" href="//book.qidian.com/info/1003354631" target="_blank" data-eid="qd_C40" data-bid="1003354631"><h2>一念永恒</h2></a> <i class="total">4617906</i>
+                                    </div></li>
+                                <li data-rid="9">
+                                    <div class="num-box">
+                                        <span class="num9">9</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="我师兄实在太稳健了最新章节在线阅读" href="//book.qidian.com/info/1016572786" target="_blank" data-eid="qd_C40" data-bid="1016572786"><h2>我师兄实在太稳健了</h2></a> <i class="total">4124656</i>
+                                    </div></li>
+                                <li data-rid="10">
+                                    <div class="num-box">
+                                        <span class="num10">10</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="万族之劫最新章节在线阅读" href="//book.qidian.com/info/1018027842" target="_blank" data-eid="qd_C40" data-bid="1018027842"><h2>万族之劫</h2></a> <i class="total">3869681</i>
+                                    </div></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rank-list sort-list">
+                        <h3 class="wrap-title lang">签约作者新书榜<a class="more" href="//www.qidian.com/rank/signnewbook/" data-eid="qd_C60" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        <div class="book-list">
+                            <ul>
+                                <li class="unfold" data-rid="1">
+                                    <div class="book-wrap cf">
+                                        <div class="book-info fl">
+                                            <h3>NO.1</h3>
+                                            <h2><a href="//book.qidian.com/info/1036939820" title="死灵法师只想种树最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1036939820">死灵法师只想种树</a></h2>
+                                            <p class="digital f16">本周最强</p>
+                                            <p class="author"><a class="type" href="//www.qidian.com/youxi" target="_blank" data-eid="qd_C42">游戏</a><i>·</i><a class="writer" href="//my.qidian.com/author/430220196/" target="_blank" data-eid="qd_C41">十年一键</a></p>
+                                        </div>
+                                        <div class="book-cover">
+                                            <a class="link" href="//book.qidian.com/info/1036939820" target="_blank" data-eid="qd_C39" data-bid="1036939820"><img src="//bookcover.yuewen.com/qdbimg/349573/1036939820/90" alt="死灵法师只想种树在线阅读"> </a><span></span>
+                                        </div>
+                                    </div></li>
+                                <li data-rid="2">
+                                    <div class="num-box">
+                                        <span class="num2">2</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="科研制卡师最新章节在线阅读" href="//book.qidian.com/info/1036906666" target="_blank" data-eid="qd_C40" data-bid="1036906666"><h2>科研制卡师</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="3">
+                                    <div class="num-box">
+                                        <span class="num3">3</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="我变成了妖怪最新章节在线阅读" href="//book.qidian.com/info/1036892303" target="_blank" data-eid="qd_C40" data-bid="1036892303"><h2>我变成了妖怪</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="4">
+                                    <div class="num-box">
+                                        <span class="num4">4</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="我带地球去流浪最新章节在线阅读" href="//book.qidian.com/info/1036885012" target="_blank" data-eid="qd_C40" data-bid="1036885012"><h2>我带地球去流浪</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="5">
+                                    <div class="num-box">
+                                        <span class="num5">5</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="目中无人最新章节在线阅读" href="//book.qidian.com/info/1036992558" target="_blank" data-eid="qd_C40" data-bid="1036992558"><h2>目中无人</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="6">
+                                    <div class="num-box">
+                                        <span class="num6">6</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="帝龙最新章节在线阅读" href="//book.qidian.com/info/1036076465" target="_blank" data-eid="qd_C40" data-bid="1036076465"><h2>帝龙</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="7">
+                                    <div class="num-box">
+                                        <span class="num7">7</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="末日：从打猎开始肝经验最新章节在线阅读" href="//book.qidian.com/info/1036891337" target="_blank" data-eid="qd_C40" data-bid="1036891337"><h2>末日：从打猎开始肝经验</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="8">
+                                    <div class="num-box">
+                                        <span class="num8">8</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="从皇马踢后腰开始最新章节在线阅读" href="//book.qidian.com/info/1036978233" target="_blank" data-eid="qd_C40" data-bid="1036978233"><h2>从皇马踢后腰开始</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="9">
+                                    <div class="num-box">
+                                        <span class="num9">9</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="熊学派的阿斯塔特最新章节在线阅读" href="//book.qidian.com/info/1036885792" target="_blank" data-eid="qd_C40" data-bid="1036885792"><h2>熊学派的阿斯塔特</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="10">
+                                    <div class="num-box">
+                                        <span class="num10">10</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="悠闲人生：我有万亩草原最新章节在线阅读" href="//book.qidian.com/info/1036919856" target="_blank" data-eid="qd_C40" data-bid="1036919856"><h2>悠闲人生：我有万亩草原</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rank-list sort-list">
+                        <h3 class="wrap-title lang">公众作家新书榜<a class="more" href="//www.qidian.com/rank/pubnewbook/" data-eid="qd_C61" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        <div class="book-list">
+                            <ul>
+                                <li class="unfold" data-rid="1">
+                                    <div class="book-wrap cf">
+                                        <div class="book-info fl">
+                                            <h3>NO.1</h3>
+                                            <h2><a href="//book.qidian.com/info/1036894202" title="暗盒游戏最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1036894202">暗盒游戏</a></h2>
+                                            <p class="digital f16">本周最强</p>
+                                            <p class="author"><a class="type" href="//www.qidian.com/lingyi" target="_blank" data-eid="qd_C42">悬疑</a><i>·</i><a class="writer" href="//my.qidian.com/author/430828645/" target="_blank" data-eid="qd_C41">天一朔</a></p>
+                                        </div>
+                                        <div class="book-cover">
+                                            <a class="link" href="//book.qidian.com/info/1036894202" target="_blank" data-eid="qd_C39" data-bid="1036894202"><img src="//bookcover.yuewen.com/qdbimg/349573/1036894202/90" alt="暗盒游戏在线阅读"> </a><span></span>
+                                        </div>
+                                    </div></li>
+                                <li data-rid="2">
+                                    <div class="num-box">
+                                        <span class="num2">2</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="2000重回年少最新章节在线阅读" href="//book.qidian.com/info/1037043913" target="_blank" data-eid="qd_C40" data-bid="1037043913"><h2>2000重回年少</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="3">
+                                    <div class="num-box">
+                                        <span class="num3">3</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="星猎：永恒阶梯最新章节在线阅读" href="//book.qidian.com/info/1036886505" target="_blank" data-eid="qd_C40" data-bid="1036886505"><h2>星猎：永恒阶梯</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="4">
+                                    <div class="num-box">
+                                        <span class="num4">4</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="话江湖谁入江湖最新章节在线阅读" href="//book.qidian.com/info/1037005312" target="_blank" data-eid="qd_C40" data-bid="1037005312"><h2>话江湖谁入江湖</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="5">
+                                    <div class="num-box">
+                                        <span class="num5">5</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="深夜将至最新章节在线阅读" href="//book.qidian.com/info/1037042721" target="_blank" data-eid="qd_C40" data-bid="1037042721"><h2>深夜将至</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="6">
+                                    <div class="num-box">
+                                        <span class="num6">6</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="宇宙你就继续膨胀吧最新章节在线阅读" href="//book.qidian.com/info/1036878844" target="_blank" data-eid="qd_C40" data-bid="1036878844"><h2>宇宙你就继续膨胀吧</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="7">
+                                    <div class="num-box">
+                                        <span class="num7">7</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="师兄，请出山！最新章节在线阅读" href="//book.qidian.com/info/1036835626" target="_blank" data-eid="qd_C40" data-bid="1036835626"><h2>师兄，请出山！</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="8">
+                                    <div class="num-box">
+                                        <span class="num8">8</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="神烬轮回最新章节在线阅读" href="//book.qidian.com/info/1036939687" target="_blank" data-eid="qd_C40" data-bid="1036939687"><h2>神烬轮回</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="9">
+                                    <div class="num-box">
+                                        <span class="num9">9</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="李珏的影视人生最新章节在线阅读" href="//book.qidian.com/info/1036964870" target="_blank" data-eid="qd_C40" data-bid="1036964870"><h2>李珏的影视人生</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                                <li data-rid="10">
+                                    <div class="num-box">
+                                        <span class="num10">10</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="进击的巨人之艾尔迪亚的复兴最新章节在线阅读" href="//book.qidian.com/info/1036339157" target="_blank" data-eid="qd_C40" data-bid="1036339157"><h2>进击的巨人之艾尔迪亚的复兴</h2></a> <span class="iconfont"></span>
+                                    </div></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="rank-list mr0">
+                        <h3 class="wrap-title lang">月票榜<i>·</i>VIP新作<a class="more" href="//www.qidian.com/rank/yuepiao?chn=0" data-eid="qd_C45" rel="nofollow">更多<em class="iconfont"></em></a></h3>
+                        <div class="book-list">
+                            <ul>
+                                <li class="unfold" data-rid="1">
+                                    <div class="book-wrap cf">
+                                        <div class="book-info fl">
+                                            <h3>NO.1</h3>
+                                            <h2><a href="//book.qidian.com/info/1035422683" title="养成系男神：听劝后，我成了顶流最新章节在线阅读" target="_blank" data-eid="qd_C40" data-bid="1035422683">养成系男神：听劝后，我成了顶流</a></h2>
+                                            <p class="digital"><em>10481</em>月票</p>
+                                            <p class="author"><a class="type" href="//www.qidian.com/dushi" target="_blank" data-eid="qd_C42">都市</a><i>·</i><a class="writer" href="//my.qidian.com/author/8177294/" target="_blank" data-eid="qd_C41">蠢蠢凡愚QD</a></p>
+                                        </div>
+                                        <div class="book-cover">
+                                            <a class="link" href="//book.qidian.com/info/1035422683" target="_blank" data-eid="qd_C39" data-bid="1035422683"><img src="//bookcover.yuewen.com/qdbimg/349573/1035422683/90" alt="养成系男神：听劝后，我成了顶流在线阅读"> </a><span></span>
+                                        </div>
+                                    </div></li>
+                                <li data-rid="2">
+                                    <div class="num-box">
+                                        <span class="num2">2</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="说好制作烂游戏，泰坦陨落什么鬼最新章节在线阅读" href="//book.qidian.com/info/1036777227" target="_blank" data-eid="qd_C40" data-bid="1036777227"><h2>说好制作烂游戏，泰坦陨落什么鬼</h2></a> <i class="total">9416</i>
+                                    </div></li>
+                                <li data-rid="3">
+                                    <div class="num-box">
+                                        <span class="num3">3</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="隐秘死角最新章节在线阅读" href="//book.qidian.com/info/1036789359" target="_blank" data-eid="qd_C40" data-bid="1036789359"><h2>隐秘死角</h2></a> <i class="total">8458</i>
+                                    </div></li>
+                                <li data-rid="4">
+                                    <div class="num-box">
+                                        <span class="num4">4</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="联盟：这选手醉酒比赛，全网笑疯最新章节在线阅读" href="//book.qidian.com/info/1036656617" target="_blank" data-eid="qd_C40" data-bid="1036656617"><h2>联盟：这选手醉酒比赛，全网笑疯</h2></a> <i class="total">4014</i>
+                                    </div></li>
+                                <li data-rid="5">
+                                    <div class="num-box">
+                                        <span class="num5">5</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="围棋：我和AI五五开最新章节在线阅读" href="//book.qidian.com/info/1036741406" target="_blank" data-eid="qd_C40" data-bid="1036741406"><h2>围棋：我和AI五五开</h2></a> <i class="total">3555</i>
+                                    </div></li>
+                                <li data-rid="6">
+                                    <div class="num-box">
+                                        <span class="num6">6</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="细说红尘最新章节在线阅读" href="//book.qidian.com/info/1036506211" target="_blank" data-eid="qd_C40" data-bid="1036506211"><h2>细说红尘</h2></a> <i class="total">3447</i>
+                                    </div></li>
+                                <li data-rid="7">
+                                    <div class="num-box">
+                                        <span class="num7">7</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="人生扮演游戏最新章节在线阅读" href="//book.qidian.com/info/1036773026" target="_blank" data-eid="qd_C40" data-bid="1036773026"><h2>人生扮演游戏</h2></a> <i class="total">3333</i>
+                                    </div></li>
+                                <li data-rid="8">
+                                    <div class="num-box">
+                                        <span class="num8">8</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="您完全不按套路通关是吗最新章节在线阅读" href="//book.qidian.com/info/1036487387" target="_blank" data-eid="qd_C40" data-bid="1036487387"><h2>您完全不按套路通关是吗</h2></a> <i class="total">2538</i>
+                                    </div></li>
+                                <li data-rid="9">
+                                    <div class="num-box">
+                                        <span class="num9">9</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="哈兰德领主最新章节在线阅读" href="//book.qidian.com/info/1036714223" target="_blank" data-eid="qd_C40" data-bid="1036714223"><h2>哈兰德领主</h2></a> <i class="total">2524</i>
+                                    </div></li>
+                                <li data-rid="10">
+                                    <div class="num-box">
+                                        <span class="num10">10</span>
+                                    </div>
+                                    <div class="name-box"> <a class="name" title="天道酬勤：一分耕耘百分收获最新章节在线阅读" href="//book.qidian.com/info/1028792770" target="_blank" data-eid="qd_C40" data-bid="1028792770"><h2>天道酬勤：一分耕耘百分收获</h2></a> <i class="total">2443</i>
+                                    </div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="box-center cf">
+            <div class="footer-menu dib-wrap">
+                <a href="//www.qidian.com/about/intro" target="_blank">关于起点</a> <a href="//www.qidian.com/about/contact" target="_blank">联系我们</a> <a href="//join.yuewen.com" rel="nofollow" target="_blank">加入我们</a> <a href="//www.qidian.com/help" target="_blank">帮助与客服</a> <a href="//jubao.yuewen.com" rel="nofollow" target="_blank">举报中心</a> <a href="//security.tencent.com/" rel="nofollow" target="_blank">漏洞提交</a>
+            </div>
+            <div class="copy-right">
+                <p><span>Copyright © 2002-2023 www.qidian.com All Rights Reserved 版权所有 上海玄霆娱乐信息科技有限公司</span></p>
+                <p><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011502001275"><img src="https://imgservices-1252317822.image.myqcloud.com/image/20191223/o5lajshfcw.png"><span>沪公网安备 31011502001275号</span></a><span>增值电信业务经营许可证：沪B2-20080046 互联网ICP备案号：</span><a href="http://beian.miit.gov.cn" target="_blank">沪B2-20080046-1</a><span>&nbsp;出版经营许可证：新出发沪批字第 U3718 号</span></p>
+                <p><span>网络文化经营许可证：沪网文〔2021〕0374-020号 网络出版服务许可证：（署）网出证（沪）字第055号&nbsp;</span><a target="_blank" href="https://imgservices-1252317822.image.myqcloud.com/coco/s11302022/1559b4c2.sgu0f6.png">营业执照</a>&nbsp;&nbsp;<a target="_blank" href="https://imgservices-1252317822.image.myqcloud.com/coco/s11302022/e8818776.u2qx9p.png"><span>互联网宗教信息服务许可证 编号：沪（2022）0000022</span></a></p>
+                <p>请所有作者发布作品时务必遵守国家互联网信息管理办法规定，我们拒绝任何色情小说，一经发现，即作删除！举报电话：010-59357051</p>
+                <p>本站所收录的作品、社区话题、用户评论、用户上传内容或图片等均属用户个人行为。如前述内容侵害您的权益，欢迎举报投诉，一经核实，立即删除，本站不承担任何责任</p>
+                <p>联系方式 总机 021-61870500 地址：中国（上海）自由贸易试验区环科路999弄1号706室</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>var g_data={};g_data.adBanner={adTop: {"title":"传奇霸主","adImgUrl":"https://img1.qidian.com/upload/gamesy/2022/02/14/20220214161349tbwcaz84rz.jpg","adCategoryName":"广告","colorType":0,"type":1,"isAdv":1,"adJumpUrl":"http://cpgame.qd.game.qidian.com/Home/Index/directLogin/name/cqbz/way/1?qd_game_key=cqbz1200x60.jpg&qd_dd_p1=132588","hasAd":1}},g_data.adBanner.adTop&&(g_data.adBanner.adTop.eid="qd_C67"),g_data.envType="pro",g_data.isZht= false,g_data.pageId="qd_P_rank",g_data.domainPreFix="",g_data.domainSearch="www.qidian.com/soushu"</script>
+</body>
+</html>

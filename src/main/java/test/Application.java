@@ -30,8 +30,6 @@ public class Application {
     public static void main(String[] args1) throws SQLException {
         Main.searchAndInsert("鼻窦炎", false, true);
 
-
-
     }
 
     public static void generateMatrix() throws SQLException {

@@ -22,13 +22,14 @@ public class ThreadPoolFactory {
     }
 
     private ExecutorService buildThreadPool(int threadNum, String threadNamePrefix) {
-        // 将 corePoolSize 设置为 0，在所有任务结束后自动关闭线程池
-        return new ThreadPoolExecutor(0,
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(threadNum,
                 threadNum,
                 10L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(),
                 new CnkiThreadFactory(threadNamePrefix),
                 new ThreadPoolExecutor.AbortPolicy());
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        return threadPoolExecutor;
     }
 
 
